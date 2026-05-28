@@ -29,13 +29,14 @@ tailwind.config = {
       },
       colors: {
         brand: {
-          50:  '#F0F9FF', 100: '#E0F2FE', 200: '#BAE6FD',
+          50:  '#F0F9FF', 100: '#E0F2FE', 200: '#BAE6FD', 300: '#7DD3FC',
           400: '#38BDF8', 500: '#0EA5E9', 600: '#0284C7',
-          700: '#0369A1', 900: '#0C4A6E'
+          700: '#0369A1', 800: '#075985', 900: '#0C4A6E', 950: '#082F49'
         },
         heal: {
-          50:  '#ECFDF5', 100: '#D1FAE5',
-          400: '#34D399', 500: '#10B981', 600: '#059669'
+          50:  '#ECFDF5', 100: '#D1FAE5', 200: '#A7F3D0', 300: '#6EE7B7',
+          400: '#34D399', 500: '#10B981', 600: '#059669',
+          700: '#047857', 800: '#065F46', 900: '#064E3B', 950: '#022C22'
         },
         ink: {
           // Apple's neutral system
@@ -1176,7 +1177,7 @@ const HomePage = ({ onLoginClick }) => {
           {/* Hero CTAs (Apple-style: primary + secondary link with chevron) */}
           <div className="fade-up mt-9 flex items-center justify-center gap-5 flex-wrap">
             <Btn as="a" href="#/doctors" variant="accent" size="lg" className="!px-7">Find a doctor</Btn>
-            <a href="#/vault" className="text-[15px] font-medium text-brand-300 hover:text-brand-200 inline-flex items-center gap-1 transition-colors">
+            <a href="#/vault" className="text-[15px] font-medium text-brand-300 hover:text-white inline-flex items-center gap-1 transition-colors">
               Open my vault <Icon name="arrowRight" className="w-4 h-4"/>
             </a>
           </div>
@@ -1465,7 +1466,7 @@ const HomePage = ({ onLoginClick }) => {
                   <div className="mt-9 flex flex-wrap items-center gap-5">
                     <Btn as="a" href="#/vault" variant="ghost" size="lg" className="!bg-white !text-ink-900 !border-0">Open my vault</Btn>
                     {!user && (
-                      <button onClick={onLoginClick} className="text-[15px] font-medium text-brand-300 hover:text-brand-200 inline-flex items-center gap-1">
+                      <button onClick={onLoginClick} className="text-[15px] font-medium text-brand-300 hover:text-white inline-flex items-center gap-1">
                         Sign in with demo <Icon name="arrowRight" className="w-4 h-4"/>
                       </button>
                     )}
@@ -3204,7 +3205,7 @@ const CommunityHome = () => (
         </p>
         <div className="mt-9 flex items-center justify-center gap-5 flex-wrap">
           <Btn as="a" href="#/journals" variant="accent" size="lg">Read treatment journals</Btn>
-          <a href="#/qa" className="text-[15px] font-medium text-brand-300 hover:text-brand-200 inline-flex items-center gap-1">
+          <a href="#/qa" className="text-[15px] font-medium text-brand-300 hover:text-white inline-flex items-center gap-1">
             Ask a verified doctor <Icon name="arrowRight" className="w-4 h-4"/>
           </a>
         </div>

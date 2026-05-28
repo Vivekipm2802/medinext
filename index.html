@@ -10,7 +10,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230EA5E9'/%3E%3Cpath d='M16 8v16M8 16h16' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
@@ -239,6 +239,13 @@ tailwind.config = {
 
   /* Apple-style horizontal rule */
   .hr-apple { height: 1px; background: linear-gradient(90deg, transparent, var(--apple-line) 20%, var(--apple-line) 80%, transparent); border: 0; }
+
+  /* Devanagari script — for the Indian brand voice line */
+  .dev {
+    font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+    letter-spacing: 0;
+  }
 </style>
 </head>
 <body>
@@ -854,6 +861,37 @@ const Reveal = ({ children, delay = 0, className = "" }) => {
   return <div ref={ref} className={`reveal ${className}`}>{children}</div>;
 };
 
+/* ─── Animated counter (counts up from 0 → target when scrolled into view) */
+const AnimatedStat = ({ target, suffix = "+", duration = 1700, className = "" }) => {
+  const [value, setValue] = useState(0);
+  const ref = useRef(null);
+  const started = useRef(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !started.current) {
+          started.current = true;
+          const start = performance.now();
+          const animate = (now) => {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+            setValue(Math.floor(eased * target));
+            if (progress < 1) requestAnimationFrame(animate);
+            else setValue(target);
+          };
+          requestAnimationFrame(animate);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [target, duration]);
+  return <span ref={ref} className={className}>{value.toLocaleString("en-IN")}{suffix}</span>;
+};
+
 const Avatar = ({ name, hue = 200, size = 56 }) => {
   const initials = name.split(/\s+/).slice(0,2).map(n => n[0]).join("").toUpperCase();
   return (
@@ -1214,17 +1252,19 @@ const HomePage = ({ onLoginClick }) => {
 
       </section>
 
-      {/* Apple-style sticky stat bar */}
+      {/* Apple-style sticky stat bar — animated counters */}
       <section className="bg-white border-y border-ink-200/60">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-ink-200/60">
           {[
-            { v: DATA.hospitals.length + "+", l: "Hospitals" },
-            { v: DATA.doctors.length + "+", l: "Doctors" },
-            { v: DATA.pathology.length + "+", l: "NABL labs" },
-            { v: DATA.pharmacies.length + "+", l: "Pharmacies" }
+            { n: DATA.hospitals.length, l: "Hospitals" },
+            { n: DATA.doctors.length, l: "Doctors" },
+            { n: DATA.pathology.length, l: "NABL labs" },
+            { n: DATA.pharmacies.length, l: "Pharmacies" }
           ].map((s,i) => (
             <div key={s.l} className={`text-center py-4 md:py-2 ${i % 2 ? 'md:pl-6' : 'md:pr-6'}`}>
-              <div className="text-[32px] sm:text-[42px] font-semibold text-ink-900 tracking-tightest">{s.v}</div>
+              <div className="text-[32px] sm:text-[42px] font-semibold text-ink-900 tracking-tightest tabular-nums">
+                <AnimatedStat target={s.n} suffix="+" duration={1500 + i * 200}/>
+              </div>
               <div className="text-[12px] text-ink-500 mt-1">{s.l}</div>
             </div>
           ))}
@@ -1241,6 +1281,11 @@ const HomePage = ({ onLoginClick }) => {
               <div className="eyebrow !text-amber-300/80 mb-3">The transparency moat</div>
               <h2 className="display-md text-white">What patients <span className="gradient-text-bright italic font-serif font-normal">actually paid</span> this month.</h2>
               <p className="mt-4 text-[16px] sm:text-[17px] text-white/70 max-w-xl mx-auto">Same procedure. Same city. Up to <span className="text-white font-semibold">13× price difference</span>. This is why MediNext exists.</p>
+              {/* Devanagari brand line */}
+              <p className="dev mt-6 text-[18px] sm:text-[22px] font-medium text-white/85 tracking-wide">
+                मरीज़ पहले<span className="text-amber-300">.</span> मुनाफ़ा बाद में<span className="text-amber-300">.</span>
+              </p>
+              <p className="mt-2 text-[12px] text-white/45 italic">Patient first. Profit later.</p>
             </div>
           </Reveal>
 

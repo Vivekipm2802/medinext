@@ -1165,13 +1165,13 @@ const HomePage = ({ onLoginClick }) => {
 
           {/* Monumental headline */}
           <h1 className="fade-up display-xl text-white">
-            Find healthcare.
+            Find a doctor, hospital or lab.
             <br/>
-            <span className="gradient-text-bright italic font-serif font-normal">Heal&nbsp;forward.</span>
+            <span className="gradient-text-bright italic font-serif font-normal">All across&nbsp;India.</span>
           </h1>
 
-          <p className="fade-up mt-7 text-[19px] sm:text-[21px] leading-[1.45] text-white/70 max-w-2xl mx-auto font-light">
-            Hospitals, doctors, diagnostics and pharmacies — verified, rated and bookable in seconds. Plus a private vault for every report.
+          <p className="fade-up mt-7 text-[19px] sm:text-[21px] leading-[1.45] text-white/80 max-w-2xl mx-auto font-light">
+            Verified hospitals and doctors. Honest patient reviews. Transparent pricing. Plus a safe place to keep all your prescriptions and lab reports — your private health vault.
           </p>
 
           {/* Hero CTAs (Apple-style: primary + secondary link with chevron) */}
@@ -1188,10 +1188,10 @@ const HomePage = ({ onLoginClick }) => {
           </div>
 
           {/* Trust strip */}
-          <div className="fade-up mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-white/55">
-            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> NABH / NABL verified</span>
-            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> ABDM (ABHA) ready</span>
-            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> Cashless network</span>
+          <div className="fade-up mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-white/75">
+            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> NABH and NABL verified</span>
+            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> Works with your ABHA ID</span>
+            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> Cashless insurance accepted</span>
           </div>
 
           {/* Next available — floating strip */}
@@ -1311,7 +1311,7 @@ const HomePage = ({ onLoginClick }) => {
             <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 text-center pointer-events-none">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-[11px] font-medium border border-white/15">
                 <span className="w-1.5 h-1.5 rounded-full bg-heal-400 pulse-dot"/>
-                <span>Live demo · scroll to explore</span>
+                <span>Scroll down to see how it works</span>
               </div>
             </div>
           </div>
@@ -1339,19 +1339,19 @@ const HomePage = ({ onLoginClick }) => {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
         <Reveal>
           <SectionTitle
-            eyebrow="Discover"
-            title="Everything for your health."
-            accent="In one place."
-            sub="Hospitals, doctors, diagnostics and pharmacies — verified, rated, and bookable in seconds."
+            eyebrow="Browse"
+            title="Everything you need for your health,"
+            accent="in one app."
+            sub="From your nearest doctor and hospital to a same-day lab test and home medicine delivery."
           />
         </Reveal>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {(() => {
             const tiles = [
-              { kind: "hospitals", title: "Hospitals", tagline: "NABH-accredited care, near you.", count: DATA.hospitals.length, icon: "building", tone: "from-sky-400/30 via-sky-500/10 to-transparent", iconBg: "bg-sky-500" },
-              { kind: "doctors", title: "Doctors", tagline: "Specialists in 17 fields.", count: DATA.doctors.length, icon: "stethoscope", tone: "from-emerald-400/30 via-emerald-500/10 to-transparent", iconBg: "bg-emerald-500" },
-              { kind: "pathology", title: "Diagnostics", tagline: "NABL labs. Reports in 12h.", count: DATA.pathology.length, icon: "flask", tone: "from-amber-400/30 via-amber-500/10 to-transparent", iconBg: "bg-amber-500" },
-              { kind: "pharmacies", title: "Pharmacies", tagline: "Genuine meds. 30-min delivery.", count: DATA.pharmacies.length, icon: "pill", tone: "from-rose-400/30 via-rose-500/10 to-transparent", iconBg: "bg-rose-500" }
+              { kind: "hospitals", title: "Hospitals", tagline: "NABH-accredited hospitals near you", count: DATA.hospitals.length, icon: "building", tone: "from-sky-400/30 via-sky-500/10 to-transparent", iconBg: "bg-sky-500" },
+              { kind: "doctors", title: "Doctors", tagline: "Verified specialists in 17 fields", count: DATA.doctors.length, icon: "stethoscope", tone: "from-emerald-400/30 via-emerald-500/10 to-transparent", iconBg: "bg-emerald-500" },
+              { kind: "pathology", title: "Diagnostics", tagline: "NABL labs. Reports within 12 hours", count: DATA.pathology.length, icon: "flask", tone: "from-amber-400/30 via-amber-500/10 to-transparent", iconBg: "bg-amber-500" },
+              { kind: "pharmacies", title: "Pharmacies", tagline: "Genuine medicines, home delivery in 30 minutes", count: DATA.pharmacies.length, icon: "pill", tone: "from-rose-400/30 via-rose-500/10 to-transparent", iconBg: "bg-rose-500" }
             ];
             return tiles.map((t, i) => (
               <Reveal key={t.kind} delay={i * 80}>
@@ -1388,9 +1388,9 @@ const HomePage = ({ onLoginClick }) => {
         <Reveal>
           <SectionTitle
             eyebrow="Lab tests"
-            title="Health checkups,"
-            accent="from ₹199."
-            sub="NABL-accredited labs. Sample collected at home. Reports in your vault within 24 hours."
+            title="Book a health check-up"
+            accent="from just ₹199."
+            sub="NABL-accredited labs. Free home sample collection. Reports delivered within 24 hours, straight to your vault."
           />
         </Reveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1419,10 +1419,10 @@ const HomePage = ({ onLoginClick }) => {
         <Reveal>
           <SectionTitle
             eyebrow="Top doctors"
-            title="Specialists"
-            accent="you can trust."
-            sub="Verified credentials. Real reviews. Instant booking."
-            action={<a href="#/doctors" className="text-[14px] font-medium text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">All doctors <Icon name="arrowRight" className="w-4 h-4"/></a>}
+            title="Trusted specialists,"
+            accent="near you."
+            sub="Every doctor is verified with the National Medical Commission. Only patients with confirmed appointments can leave reviews. Book in seconds."
+            action={<a href="#/doctors" className="text-[14px] font-medium text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">See all doctors <Icon name="arrowRight" className="w-4 h-4"/></a>}
           />
         </Reveal>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1435,9 +1435,10 @@ const HomePage = ({ onLoginClick }) => {
         <Reveal>
           <SectionTitle
             eyebrow="Hospitals"
-            title="Top-rated hospitals,"
+            title="Top-rated hospitals"
             accent="near you."
-            action={<a href="#/hospitals" className="text-[14px] font-medium text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">All hospitals <Icon name="arrowRight" className="w-4 h-4"/></a>}
+            sub="NABH and NABL accredited. Cashless insurance accepted. 24×7 emergency wherever available."
+            action={<a href="#/hospitals" className="text-[14px] font-medium text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">See all hospitals <Icon name="arrowRight" className="w-4 h-4"/></a>}
           />
         </Reveal>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1454,20 +1455,20 @@ const HomePage = ({ onLoginClick }) => {
               <div className="absolute -top-20 -left-20 w-[420px] h-[420px] rounded-full bg-brand-500/20 blur-3xl pointer-events-none float-slow"/>
               <div className="relative grid lg:grid-cols-2 gap-12 items-center p-10 sm:p-16 lg:p-20">
                 <div>
-                  <div className="eyebrow !text-white/60">Patient Vault</div>
+                  <div className="eyebrow !text-white/70">Patient Vault</div>
                   <h3 className="mt-3 display-lg">
-                    Every report.<br/>
-                    Every prescription.<br/>
-                    <span className="gradient-text-bright italic font-serif font-normal">Sealed.</span>
+                    All your prescriptions<br/>
+                    and reports,<br/>
+                    <span className="gradient-text-bright italic font-serif font-normal">in one safe&nbsp;place.</span>
                   </h3>
-                  <p className="mt-6 text-[17px] leading-relaxed text-white/65 max-w-md">
-                    ABDM-aligned. End-to-end encrypted (planned at GA). Share with any doctor in a tap — and revoke it just as fast.
+                  <p className="mt-6 text-[17px] leading-relaxed text-white/80 max-w-md">
+                    Linked with your ABHA (digital health) ID. Strongly encrypted. Share any record with a doctor in one tap — and take that access back whenever you want.
                   </p>
                   <div className="mt-9 flex flex-wrap items-center gap-5">
                     <Btn as="a" href="#/vault" variant="ghost" size="lg" className="!bg-white !text-ink-900 !border-0">Open my vault</Btn>
                     {!user && (
                       <button onClick={onLoginClick} className="text-[15px] font-medium text-brand-300 hover:text-white inline-flex items-center gap-1">
-                        Sign in with demo <Icon name="arrowRight" className="w-4 h-4"/>
+                        Try the demo account <Icon name="arrowRight" className="w-4 h-4"/>
                       </button>
                     )}
                   </div>
@@ -1517,20 +1518,20 @@ const HomePage = ({ onLoginClick }) => {
                 <div className="lg:col-span-3 p-10 sm:p-14">
                   <div className="eyebrow">Community</div>
                   <h3 className="mt-3 display-lg">
-                    Healthcare is better,<br/>
-                    <span className="gradient-text italic font-serif font-normal">together.</span>
+                    Healthcare is easier<br/>
+                    <span className="gradient-text italic font-serif font-normal">when you're not&nbsp;alone.</span>
                   </h3>
                   <p className="mt-5 text-[17px] leading-relaxed text-ink-600 max-w-md">
-                    {COMMUNITIES.length} doctor-moderated communities on WhatsApp. Real treatment journals. Verified doctor Q&A. The Most Transparent Hospital Awards. Boots on the ground in {ADVOCATE_CITIES.length} cities.
+                    {COMMUNITIES.length} doctor-led WhatsApp groups for common conditions. Real patient stories with real hospital bills. Verified doctor Q&A. Patient advocates in {ADVOCATE_CITIES.length} Indian cities helping people fight overcharging.
                   </p>
                   <div className="mt-8 flex items-center gap-5 flex-wrap">
-                    <Btn as="a" href="#/community" size="lg">Explore communities</Btn>
-                    <a href="#/journals" className="text-[15px] font-medium text-brand-600 inline-flex items-center gap-1">Read journals <Icon name="arrowRight" className="w-4 h-4"/></a>
+                    <Btn as="a" href="#/community" size="lg">Join a community</Btn>
+                    <a href="#/journals" className="text-[15px] font-medium text-brand-600 inline-flex items-center gap-1">Read patient stories <Icon name="arrowRight" className="w-4 h-4"/></a>
                   </div>
                   <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-ink-500">
-                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> {COMMUNITIES.reduce((a,c) => a + c.members, 0).toLocaleString()} patients</span>
-                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Anonymous-friendly</span>
-                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> No paid placements</span>
+                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> {COMMUNITIES.reduce((a,c) => a + c.members, 0).toLocaleString()}+ patients</span>
+                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Anonymous if you wish</span>
+                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Free. No paid promotions.</span>
                   </div>
                 </div>
                 <div className="lg:col-span-2 p-6 sm:p-8 bg-ink-100 grid grid-cols-2 gap-3">
@@ -1554,16 +1555,16 @@ const HomePage = ({ onLoginClick }) => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
             <SectionTitle
-              eyebrow="Designed for trust"
-              title="Built on the standards"
-              accent="that matter."
+              eyebrow="Why MediNext"
+              title="Built on what matters"
+              accent="to Indian patients."
             />
           </Reveal>
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { icon: "shield", title: "Verified & accredited", body: "Every listing checked against NABH and NABL registries and council registration numbers." },
-              { icon: "heart", title: "Real patient reviews", body: "Only patients with confirmed appointments can rate — no paid placements, ever." },
-              { icon: "award", title: "Privacy-first", body: "ABDM-aligned. Your vault is encrypted at rest. You decide who sees what, and for how long." }
+              { icon: "shield", title: "Properly verified", body: "Every hospital and doctor we list is checked against NABH, NABL and the National Medical Commission's official records." },
+              { icon: "heart", title: "Honest reviews only", body: "Only patients with a confirmed appointment can write a review. No paid placements. No fake stars." },
+              { icon: "award", title: "Your data is yours", body: "Your health vault is encrypted and works with India's ABDM (Ayushman Bharat Digital Mission). You decide who sees what, and for how long." }
             ].map((t, i) => (
               <Reveal key={t.title} delay={i * 80}>
                 <div className="bg-white rounded-3xl p-8 hairline h-full">
@@ -2081,7 +2082,7 @@ const HospitalDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">About</div>
-                <h2 className="display-sm">A place built for healing.</h2>
+                <h2 className="display-sm">About this hospital</h2>
                 <p className="mt-4 text-[15px] leading-relaxed text-ink-700">{h.about}</p>
                 <div className="mt-7 grid grid-cols-3 gap-3 text-center">
                   <div className="rounded-2xl bg-ink-100 p-5">
@@ -2104,7 +2105,8 @@ const HospitalDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">Specialties</div>
-                <h2 className="display-sm">{h.specialties.length} fields of medicine.</h2>
+                <h2 className="display-sm">Specialties available here</h2>
+                <p className="mt-2 text-[14px] text-ink-500">{h.specialties.length} departments under one roof.</p>
                 <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {h.specialties.map(s => (
                     <div key={s} className="px-4 py-3 rounded-2xl bg-ink-100 hairline text-[14px] font-medium text-ink-900 flex items-center gap-2">
@@ -2119,7 +2121,7 @@ const HospitalDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">Facilities</div>
-                <h2 className="display-sm">Built to handle anything.</h2>
+                <h2 className="display-sm">What's available on the premises</h2>
                 <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {h.facilities.map(f => (
                     <div key={f} className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-ink-100 text-[14px] text-ink-700">
@@ -2136,8 +2138,8 @@ const HospitalDetail = ({ slug }) => {
             {hospDoctors.length > 0 && (
               <Reveal>
                 <div>
-                  <div className="eyebrow mb-2">Our team</div>
-                  <h2 className="display-sm">Doctors at {h.name.split(" ")[0]}.</h2>
+                  <div className="eyebrow mb-2">Our doctors</div>
+                  <h2 className="display-sm">Doctors who practise at {h.name.split(" ")[0]}</h2>
                   <div className="mt-6 grid sm:grid-cols-2 gap-4">
                     {hospDoctors.map(d => <DoctorCard key={d.id} doctor={d}/>)}
                   </div>
@@ -2152,7 +2154,7 @@ const HospitalDetail = ({ slug }) => {
               <div className="bg-white hairline rounded-3xl overflow-hidden card-soft">
                 <div className="p-8 pb-4">
                   <div className="eyebrow mb-2">Location</div>
-                  <h2 className="display-sm">{h.locality}, {h.city}.</h2>
+                  <h2 className="display-sm">How to reach</h2>
                   <div className="mt-3 text-[14px] text-ink-600">{h.address}</div>
                 </div>
                 <a target="_blank" rel="noreferrer"
@@ -2324,7 +2326,7 @@ const DoctorDetail = ({ slug, onBook }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">About</div>
-                <h2 className="display-sm">Meet Dr. {firstName}.</h2>
+                <h2 className="display-sm">About Dr. {firstName}</h2>
                 <p className="mt-4 text-[16px] leading-relaxed text-ink-700">{d.about}</p>
                 {d.awards.length > 0 && (
                   <div className="mt-7">
@@ -2343,8 +2345,8 @@ const DoctorDetail = ({ slug, onBook }) => {
 
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
-                <div className="eyebrow mb-2">Languages spoken</div>
-                <h2 className="display-sm">Fluent in {d.languages.length}.</h2>
+                <div className="eyebrow mb-2">Languages</div>
+                <h2 className="display-sm">Speaks {d.languages.length} languages</h2>
                 <div className="mt-5 flex gap-2 flex-wrap">
                   {d.languages.map(l => (
                     <div key={l} className="px-4 py-2.5 rounded-2xl bg-ink-100 text-[14px] font-medium text-ink-900">{l}</div>
@@ -2356,8 +2358,8 @@ const DoctorDetail = ({ slug, onBook }) => {
             {hosp && (
               <Reveal>
                 <div>
-                  <div className="eyebrow mb-2">Practices at</div>
-                  <h2 className="display-sm mb-6">{hosp.name}.</h2>
+                  <div className="eyebrow mb-2">Where they practise</div>
+                  <h2 className="display-sm mb-6">{hosp.name}</h2>
                   <HospitalCard hospital={hosp}/>
                 </div>
               </Reveal>
@@ -2475,7 +2477,7 @@ const PathologyDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">About</div>
-                <h2 className="display-sm">Diagnostics, done right.</h2>
+                <h2 className="display-sm">About this lab</h2>
                 <p className="mt-4 text-[15px] leading-relaxed text-ink-700">{l.about}</p>
                 <div className="mt-4 text-[13px] text-ink-500 inline-flex items-center gap-1.5"><Icon name="map" className="w-4 h-4"/> {l.address}</div>
               </div>
@@ -2484,7 +2486,7 @@ const PathologyDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">Popular tests</div>
-                <h2 className="display-sm">Book in seconds.</h2>
+                <h2 className="display-sm">Book a test in seconds</h2>
                 <div className="mt-6 divide-y divide-ink-200/60">
                   {l.popular_tests.map(t => (
                     <div key={t} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
@@ -2508,7 +2510,7 @@ const PathologyDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">Radiology & scans</div>
-                <h2 className="display-sm">Imaging on site.</h2>
+                <h2 className="display-sm">Scans and imaging available here</h2>
                 <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {l.scans.map(s => (
                     <div key={s} className="px-4 py-3 rounded-2xl bg-ink-100 hairline text-[14px] font-medium text-ink-900 inline-flex items-center gap-2">
@@ -2609,7 +2611,7 @@ const PharmacyDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">About</div>
-                <h2 className="display-sm">Genuine meds, fast.</h2>
+                <h2 className="display-sm">About this pharmacy</h2>
                 <p className="mt-4 text-[15px] leading-relaxed text-ink-700">{p.about}</p>
                 <div className="mt-4 text-[13px] text-ink-500 inline-flex items-center gap-1.5"><Icon name="map" className="w-4 h-4"/> {p.address}</div>
               </div>
@@ -2617,9 +2619,9 @@ const PharmacyDetail = ({ slug }) => {
 
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
-                <div className="eyebrow mb-2">Upload prescription</div>
-                <h2 className="display-sm">Skip the queue.</h2>
-                <p className="mt-3 text-[15px] text-ink-600">Snap your prescription. We'll source genuine meds with up to {p.discount_pct}% off and deliver in {p.delivery_eta_minutes} minutes.</p>
+                <div className="eyebrow mb-2">Upload your prescription</div>
+                <h2 className="display-sm">Skip the queue at the chemist</h2>
+                <p className="mt-3 text-[15px] text-ink-600">Take a picture of your prescription. We will source the medicines (genuine, batch-verified) at up to {p.discount_pct}% off MRP and deliver in {p.delivery_eta_minutes} minutes.</p>
                 <UploadDropzone p={p}/>
               </div>
             </Reveal>
@@ -2627,8 +2629,8 @@ const PharmacyDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">Popular medicines</div>
-                <h2 className="display-sm">{p.discount_pct}% off MRP.</h2>
-                <p className="mt-2 text-[13px] text-ink-500">Demo catalogue · all prices include discount.</p>
+                <h2 className="display-sm">Popular medicines at {p.discount_pct}% off MRP</h2>
+                <p className="mt-2 text-[13px] text-ink-500">Demo catalogue. All prices already include the discount.</p>
                 <div className="mt-6 divide-y divide-ink-200/60">
                   {SAMPLE_MEDS.map(m => {
                     const price = Math.round(m.mrp * (1 - p.discount_pct/100));
@@ -3195,18 +3197,18 @@ const CommunityHome = () => (
       </nav>
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="eyebrow !text-white/60 mb-4">Community</div>
+        <div className="eyebrow !text-white/70 mb-4">Community</div>
         <h1 className="display-xl text-white">
-          Healthcare is better,<br/>
-          <span className="gradient-text-bright italic font-serif font-normal">together.</span>
+          Healthcare is easier<br/>
+          <span className="gradient-text-bright italic font-serif font-normal">when you're not&nbsp;alone.</span>
         </h1>
-        <p className="mt-6 text-[19px] leading-[1.45] text-white/70 max-w-2xl mx-auto font-light">
-          {COMMUNITIES.length} doctor-moderated communities. {JOURNALS.length}+ real treatment journeys. {QA.length}+ verified-doctor answers. No ads, no paid placements — ever.
+        <p className="mt-6 text-[19px] leading-[1.45] text-white/80 max-w-2xl mx-auto font-light">
+          {COMMUNITIES.length} doctor-led groups on WhatsApp. {JOURNALS.length}+ real patient stories with real bills. {QA.length}+ answers from verified doctors. No ads, no paid promotions, no hidden commissions — ever.
         </p>
         <div className="mt-9 flex items-center justify-center gap-5 flex-wrap">
-          <Btn as="a" href="#/journals" variant="accent" size="lg">Read treatment journals</Btn>
+          <Btn as="a" href="#/journals" variant="accent" size="lg">Read patient stories</Btn>
           <a href="#/qa" className="text-[15px] font-medium text-brand-300 hover:text-white inline-flex items-center gap-1">
-            Ask a verified doctor <Icon name="arrowRight" className="w-4 h-4"/>
+            Ask a doctor <Icon name="arrowRight" className="w-4 h-4"/>
           </a>
         </div>
       </div>
@@ -3234,10 +3236,10 @@ const CommunityHome = () => (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
       <Reveal>
         <SectionTitle
-          eyebrow="Communities"
-          title="Find your people."
-          accent="By condition. By chapter."
-          sub="Anonymous-friendly. Moderated by patient advocates and verified doctors. Available on WhatsApp."
+          eyebrow="WhatsApp communities"
+          title="Find people going through"
+          accent="the same thing as you."
+          sub="Each group is led by a verified doctor, with patient advocates as moderators. Stay anonymous if you want. Everything happens on WhatsApp — no new app to download."
         />
       </Reveal>
       <div className="grid md:grid-cols-2 gap-4">
@@ -3283,11 +3285,11 @@ const CommunityHome = () => (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
       <Reveal>
         <SectionTitle
-          eyebrow="Treatment journals"
-          title="Real journeys."
-          accent="Real bills. Real outcomes."
-          sub="The truth your hospital won't tell you — from patients who've been there."
-          action={<a href="#/journals" className="text-[14px] font-medium text-brand-600 inline-flex items-center gap-1">Read all journals <Icon name="arrowRight" className="w-4 h-4"/></a>}
+          eyebrow="Patient stories"
+          title="Real treatments,"
+          accent="real hospital bills."
+          sub="What other patients went through, what they paid, and what they wish they had known beforehand."
+          action={<a href="#/journals" className="text-[14px] font-medium text-brand-600 inline-flex items-center gap-1">Read all stories <Icon name="arrowRight" className="w-4 h-4"/></a>}
         />
       </Reveal>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -3301,11 +3303,11 @@ const CommunityHome = () => (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
       <Reveal>
         <SectionTitle
-          eyebrow="Verified Q&A"
-          title="Ask. Get a real answer."
-          accent="From a real doctor."
-          sub="Every answer is from a verified, licensed doctor — with citations."
-          action={<a href="#/qa" className="text-[14px] font-medium text-brand-600 inline-flex items-center gap-1">Browse all questions <Icon name="arrowRight" className="w-4 h-4"/></a>}
+          eyebrow="Ask a doctor"
+          title="Real questions,"
+          accent="answered by real doctors."
+          sub="Every answer is from a doctor verified with the National Medical Commission. With sources you can check."
+          action={<a href="#/qa" className="text-[14px] font-medium text-brand-600 inline-flex items-center gap-1">See all questions <Icon name="arrowRight" className="w-4 h-4"/></a>}
         />
       </Reveal>
       <div className="space-y-3">
@@ -3329,11 +3331,11 @@ const CommunityHome = () => (
                   Most Transparent<br/>
                   <span className="gradient-text-bright italic font-serif font-normal">Hospital Awards.</span>
                 </h3>
-                <p className="mt-5 text-[16px] text-white/70 max-w-md">
-                  {AWARDS_2026.ceremony_when} · {AWARDS_2026.ceremony_where}. {AWARDS_2026.categories.length} categories. Independent jury. Nominate the hospital that earned your trust.
+                <p className="mt-5 text-[16px] text-white/80 max-w-md">
+                  {AWARDS_2026.ceremony_when}, {AWARDS_2026.ceremony_where}. {AWARDS_2026.categories.length} award categories. Judged by an independent panel. Nominate the hospital that treated you fairly.
                 </p>
                 <div className="mt-7 inline-flex items-center gap-2 text-[14px] font-medium text-amber-300">
-                  See categories & nominate <Icon name="arrowRight" className="w-4 h-4"/>
+                  See categories and nominate <Icon name="arrowRight" className="w-4 h-4"/>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 max-w-md ml-auto">
@@ -3357,9 +3359,9 @@ const CommunityHome = () => (
           <div className="bg-white rounded-5xl hairline card-soft p-10 sm:p-14 grid md:grid-cols-2 gap-8 items-center">
             <div>
               <div className="eyebrow">Patient Power</div>
-              <h3 className="mt-3 display-md">Boots on the ground. <span className="text-ink-500 font-normal">In every metro.</span></h3>
+              <h3 className="mt-3 display-md">Trained advocates <span className="text-ink-500 font-normal">in every major city.</span></h3>
               <p className="mt-5 text-[16px] text-ink-600 max-w-md">
-                Become a MediNext patient advocate. Help patients navigate bills, claims, second opinions, and complaints — in your city.
+                Become a MediNext patient advocate. Help people in your city with hospital bills, claim rejections, second opinions and complaints. Paid stipend, real impact.
               </p>
               <div className="mt-7"><Btn as="a" href="#/patient-power" variant="primary" size="lg">Apply to be an advocate</Btn></div>
             </div>
@@ -3416,7 +3418,7 @@ const CommunityDetail = ({ slug }) => {
           <div className="lg:col-span-2 space-y-6">
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
-                <div className="eyebrow mb-2">About this community</div>
+                <div className="eyebrow mb-2">About this group</div>
                 <h2 className="display-sm">{c.tagline}</h2>
                 <p className="mt-4 text-[15px] leading-relaxed text-ink-700">{c.desc}</p>
                 <div className="mt-6 grid sm:grid-cols-3 gap-3">
@@ -3438,8 +3440,8 @@ const CommunityDetail = ({ slug }) => {
 
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
-                <div className="eyebrow mb-2">Active threads</div>
-                <h2 className="display-sm">What people are talking about.</h2>
+                <div className="eyebrow mb-2">What's being discussed</div>
+                <h2 className="display-sm">Current conversations in the group</h2>
                 <div className="mt-5 divide-y divide-ink-200/60">
                   {c.threads.map((t, i) => (
                     <div key={i} className="py-4 first:pt-0 last:pb-0 flex items-start gap-3">
@@ -3461,15 +3463,15 @@ const CommunityDetail = ({ slug }) => {
 
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
-                <div className="eyebrow mb-2">Community guidelines</div>
-                <h2 className="display-sm">Kindness is non-negotiable.</h2>
+                <div className="eyebrow mb-2">Group rules</div>
+                <h2 className="display-sm">Simple rules. Strictly followed.</h2>
                 <ul className="mt-5 space-y-3 text-[15px] text-ink-700">
                   {[
-                    "Real names or anonymous — both welcome. Either way, your privacy is protected.",
-                    "No medical advice from non-doctors. Share experience, not prescriptions.",
-                    "No paid placements, brand endorsements, or affiliate links — ever.",
-                    "Verified doctors only answer in their specialty area, with citations.",
-                    "Report harassment or misinformation — a moderator responds within 24 hours."
+                    "Use your real name or stay anonymous, both are welcome. Either way, your privacy is fully protected.",
+                    "Only doctors can give medical advice. Other members can share their experience but not prescribe.",
+                    "No paid promotions, brand endorsements or affiliate links of any kind. Ever.",
+                    "Verified doctors only answer questions in their own field of expertise, and always with proper sources.",
+                    "Report any harassment or wrong information directly to a moderator. We respond within 24 hours."
                   ].map((g, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <span className="w-5 h-5 rounded-full bg-heal-500 text-white flex items-center justify-center shrink-0 mt-0.5">
@@ -3566,13 +3568,13 @@ const JournalsPage = () => (
           <span className="text-white/30">/</span>
           <span className="text-white">Treatment Journals</span>
         </nav>
-        <div className="eyebrow !text-white/60">Treatment journals</div>
-        <h1 className="display-lg mt-2">Real bills. Real outcomes.<br/><span className="gradient-text-bright italic font-serif font-normal">Real talk.</span></h1>
-        <p className="mt-5 text-[17px] text-white/70 max-w-2xl">
-          Patients sharing their full journey — hospital, doctor, what they were quoted, what they actually paid, and what they'd tell you to do differently.
+        <div className="eyebrow !text-white/70">Patient stories</div>
+        <h1 className="display-lg mt-2">Real treatments, real bills,<br/><span className="gradient-text-bright italic font-serif font-normal">honest stories.</span></h1>
+        <p className="mt-5 text-[17px] text-white/80 max-w-2xl">
+          Patients sharing their full experience — which hospital, which doctor, what they were quoted, what they actually paid, and what they wish they had done differently.
         </p>
         <div className="mt-7">
-          <WAJoinBtn msg={"Hi MediNext! I want to share my treatment journey.\n\nHospital:\nDoctor:\nProcedure:\nQuoted bill:\nFinal bill:\nOutcome:\nWhat worked:\nWhat didn't:\n\nThanks!"} label="Share your journey"/>
+          <WAJoinBtn msg={"Hi MediNext! I want to share my treatment story.\n\nHospital:\nDoctor:\nProcedure:\nQuoted bill:\nFinal bill:\nOutcome:\nWhat went well:\nWhat went wrong:\n\nThanks!"} label="Share your story"/>
         </div>
       </div>
     </section>
@@ -3630,7 +3632,7 @@ const JournalDetail = ({ slug }) => {
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">The numbers</div>
-                <h2 className="display-sm">What it actually cost.</h2>
+                <h2 className="display-sm">What it actually cost</h2>
                 <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="rounded-2xl bg-ink-100 p-5">
                     <div className="text-[11px] text-ink-500 uppercase tracking-wide">Quoted</div>
@@ -3671,8 +3673,8 @@ const JournalDetail = ({ slug }) => {
             {/* What worked */}
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
-                <div className="eyebrow mb-2 !text-heal-600">What worked</div>
-                <h2 className="display-sm">The good.</h2>
+                <div className="eyebrow mb-2 !text-heal-600">What went well</div>
+                <h2 className="display-sm">The good parts</h2>
                 <p className="mt-4 text-[16px] leading-relaxed text-ink-700">{j.what_worked}</p>
               </div>
             </Reveal>
@@ -3680,8 +3682,8 @@ const JournalDetail = ({ slug }) => {
             {/* What didn't */}
             <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
-                <div className="eyebrow mb-2 !text-rose-600">What didn't</div>
-                <h2 className="display-sm">The not-so-good.</h2>
+                <div className="eyebrow mb-2 !text-rose-600">What went wrong</div>
+                <h2 className="display-sm">Where things could have been better</h2>
                 <p className="mt-4 text-[16px] leading-relaxed text-ink-700">{j.what_didnt}</p>
               </div>
             </Reveal>
@@ -3689,7 +3691,7 @@ const JournalDetail = ({ slug }) => {
             {/* Advice */}
             <Reveal>
               <div className="bg-ink-900 text-white rounded-3xl p-8 card-soft">
-                <div className="eyebrow !text-amber-300/80">Advice to my past self</div>
+                <div className="eyebrow !text-amber-300/80">What I would tell anyone going through this</div>
                 <p className="mt-4 text-[18px] leading-relaxed font-serif italic">"{j.advice}"</p>
                 <div className="mt-4 text-[13px] text-white/60">— {j.author}</div>
               </div>
@@ -3698,8 +3700,8 @@ const JournalDetail = ({ slug }) => {
             {(hosp || doc) && (
               <Reveal>
                 <div>
-                  <div className="eyebrow mb-2">The hospital & doctor</div>
-                  <h2 className="display-sm mb-6">Where this happened.</h2>
+                  <div className="eyebrow mb-2">The hospital and doctor</div>
+                  <h2 className="display-sm mb-6">Where this happened</h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {hosp && <HospitalCard hospital={hosp}/>}
                     {doc && <DoctorCard doctor={doc}/>}
@@ -3786,13 +3788,13 @@ const QAPage = () => (
           <span className="text-white/30">/</span>
           <span className="text-white">Verified Q&A</span>
         </nav>
-        <div className="eyebrow !text-white/60">Verified Q&A</div>
-        <h1 className="display-lg mt-2">Real questions.<br/><span className="gradient-text-bright italic font-serif font-normal">Real doctors. Cited answers.</span></h1>
-        <p className="mt-5 text-[17px] text-white/70 max-w-2xl">
-          Every answer comes from a verified, licensed doctor. With sources. No paid placements, no influencer hot-takes.
+        <div className="eyebrow !text-white/70">Ask a doctor</div>
+        <h1 className="display-lg mt-2">Real questions, answered by<br/><span className="gradient-text-bright italic font-serif font-normal">real doctors. With sources.</span></h1>
+        <p className="mt-5 text-[17px] text-white/80 max-w-2xl">
+          Every answer comes from a doctor verified with the National Medical Commission. With proper sources you can check. No paid promotions, no random influencer opinions.
         </p>
         <div className="mt-7">
-          <WAJoinBtn msg={"Hi MediNext! I want to ask a verified doctor a question.\n\nMy question:\n\n(I'm happy to be anonymous in the public Q&A.)"} label="Ask a doctor"/>
+          <WAJoinBtn msg={"Hi MediNext! I want to ask a verified doctor a question.\n\nMy question:\n\n(You can post my question anonymously.)"} label="Ask a doctor"/>
         </div>
       </div>
     </section>
@@ -3908,9 +3910,9 @@ const AwardsPage = () => (
           <span className="text-white">Awards {AWARDS_2026.year}</span>
         </nav>
         <div className="eyebrow !text-amber-300/80">MediNext Transparency Awards · {AWARDS_2026.year}</div>
-        <h1 className="display-xl mt-3">Honouring the hospitals<br/><span className="gradient-text-bright italic font-serif font-normal">who earned our trust.</span></h1>
-        <p className="mt-7 text-[19px] leading-[1.45] text-white/70 max-w-2xl font-light">
-          The first national awards judging Indian hospitals on transparency — pricing, outcomes, communication, and patient honesty. Independent jury. Patient-nominated.
+        <h1 className="display-xl mt-3">Awarding hospitals<br/><span className="gradient-text-bright italic font-serif font-normal">that put patients first.</span></h1>
+        <p className="mt-7 text-[19px] leading-[1.45] text-white/80 max-w-2xl font-light">
+          India's first national awards that judge hospitals on how honestly they treat their patients — fair pricing, clear outcomes, good communication, and respect for the patient's wallet. Independent jury. Nominated only by patients, never paid placements.
         </p>
         <div className="mt-8 grid sm:grid-cols-3 gap-3 max-w-2xl">
           <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-5 backdrop-blur-md">
@@ -3936,7 +3938,7 @@ const AwardsPage = () => (
     {/* Categories */}
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
       <Reveal>
-        <SectionTitle eyebrow="Categories" title="Five awards." accent={`${AWARDS_2026.categories.length} kinds of courage.`}/>
+        <SectionTitle eyebrow="Categories" title="Five awards." accent="Five areas where honesty matters most."/>
       </Reveal>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {AWARDS_2026.categories.map((c, i) => (
@@ -3956,7 +3958,7 @@ const AwardsPage = () => (
     {/* Jury */}
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
       <Reveal>
-        <SectionTitle eyebrow="Independent jury" title="No conflicts." accent="No paid placements."/>
+        <SectionTitle eyebrow="Independent jury" title="No conflicts of interest." accent="No paid placements, ever."/>
       </Reveal>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {AWARDS_2026.jury.map((j, i) => (
@@ -3985,12 +3987,12 @@ const AwardsPage = () => (
           <div className="relative grid md:grid-cols-2 gap-8 items-center">
             <div>
               <div className="eyebrow !text-amber-300/80">How it works</div>
-              <h3 className="display-md mt-3">Patient-nominated. Jury-decided.</h3>
+              <h3 className="display-md mt-3">Nominated by patients. Decided by an independent jury.</h3>
               <ol className="mt-7 space-y-4 text-[15px] text-white/80">
-                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">1</span><span>Patients nominate any hospital via WhatsApp. Share what made them transparent.</span></li>
-                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">2</span><span>MediNext team verifies the nomination — bills, outcomes, communication records.</span></li>
-                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">3</span><span>Top 5 finalists per category go to the independent jury for final selection.</span></li>
-                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">4</span><span>Winners announced at the ceremony. No hospital pays a single rupee to win.</span></li>
+                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">1</span><span>Patients nominate any hospital on WhatsApp. They share what made the hospital trustworthy.</span></li>
+                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">2</span><span>The MediNext team verifies each nomination — bills, treatment records, communication trail.</span></li>
+                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">3</span><span>Top 5 finalists in each category go to the independent jury for the final decision.</span></li>
+                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">4</span><span>Winners are announced at the ceremony. No hospital pays even one rupee to be nominated or to win.</span></li>
               </ol>
             </div>
             <div className="text-center md:text-right">
@@ -4017,13 +4019,13 @@ const PatientPowerPage = () => (
           <span className="text-white/30">/</span>
           <span className="text-white">Patient Power</span>
         </nav>
-        <div className="eyebrow !text-white/60">Patient Power</div>
-        <h1 className="display-xl mt-3">Be the advocate<br/><span className="gradient-text-bright italic font-serif font-normal">your city needs.</span></h1>
-        <p className="mt-7 text-[19px] leading-[1.45] text-white/70 max-w-2xl font-light">
-          Help patients in your city navigate hospital bills, insurance denials, second opinions, and complaints. Paid stipend. Real impact. Boots on the ground.
+        <div className="eyebrow !text-white/70">Patient Power</div>
+        <h1 className="display-xl mt-3">Help patients in your city<br/><span className="gradient-text-bright italic font-serif font-normal">fight unfair hospital bills.</span></h1>
+        <p className="mt-7 text-[19px] leading-[1.45] text-white/80 max-w-2xl font-light">
+          Help patients in your city deal with inflated hospital bills, insurance claim rejections, second opinions, and complaints. You get a monthly stipend, free training, and the satisfaction of doing real work that matters.
         </p>
         <div className="mt-9">
-          <WAJoinBtn msg={"Hi MediNext! I want to apply to be a Patient Power advocate.\n\nMy city:\nMy background (healthcare/legal/social work):\nWhy I want to help:\nMonthly hours I can commit:\n\nThanks!"} label="Apply now" variant="accent"/>
+          <WAJoinBtn msg={"Hi MediNext! I want to apply to be a Patient Power advocate.\n\nMy city:\nMy background (healthcare / law / social work / other):\nWhy I want to help:\nHours per month I can give:\n\nThanks!"} label="Apply now" variant="accent"/>
         </div>
       </div>
     </section>
@@ -4031,14 +4033,14 @@ const PatientPowerPage = () => (
     {/* What you do */}
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
       <Reveal>
-        <SectionTitle eyebrow="The role" title="What advocates actually do."/>
+        <SectionTitle eyebrow="What you'll do" title="A typical day for a patient advocate."/>
       </Reveal>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: "rupee", title: "Bill audits", body: "Help patients line-item their hospital bills, flag overcharges, draft negotiation letters." },
-          { icon: "shield", title: "Insurance fights", body: "Support claim rejection appeals to IRDAI and insurance ombudsmen." },
-          { icon: "chat", title: "Second opinions", body: "Connect patients to independent specialists when treatment recommendations feel rushed." },
-          { icon: "alert", title: "Complaint filing", body: "Help families file with NMC, state councils, and consumer courts when things go wrong." }
+          { icon: "rupee", title: "Bill audits", body: "Help patients understand their hospital bill line by line, flag overcharges, and draft negotiation letters." },
+          { icon: "shield", title: "Insurance claim help", body: "Support patients when insurance companies reject claims. File appeals with IRDAI and the insurance ombudsman." },
+          { icon: "chat", title: "Second opinions", body: "Connect patients with independent doctors when a treatment recommendation feels rushed or expensive." },
+          { icon: "alert", title: "Filing complaints", body: "Help families file complaints with the NMC, state medical councils, and consumer courts when things go wrong." }
         ].map((r, i) => (
           <Reveal key={r.title} delay={i * 60}>
             <div className="bg-white hairline rounded-3xl p-7 card-soft h-full">
@@ -4089,19 +4091,19 @@ const PatientPowerPage = () => (
           <div className="grid md:grid-cols-2 gap-10">
             <div>
               <div className="eyebrow">What you get</div>
-              <h3 className="display-md mt-3">More than a stipend.</h3>
+              <h3 className="display-md mt-3">A lot more than just a stipend.</h3>
               <p className="mt-5 text-[15px] leading-relaxed text-ink-600 max-w-md">
-                You'll be trained by healthcare lawyers, doctors, and patient-rights veterans. You'll be backed by a national legal fund. You'll have the data — and the brand — behind you.
+                You will be trained by healthcare lawyers, doctors, and senior patient-rights workers. You will have a national legal fund supporting you. You will have MediNext's data and brand behind every case you take up.
               </p>
             </div>
             <ul className="space-y-4 text-[15px] text-ink-700">
               {[
-                "₹8,000–15,000 monthly stipend (city-based)",
-                "Free training: healthcare law, bill auditing, insurance appeals",
-                "Legal fund backing for high-stakes cases",
-                "Access to MediNext data & verified doctor network",
-                "Annual MediNext summit in Delhi (all expenses paid)",
-                "Direct mentorship from healthcare journalists & researchers"
+                "₹8,000 to ₹15,000 monthly stipend (depending on city)",
+                "Free training in healthcare law, bill auditing, and insurance appeals",
+                "Legal fund backing for big cases",
+                "Access to MediNext's data and verified doctor network",
+                "All-expenses-paid annual MediNext summit in Delhi",
+                "Direct mentorship from healthcare journalists and researchers"
               ].map((b, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="w-6 h-6 rounded-full bg-heal-500 text-white flex items-center justify-center shrink-0 mt-0.5"><Icon name="check" className="w-3.5 h-3.5" strokeWidth={3}/></span>

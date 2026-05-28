@@ -1156,7 +1156,7 @@ const HomePage = ({ onLoginClick }) => {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* tiny eyebrow */}
           <div className="fade-up flex items-center justify-center gap-3 mb-7">
-            <span className="text-[12px] font-medium text-white/70 tracking-wide">MediNext · India's first transparent healthcare directory</span>
+            <span className="text-[12px] font-medium text-white/70 tracking-wide">India's first transparent healthcare directory</span>
             <span className="hidden sm:inline text-white/20">·</span>
             <span className="hidden sm:inline-flex text-[12px] font-medium text-heal-400 tracking-wide items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-heal-400 animate-pulse"/> Demo build
@@ -1170,28 +1170,30 @@ const HomePage = ({ onLoginClick }) => {
             <span className="gradient-text-bright italic font-serif font-normal">surprise&nbsp;bills.</span>
           </h1>
 
-          <p className="fade-up mt-6 text-[17px] sm:text-[19px] leading-[1.5] text-white/80 max-w-xl mx-auto font-light">
-            See what other Indian patients actually paid <em className="not-italic text-white font-medium">before</em> you book. Verified hospitals, doctors and labs. Honest reviews. No paid placements.
+          {/* One-line subhead */}
+          <p className="fade-up mt-6 text-[17px] sm:text-[18px] leading-snug text-white/80 max-w-lg mx-auto font-light">
+            See what other Indian patients actually paid, <em className="not-italic text-white font-medium">before</em> you book.
           </p>
 
-          {/* Hero CTAs */}
-          <div className="fade-up mt-8 flex items-center justify-center gap-6 flex-wrap">
-            <Btn as="a" href="#/doctors" variant="accent" size="lg" className="!px-7">Find a doctor</Btn>
-            <a href="#/journals" className="text-[15px] font-medium text-brand-300 hover:text-white inline-flex items-center gap-1 transition-colors">
-              See real bills <Icon name="arrowRight" className="w-4 h-4"/>
-            </a>
-          </div>
-
-          {/* Search panel — floating glass */}
-          <div className="fade-up mt-12 max-w-3xl mx-auto">
+          {/* Clean search bar */}
+          <div className="fade-up mt-10 max-w-2xl mx-auto">
             <SearchBar inHero/>
           </div>
 
-          {/* Trust strip */}
-          <div className="fade-up mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-white/75">
-            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> NABH and NABL verified</span>
-            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> Works with your ABHA ID</span>
-            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> Cashless insurance accepted</span>
+          {/* Search suggestion chips */}
+          <div className="fade-up mt-5 flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto px-4">
+            <span className="text-[12px] text-white/55 mr-1">Try:</span>
+            {[
+              { label: "Dermatologist in Delhi", href: "#/doctors?city=Delhi&q=Dermatology" },
+              { label: "Cost of normal delivery, Mumbai", href: "#/journals/vbac-at-lotus-bandra" },
+              { label: "HbA1c test, home collection", href: "#/pathology?q=HbA1c" },
+              { label: "Cancer hospitals, Bangalore", href: "#/hospitals?city=Bangalore&q=Oncology" }
+            ].map(s => (
+              <a key={s.label} href={s.href}
+                 className="text-[12px] text-white/85 hover:text-white px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/10 transition-colors backdrop-blur-md whitespace-nowrap">
+                {s.label}
+              </a>
+            ))}
           </div>
         </div>
 
@@ -1250,6 +1252,15 @@ const HomePage = ({ onLoginClick }) => {
               <span>Same procedure. Same city. Up to <span className="text-white font-semibold">13× price difference</span>. This is why transparency matters.</span>
               <a href="#/journals" className="text-brand-300 hover:text-white font-medium inline-flex items-center gap-1">Read patient stories <Icon name="arrowRight" className="w-3.5 h-3.5"/></a>
             </div>
+          </div>
+
+          {/* Slim trust strip below proof card */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] text-white/60">
+            <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3 h-3 text-heal-400"/> NABH and NABL verified</span>
+            <span className="text-white/20">·</span>
+            <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3 h-3 text-heal-400"/> Works with your ABHA ID</span>
+            <span className="text-white/20">·</span>
+            <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3 h-3 text-heal-400"/> Cashless insurance accepted</span>
           </div>
         </div>
 

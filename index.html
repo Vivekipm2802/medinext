@@ -10,7 +10,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230EA5E9'/%3E%3Cpath d='M16 8v16M8 16h16' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif&display=swap" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
@@ -22,37 +22,47 @@ tailwind.config = {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Montserrat', 'sans-serif'],
-        body: ['Inter', 'sans-serif']
+        // Apple stack: SF Pro on Apple devices, Inter elsewhere
+        display: ['-apple-system','BlinkMacSystemFont','"SF Pro Display"','Inter','system-ui','sans-serif'],
+        body:    ['-apple-system','BlinkMacSystemFont','"SF Pro Text"','Inter','system-ui','sans-serif'],
+        serif:   ['"Instrument Serif"','Georgia','serif']
       },
       colors: {
         brand: {
-          50:  '#F0F9FF',
-          100: '#E0F2FE',
-          200: '#BAE6FD',
-          400: '#38BDF8',
-          500: '#0EA5E9',   // primary medical blue
-          600: '#0284C7',
-          700: '#0369A1',
-          900: '#0C4A6E'
+          50:  '#F0F9FF', 100: '#E0F2FE', 200: '#BAE6FD',
+          400: '#38BDF8', 500: '#0EA5E9', 600: '#0284C7',
+          700: '#0369A1', 900: '#0C4A6E'
         },
         heal: {
-          50:  '#ECFDF5',
-          100: '#D1FAE5',
-          400: '#34D399',
-          500: '#10B981',   // healing emerald
-          600: '#059669'
+          50:  '#ECFDF5', 100: '#D1FAE5',
+          400: '#34D399', 500: '#10B981', 600: '#059669'
         },
         ink: {
-          900: '#0F172A',
-          800: '#1E293B',
-          700: '#334155',
-          500: '#64748B',
-          400: '#94A3B8',
-          200: '#E2E8F0',
-          100: '#F1F5F9',
-          50:  '#F8FAFC'
+          // Apple's neutral system
+          950: '#000000',
+          900: '#1D1D1F',  // apple.com primary text
+          800: '#2D2D30',
+          700: '#424245',
+          600: '#6E6E73',
+          500: '#86868B',
+          400: '#A1A1A6',
+          300: '#D2D2D7',  // apple hairline divider
+          200: '#E5E5EA',
+          100: '#F5F5F7',  // apple "cool grey" panels
+          50:  '#FBFBFD'   // apple body background
         }
+      },
+      letterSpacing: {
+        'tightest': '-0.04em',
+        'apple': '-0.035em',
+        'apple-tight': '-0.022em'
+      },
+      borderRadius: {
+        '4xl': '2rem',
+        '5xl': '2.5rem'
+      },
+      transitionTimingFunction: {
+        'apple': 'cubic-bezier(0.32, 0.72, 0, 1)'
       }
     }
   }
@@ -60,50 +70,164 @@ tailwind.config = {
 </script>
 
 <style>
-  :root { --hero-bg: #0F172A; }
-  html, body { font-family: 'Inter', sans-serif; background: #F8FAFC; color: #0F172A; }
-  body { -webkit-font-smoothing: antialiased; }
-  h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', sans-serif; letter-spacing: -0.01em; }
+  :root {
+    --hero-bg: #000;
+    --apple-text: #1D1D1F;
+    --apple-text-muted: #6E6E73;
+    --apple-bg: #FBFBFD;
+    --apple-panel: #F5F5F7;
+    --apple-line: #D2D2D7;
+    --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  html { -webkit-text-size-adjust: 100%; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
+    background: var(--apple-bg);
+    color: var(--apple-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1,h2,h3,h4,h5,h6 {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
+    letter-spacing: -0.022em;
+    font-weight: 600;
+  }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 5px; }
-  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+  /* Apple's monumental display type — used on hero h1 */
+  .display-xl {
+    font-size: clamp(48px, 9vw, 112px);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    font-weight: 700;
+  }
+  .display-lg {
+    font-size: clamp(40px, 6.5vw, 80px);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+  .display-md {
+    font-size: clamp(32px, 4.6vw, 56px);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+  }
+  .display-sm {
+    font-size: clamp(24px, 3vw, 36px);
+    line-height: 1.15;
+    letter-spacing: -0.024em;
+    font-weight: 600;
+  }
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    color: var(--apple-text-muted);
+  }
 
-  /* Hero gradient (EduNext-inspired dark with healthcare tint) */
+  /* Custom scrollbar — Apple-thin */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #D2D2D7; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #A1A1A6; }
+
+  /* Hero gradient — Apple Pro / iPhone-style charcoal with a hint of cyan glow */
   .hero-bg {
     background:
-      radial-gradient(1200px 600px at 20% -10%, rgba(14, 165, 233, 0.35), transparent 60%),
-      radial-gradient(800px 400px at 80% 10%, rgba(16, 185, 129, 0.25), transparent 60%),
-      linear-gradient(180deg, #0F172A 0%, #0B1224 100%);
+      radial-gradient(1400px 700px at 18% -10%, rgba(14, 165, 233, 0.32), transparent 55%),
+      radial-gradient(900px 500px at 85% 8%, rgba(16, 185, 129, 0.22), transparent 55%),
+      radial-gradient(800px 400px at 50% 110%, rgba(99, 102, 241, 0.18), transparent 60%),
+      linear-gradient(180deg, #0A0A0F 0%, #000000 100%);
   }
   .hero-grid {
     background-image:
-      linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 56px 56px;
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
   }
 
-  /* Soft card shadow */
-  .card-soft { box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.05); }
-  .card-soft:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.06), 0 12px 32px rgba(15,23,42,0.08); }
+  /* Apple-style "panel" — soft cream */
+  .panel-cream { background: var(--apple-panel); }
+
+  /* Cards — Apple-style ambient shadow (no harsh drop) */
+  .card-soft {
+    box-shadow:
+      0 0 0 0.5px rgba(0,0,0,0.04),
+      0 2px 8px rgba(0,0,0,0.04),
+      0 12px 32px rgba(0,0,0,0.04);
+    transition: transform 0.5s var(--ease-apple), box-shadow 0.5s var(--ease-apple);
+  }
+  .card-soft:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 0.5px rgba(0,0,0,0.06),
+      0 8px 16px rgba(0,0,0,0.06),
+      0 24px 48px rgba(0,0,0,0.08);
+  }
+
+  /* Hairline border (apple style) */
+  .hairline { border: 0.5px solid var(--apple-line); }
+
+  /* Glass navbar */
+  .glass {
+    background: rgba(251, 251, 253, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
 
   /* Hide scrollbar utility */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
   /* Animations */
-  @keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .fade-up { animation: fade-up 0.35s ease-out both; }
-  @keyframes pulse-soft { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4);} 50% { box-shadow: 0 0 0 10px rgba(239,68,68,0);} }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fade-up 0.6s var(--ease-apple) both; }
+  @keyframes pulse-soft { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4);} 50% { box-shadow: 0 0 0 12px rgba(239,68,68,0);} }
   .pulse-soft { animation: pulse-soft 2s infinite; }
+  @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+  @keyframes float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .float-slow { animation: float-slow 6s ease-in-out infinite; }
 
-  /* Avatar generator */
-  .avatar-gradient { background: linear-gradient(135deg, hsl(var(--h), 70%, 55%), hsl(calc(var(--h) + 30), 70%, 45%)); }
+  /* Scroll-reveal */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s var(--ease-apple), transform 0.9s var(--ease-apple); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* Avatar / image gradient */
+  .avatar-gradient { background: linear-gradient(135deg, hsl(var(--h), 72%, 58%), hsl(calc(var(--h) + 30), 68%, 42%)); }
+
+  /* Apple-style gradient text */
+  .gradient-text {
+    background: linear-gradient(96deg, #0EA5E9 0%, #10B981 50%, #6366F1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .gradient-text-bright {
+    background: linear-gradient(96deg, #38BDF8 0%, #34D399 50%, #818CF8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
   /* Form basics */
   input, select, textarea, button { font-family: inherit; }
   input:focus, select:focus, textarea:focus { outline: none; }
+
+  /* Focus rings — Apple style */
+  *:focus-visible { outline: 2px solid #0EA5E9; outline-offset: 2px; border-radius: 4px; }
+
+  /* Soft selection */
+  ::selection { background: rgba(14, 165, 233, 0.18); }
+
+  /* Apple-style horizontal rule */
+  .hr-apple { height: 1px; background: linear-gradient(90deg, transparent, var(--apple-line) 20%, var(--apple-line) 80%, transparent); border: 0; }
 </style>
 </head>
 <body>
@@ -262,18 +386,24 @@ const ToastHost = () => {
 /* ─── shared UI atoms ────────────────────────────────────────── */
 const Btn = ({ as = "button", variant = "primary", size = "md", className = "", children, ...rest }) => {
   const Tag = as;
-  const sizes = { sm: "px-3 py-1.5 text-sm", md: "px-4 py-2.5 text-sm", lg: "px-5 py-3 text-base" };
+  const sizes = {
+    sm: "px-3.5 py-1.5 text-[13px]",
+    md: "px-5 py-2.5 text-[14px]",
+    lg: "px-7 py-3.5 text-[15px]"
+  };
+  // Apple-style: solid dark for primary actions, white for secondary, pill-shaped
   const variants = {
-    primary:  "bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700 shadow-sm",
-    heal:     "bg-heal-500 text-white hover:bg-heal-600",
-    ghost:    "bg-white text-ink-900 hover:bg-ink-50 border border-ink-200",
-    dark:     "bg-ink-900 text-white hover:bg-ink-800",
-    soft:     "bg-brand-50 text-brand-700 hover:bg-brand-100",
-    danger:   "bg-red-500 text-white hover:bg-red-600",
-    link:     "text-brand-600 hover:text-brand-700 underline-offset-2 hover:underline"
+    primary:  "bg-ink-900 text-white hover:bg-black active:scale-[0.98]",
+    heal:     "bg-heal-500 text-white hover:bg-heal-600 active:scale-[0.98]",
+    accent:   "bg-brand-500 text-white hover:bg-brand-600 active:scale-[0.98]",
+    ghost:    "bg-white text-ink-900 hover:bg-ink-100 hairline",
+    dark:     "bg-ink-900 text-white hover:bg-black active:scale-[0.98]",
+    soft:     "bg-ink-100 text-ink-900 hover:bg-ink-200",
+    danger:   "bg-red-500 text-white hover:bg-red-600 active:scale-[0.98]",
+    link:     "text-brand-600 hover:text-brand-700 underline-offset-4 hover:underline"
   };
   return (
-    <Tag className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all ${sizes[size]} ${variants[variant]} ${className}`} {...rest}>
+    <Tag className={`inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-300 ease-apple ${sizes[size]} ${variants[variant]} ${className}`} {...rest}>
       {children}
     </Tag>
   );
@@ -287,7 +417,26 @@ const Pill = ({ children, tone = "ink", className = "" }) => {
     amber:  "bg-amber-50 text-amber-700",
     red:    "bg-red-50 text-red-600"
   };
-  return <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${tones[tone]} ${className}`}>{children}</span>;
+  return <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide ${tones[tone]} ${className}`}>{children}</span>;
+};
+
+/* ─── Reveal on scroll wrapper ───────────────────────────────── */
+const Reveal = ({ children, delay = 0, className = "" }) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add("in"), delay);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [delay]);
+  return <div ref={ref} className={`reveal ${className}`}>{children}</div>;
 };
 
 const Avatar = ({ name, hue = 200, size = 56 }) => {
@@ -308,14 +457,15 @@ const Rating = ({ value, reviews, size = "sm" }) => (
   </div>
 );
 
-const SectionTitle = ({ eyebrow, title, sub, action }) => (
-  <div className="flex items-end justify-between gap-4 mb-6 flex-wrap">
-    <div>
-      {eyebrow && <div className="text-xs font-bold tracking-widest uppercase text-brand-600 mb-1">{eyebrow}</div>}
-      <h2 className="text-2xl md:text-3xl font-bold text-ink-900">{title}</h2>
-      {sub && <p className="text-ink-500 mt-1 max-w-2xl">{sub}</p>}
-    </div>
-    {action}
+// Apple-style centered two-tone headline. Pass `centered={false}` for left-aligned (used inside dense pages).
+const SectionTitle = ({ eyebrow, title, sub, accent, action, centered = true }) => (
+  <div className={`mb-10 ${centered ? "text-center" : ""}`}>
+    {eyebrow && <div className="eyebrow mb-3">{eyebrow}</div>}
+    <h2 className="display-md text-ink-900">
+      {title}{accent && <> <span className="text-ink-500 font-normal">{accent}</span></>}
+    </h2>
+    {sub && <p className={`mt-4 text-[17px] leading-relaxed text-ink-600 ${centered ? "max-w-2xl mx-auto" : "max-w-2xl"}`}>{sub}</p>}
+    {action && <div className={`mt-6 ${centered ? "flex justify-center" : ""}`}>{action}</div>}
   </div>
 );
 
@@ -341,79 +491,76 @@ const Navbar = ({ onLoginClick }) => {
     { label: "Patient Vault", href: "#/vault" }
   ];
 
-  const navText = overlay ? "text-white/85 hover:text-white" : "text-ink-700 hover:text-ink-900";
+  const navText = overlay ? "text-white/80 hover:text-white" : "text-ink-700 hover:text-ink-900";
   const bg = overlay
-    ? "bg-transparent border-transparent"
-    : "bg-white/90 backdrop-blur-md border-ink-200/80";
+    ? "glass-dark border-transparent"
+    : "glass border-ink-200/60";
 
   return (
-    <header className={`fixed top-0 inset-x-0 z-40 border-b transition-all ${bg}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+    <header className={`fixed top-0 inset-x-0 z-40 border-b transition-all duration-500 ease-apple ${bg}`}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between gap-4">
         <a href="#/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-heal-500 flex items-center justify-center text-white font-bold">
-            <Icon name="plus" className="w-5 h-5" strokeWidth={3}/>
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-heal-500 flex items-center justify-center text-white">
+            <Icon name="plus" className="w-4 h-4" strokeWidth={3}/>
           </div>
-          <div className={`font-display font-extrabold text-lg ${overlay ? "text-white" : "text-ink-900"}`}>
-            Medi<span className="text-brand-500">Next</span>
+          <div className={`font-display font-semibold text-[15px] tracking-tight ${overlay ? "text-white" : "text-ink-900"}`}>
+            MediNext
           </div>
         </a>
 
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-7">
           {links.map(l => (
             <a key={l.href} href={l.href}
-               className={`relative px-3 py-2 text-sm font-medium transition-colors ${navText} group`}>
+               className={`text-[12px] font-normal transition-colors ${navText}`}>
               {l.label}
-              <span className="absolute left-3 right-3 -bottom-0.5 h-0.5 bg-brand-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left"/>
             </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <a href="tel:+911800633639" className={`hidden md:inline-flex items-center gap-2 text-sm font-semibold ${overlay ? "text-white" : "text-ink-900"}`} title="24x7 Helpline">
-            <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${overlay ? "bg-white/10" : "bg-brand-50 text-brand-600"}`}>
-              <Icon name="phone" className="w-4 h-4"/>
-            </span>
-            <span className="hidden lg:inline">1800-MEDI-NEXT</span>
-          </a>
-
+        <div className="flex items-center gap-5">
           {user ? (
-            <div className="hidden lg:flex items-center gap-2">
-              <a href="#/vault" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-ink-100">
-                <Avatar name={user.name} hue={user.avatar_hue || 200} size={32}/>
-                <span className="text-sm font-medium text-ink-900">{user.name.split(" ")[0]}</span>
+            <div className="hidden lg:flex items-center gap-3">
+              <a href="#/vault" className="flex items-center gap-2 group">
+                <Avatar name={user.name} hue={user.avatar_hue || 200} size={24}/>
+                <span className={`text-[12px] font-normal ${overlay ? "text-white/80 group-hover:text-white" : "text-ink-700 group-hover:text-ink-900"}`}>{user.name.split(" ")[0]}</span>
               </a>
-              <button onClick={signOut} className="p-2 rounded-xl text-ink-500 hover:bg-ink-100" title="Sign out">
-                <Icon name="logout" className="w-5 h-5"/>
+              <button onClick={signOut} className={`text-[12px] font-normal ${overlay ? "text-white/60 hover:text-white" : "text-ink-500 hover:text-ink-900"}`} title="Sign out">
+                Sign out
               </button>
             </div>
           ) : (
-            <Btn onClick={onLoginClick} size="sm" variant={overlay ? "ghost" : "primary"} className="hidden md:inline-flex">
-              <Icon name="user" className="w-4 h-4"/> Sign in
-            </Btn>
+            <button onClick={onLoginClick}
+                    className={`hidden md:inline-flex text-[12px] font-normal ${overlay ? "text-white/80 hover:text-white" : "text-ink-700 hover:text-ink-900"}`}>
+              Sign in
+            </button>
           )}
 
-          <button className={`lg:hidden p-2 rounded-xl ${overlay ? "text-white" : "text-ink-900"}`}
-                  onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
-            <Icon name={mobileOpen ? "x" : "menu"} className="w-6 h-6"/>
+          <a href="tel:+911800633639"
+             className={`hidden md:inline-flex items-center justify-center text-[12px] font-normal ${overlay ? "text-white/80 hover:text-white" : "text-ink-700 hover:text-ink-900"}`}
+             title="24x7 Helpline">
+            <Icon name="phone" className="w-3.5 h-3.5"/>
+          </a>
+
+          <button className={`lg:hidden ${overlay ? "text-white" : "text-ink-900"}`}
+                  onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu" aria-expanded={mobileOpen}>
+            <Icon name={mobileOpen ? "x" : "menu"} className="w-5 h-5"/>
           </button>
         </div>
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden bg-white border-t border-ink-200 fade-up">
-          <div className="px-4 py-4 flex flex-col gap-1">
+        <div className="lg:hidden glass border-t border-ink-200/60 fade-up">
+          <div className="px-6 py-6 flex flex-col gap-1">
             {links.map(l => (
               <a key={l.href} href={l.href}
                  onClick={() => setMobileOpen(false)}
-                 className="px-3 py-3 rounded-xl text-ink-800 font-medium hover:bg-ink-50">{l.label}</a>
+                 className="py-3 text-[17px] text-ink-900 font-normal hover:text-brand-600">{l.label}</a>
             ))}
-            {!user && (
-              <Btn onClick={() => { setMobileOpen(false); onLoginClick(); }} className="mt-2"><Icon name="user" className="w-4 h-4"/> Sign in</Btn>
-            )}
-            {user && (
-              <button onClick={() => { signOut(); setMobileOpen(false); }} className="mt-2 px-3 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 text-left flex items-center gap-2">
-                <Icon name="logout" className="w-4 h-4"/> Sign out
-              </button>
+            <div className="hr-apple my-3"/>
+            {!user ? (
+              <button onClick={() => { setMobileOpen(false); onLoginClick(); }} className="py-3 text-[17px] text-ink-700 text-left">Sign in</button>
+            ) : (
+              <button onClick={() => { signOut(); setMobileOpen(false); }} className="py-3 text-[17px] text-ink-500 text-left">Sign out</button>
             )}
           </div>
         </div>
@@ -424,53 +571,53 @@ const Navbar = ({ onLoginClick }) => {
 
 /* ─── FOOTER ─────────────────────────────────────────────────── */
 const Footer = () => (
-  <footer className="bg-ink-900 text-ink-200 mt-20">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid md:grid-cols-2 lg:grid-cols-4 gap-10">
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-heal-500 flex items-center justify-center text-white">
-            <Icon name="plus" className="w-5 h-5" strokeWidth={3}/>
+  <footer className="panel-cream mt-24 border-t border-ink-200/60">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-10">
+      <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-10 pb-10">
+        <div className="lg:col-span-2">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-heal-500 flex items-center justify-center text-white">
+              <Icon name="plus" className="w-4 h-4" strokeWidth={3}/>
+            </div>
+            <div className="font-display font-semibold text-[15px] text-ink-900">MediNext</div>
           </div>
-          <div className="font-display font-extrabold text-lg text-white">Medi<span className="text-brand-400">Next</span></div>
+          <p className="text-[13px] text-ink-600 leading-relaxed max-w-sm">India's trusted healthcare directory. Find hospitals, doctors, diagnostics, and pharmacies — and keep every record in one private vault.</p>
+          <div className="flex items-center gap-1.5 mt-5 flex-wrap">
+            {DATA.trustLogos.map(l => (
+              <span key={l} className="px-2.5 py-1 rounded-full bg-white text-[11px] text-ink-700 hairline">{l}</span>
+            ))}
+          </div>
         </div>
-        <p className="text-sm text-ink-400 leading-relaxed">India's trusted healthcare directory. Discover hospitals, doctors, diagnostics & pharmacies. Heal forward.</p>
-        <div className="flex items-center gap-2 mt-4 flex-wrap">
-          {DATA.trustLogos.map(l => (
-            <span key={l} className="px-2.5 py-1 rounded-md bg-white/5 text-xs text-ink-200 border border-white/10">{l}</span>
-          ))}
+        <div>
+          <div className="text-[12px] font-semibold text-ink-900 mb-3">Discover</div>
+          <ul className="space-y-2.5 text-[13px] text-ink-600">
+            <li><a href="#/hospitals" className="hover:text-ink-900">Hospitals</a></li>
+            <li><a href="#/doctors" className="hover:text-ink-900">Doctors</a></li>
+            <li><a href="#/pathology" className="hover:text-ink-900">Diagnostics</a></li>
+            <li><a href="#/pharmacies" className="hover:text-ink-900">Pharmacies</a></li>
+          </ul>
+        </div>
+        <div>
+          <div className="text-[12px] font-semibold text-ink-900 mb-3">For patients</div>
+          <ul className="space-y-2.5 text-[13px] text-ink-600">
+            <li><a href="#/vault" className="hover:text-ink-900">Health vault</a></li>
+            <li><a href="#/pathology" className="hover:text-ink-900">Book lab tests</a></li>
+            <li><a href="#/doctors" className="hover:text-ink-900">Video consults</a></li>
+            <li><a href="tel:102" className="hover:text-ink-900">Emergency · 102</a></li>
+          </ul>
+        </div>
+        <div>
+          <div className="text-[12px] font-semibold text-ink-900 mb-3">Company</div>
+          <ul className="space-y-2.5 text-[13px] text-ink-600">
+            <li><a href="#/contact" className="hover:text-ink-900">Contact</a></li>
+            <li><a href="#/list-with-us" className="hover:text-ink-900">List your facility</a></li>
+            <li><a href="#/privacy" className="hover:text-ink-900">Privacy & ABDM</a></li>
+            <li><a href="mailto:hello@medinext.in" className="hover:text-ink-900">hello@medinext.in</a></li>
+          </ul>
         </div>
       </div>
-      <div>
-        <div className="text-sm font-semibold text-white mb-3">Discover</div>
-        <ul className="space-y-2 text-sm text-ink-400">
-          <li><a href="#/hospitals" className="hover:text-white">Hospitals</a></li>
-          <li><a href="#/doctors" className="hover:text-white">Doctors</a></li>
-          <li><a href="#/pathology" className="hover:text-white">Diagnostics & Labs</a></li>
-          <li><a href="#/pharmacies" className="hover:text-white">Pharmacies</a></li>
-        </ul>
-      </div>
-      <div>
-        <div className="text-sm font-semibold text-white mb-3">For Patients</div>
-        <ul className="space-y-2 text-sm text-ink-400">
-          <li><a href="#/vault" className="hover:text-white">Health Vault</a></li>
-          <li><a href="#/pathology" className="hover:text-white">Book Lab Tests</a></li>
-          <li><a href="#/doctors" className="hover:text-white">Video Consults</a></li>
-          <li><a href="tel:102" className="hover:text-white">Emergency · 102</a></li>
-        </ul>
-      </div>
-      <div>
-        <div className="text-sm font-semibold text-white mb-3">Company</div>
-        <ul className="space-y-2 text-sm text-ink-400">
-          <li><a href="#/contact" className="hover:text-white">Contact</a></li>
-          <li><a href="#/list-with-us" className="hover:text-white">List your facility</a></li>
-          <li><a href="#/privacy" className="hover:text-white">Privacy & ABDM</a></li>
-          <li><a href="mailto:hello@medinext.in" className="hover:text-white">hello@medinext.in</a></li>
-        </ul>
-      </div>
-    </div>
-    <div className="border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-400">
-        <div>© {new Date().getFullYear()} MediNext — a sister brand of EduNext. Demo build.</div>
+      <div className="border-t border-ink-200/60 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-ink-500">
+        <div>Copyright © {new Date().getFullYear()} MediNext, a sister brand of EduNext. All rights reserved. Demo build.</div>
         <div className="flex items-center gap-4"><span>Emergency: 102 / 108</span><span>·</span><span>Made in India</span></div>
       </div>
     </div>
@@ -496,34 +643,50 @@ const SearchBar = ({ inHero = false, initial = {} }) => {
     navigate(`/${tab}?${params.toString()}`);
   };
 
+  // Apple-style: tabs as segmented control on top, glassy capsule search below
   return (
-    <div className={`${inHero ? "" : "card-soft"} rounded-2xl ${inHero ? "bg-white" : "bg-white border border-ink-200"}`}>
-      <div className="flex items-center gap-1 px-2 pt-2 overflow-x-auto no-scrollbar">
-        {tabs.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all
-                    ${tab === t.id ? "bg-brand-50 text-brand-700" : "text-ink-500 hover:text-ink-900 hover:bg-ink-50"}`}>
-            <Icon name={t.icon} className="w-4 h-4"/> {t.label}
-          </button>
-        ))}
+    <div className={inHero
+      ? "rounded-3xl bg-white/[0.08] backdrop-blur-xl border border-white/15 p-2.5 shadow-2xl shadow-black/20"
+      : "rounded-3xl bg-white card-soft hairline p-2.5"}>
+      {/* Segmented control */}
+      <div className={`flex items-center gap-1 p-1 rounded-full overflow-x-auto no-scrollbar mb-2.5
+                       ${inHero ? "bg-white/[0.06]" : "bg-ink-100"}`}>
+        {tabs.map(t => {
+          const active = tab === t.id;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-medium whitespace-nowrap transition-all duration-300
+                      ${active
+                          ? (inHero ? "bg-white/15 text-white shadow-sm" : "bg-white text-ink-900 shadow-sm")
+                          : (inHero ? "text-white/60 hover:text-white" : "text-ink-600 hover:text-ink-900")}`}>
+              <Icon name={t.icon} className="w-3.5 h-3.5"/> {t.label}
+            </button>
+          );
+        })}
       </div>
 
-      <form onSubmit={submit} className="flex flex-col md:flex-row items-stretch gap-2 p-2">
-        <div className="flex items-center gap-2 flex-1 px-3 rounded-xl border border-ink-200 hover:border-brand-400 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100 bg-white">
-          <Icon name="search" className="w-5 h-5 text-ink-400"/>
+      <form onSubmit={submit} className="flex flex-col md:flex-row items-stretch gap-2">
+        <div className={`flex items-center gap-3 flex-1 px-4 rounded-full transition-all
+                         ${inHero
+                              ? "bg-white/10 hover:bg-white/15 focus-within:bg-white/15 border border-white/10"
+                              : "bg-ink-100 hover:bg-ink-200/70 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-500/30 hairline"}`}>
+          <Icon name="search" className={`w-4 h-4 ${inHero ? "text-white/60" : "text-ink-400"}`}/>
           <input value={q} onChange={e => setQ(e.target.value)}
-                 placeholder={tab === "doctors" ? "Search 'Cardiologist', 'Dr. Rao'…" : tab === "hospitals" ? "Search hospital, specialty…" : tab === "pathology" ? "Search 'HbA1c', 'CBC', 'Thyroid'…" : "Search 'Pharmacy near me'…"}
-                 className="w-full py-3.5 text-sm placeholder:text-ink-400 bg-transparent"/>
+                 placeholder={tab === "doctors" ? "Cardiologist, Dr. Rao…" : tab === "hospitals" ? "Hospital, specialty…" : tab === "pathology" ? "HbA1c, CBC, Thyroid…" : "Pharmacy near me…"}
+                 className={`w-full py-3 text-[14px] bg-transparent ${inHero ? "text-white placeholder:text-white/50" : "text-ink-900 placeholder:text-ink-400"}`}/>
         </div>
-        <div className="flex items-center gap-2 px-3 rounded-xl border border-ink-200 hover:border-brand-400 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100 bg-white md:w-48">
-          <Icon name="map" className="w-5 h-5 text-ink-400"/>
+        <div className={`flex items-center gap-2 px-4 rounded-full md:w-44 transition-all
+                         ${inHero
+                              ? "bg-white/10 hover:bg-white/15 border border-white/10"
+                              : "bg-ink-100 hover:bg-ink-200/70 hairline"}`}>
+          <Icon name="map" className={`w-4 h-4 ${inHero ? "text-white/60" : "text-ink-400"}`}/>
           <select value={city} onChange={e => setCity(e.target.value)}
-                  className="w-full py-3.5 text-sm bg-transparent text-ink-900">
-            {DATA.CITIES.map(c => <option key={c}>{c}</option>)}
+                  className={`w-full py-3 text-[14px] bg-transparent ${inHero ? "text-white" : "text-ink-900"}`}>
+            {DATA.CITIES.map(c => <option key={c} className="text-ink-900">{c}</option>)}
           </select>
         </div>
-        <Btn type="submit" size="lg" className="md:px-7">
-          <Icon name="search" className="w-4 h-4"/> Search
+        <Btn type="submit" size="lg" variant={inHero ? "accent" : "primary"} className="md:!px-8">
+          Search
         </Btn>
       </form>
     </div>
@@ -543,212 +706,296 @@ const HomePage = ({ onLoginClick }) => {
   const featuredDoctors = DATA.doctors.slice(0, 6);
   const featuredHospitals = DATA.hospitals.slice(0, 6);
 
+  // Pick the next available doctor for the hero strip (memoized)
+  const nextDoc = useMemo(() =>
+    DATA.doctors.find(d => d.next_slot.startsWith("Today") && d.available_modes.includes("Video")) || DATA.doctors[0]
+  , []);
+
   return (
     <main>
-      {/* HERO */}
-      <section className="relative pt-28 pb-24 hero-bg overflow-hidden">
-        <div className="absolute inset-0 hero-grid opacity-100 pointer-events-none"/>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-7 text-white">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Pill tone="brand" className="bg-white/10 text-brand-200 border border-white/10">
-                  <Icon name="sparkles" className="w-3.5 h-3.5"/> India's most-loved healthcare directory
-                </Pill>
-                <Pill tone="amber" className="bg-amber-400/15 text-amber-300 border border-amber-400/20">
-                  Demo build
-                </Pill>
-              </div>
-              <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">
-                Find healthcare.<br/>
-                <span className="bg-gradient-to-r from-brand-400 to-heal-400 bg-clip-text text-transparent">Heal forward.</span>
-              </h1>
-              <p className="mt-5 text-lg text-ink-200 max-w-xl">
-                Hospitals, doctors, diagnostics and pharmacies — verified, rated, and bookable in seconds. Plus a secure vault for every prescription and report.
-              </p>
+      {/* HERO — Apple Pro billboard */}
+      <section className="relative pt-24 pb-20 hero-bg overflow-hidden">
+        <div className="absolute inset-0 hero-grid pointer-events-none"/>
 
-              <div className="mt-8 max-w-3xl">
-                <SearchBar inHero/>
-              </div>
+        {/* subtle floating glow orbs */}
+        <div className="absolute -top-32 left-1/4 w-[520px] h-[520px] rounded-full bg-brand-500/20 blur-3xl pointer-events-none"/>
+        <div className="absolute top-1/3 right-1/4 w-[420px] h-[420px] rounded-full bg-heal-500/15 blur-3xl pointer-events-none float-slow"/>
 
-              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ink-300">
-                <span className="inline-flex items-center gap-2"><Icon name="check" className="w-4 h-4 text-heal-400"/> NABH/NABL verified</span>
-                <span className="inline-flex items-center gap-2"><Icon name="check" className="w-4 h-4 text-heal-400"/> ABDM (ABHA) compatible</span>
-                <span className="inline-flex items-center gap-2"><Icon name="check" className="w-4 h-4 text-heal-400"/> Cashless at 320+ hospitals</span>
-              </div>
-            </div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* tiny eyebrow */}
+          <div className="fade-up flex items-center justify-center gap-3 mb-8">
+            <span className="text-[12px] font-medium text-white/60 tracking-wide">MediNext · India</span>
+            <span className="text-white/20">·</span>
+            <span className="text-[12px] font-medium text-heal-400 tracking-wide inline-flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-heal-400 animate-pulse"/> Demo build
+            </span>
+          </div>
 
-            <div className="lg:col-span-5 hidden lg:block">
-              <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-tr from-brand-500/30 to-heal-500/30 rounded-3xl blur-2xl"/>
-                <div className="relative rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-6">
-                  <div className="text-sm text-ink-300">Live now</div>
-                  <div className="flex items-center justify-between mt-1">
-                    <div className="text-2xl font-bold text-white">Next available doctor</div>
-                    <Pill tone="heal" className="bg-heal-500/15 text-heal-400 border border-heal-500/30">● online</Pill>
-                  </div>
-                  {(() => {
-                    // pick the soonest "Today" doctor with Video available
-                    const next = DATA.doctors.find(d => d.next_slot.startsWith("Today") && d.available_modes.includes("Video")) || DATA.doctors[0];
-                    return (
-                      <div className="mt-4 flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10">
-                        <Avatar name={next.name} hue={next.image_hue} size={52}/>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-white truncate">{next.name}</div>
-                          <div className="text-xs text-ink-300">{next.specialty} · {next.experience_years} yrs · {next.city}</div>
-                        </div>
-                        <Btn variant="heal" size="sm" as="a" href={`#/doctor/${next.slug}`}><Icon name="video" className="w-4 h-4"/> Consult</Btn>
-                      </div>
-                    );
-                  })()}
-                  <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-                    {[
-                      { v: DATA.doctors.length + "+", l: "Doctors" },
-                      { v: DATA.hospitals.length + "+", l: "Hospitals" },
-                      { v: (DATA.pathology.length + DATA.pharmacies.length) + "+", l: "Labs & pharmacies" }
-                    ].map(s => (
-                      <div key={s.l} className="rounded-xl bg-white/5 border border-white/10 py-3">
-                        <div className="text-lg font-bold text-white">{s.v}</div>
-                        <div className="text-[11px] text-ink-300 uppercase tracking-wide">{s.l}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-3 text-[11px] text-ink-400 text-center">Demo dataset. Scaling to 1,800+ hospitals & 12,400+ doctors at launch.</div>
-                </div>
+          {/* Monumental headline */}
+          <h1 className="fade-up display-xl text-white">
+            Find healthcare.
+            <br/>
+            <span className="gradient-text-bright italic font-serif font-normal">Heal&nbsp;forward.</span>
+          </h1>
+
+          <p className="fade-up mt-7 text-[19px] sm:text-[21px] leading-[1.45] text-white/70 max-w-2xl mx-auto font-light">
+            Hospitals, doctors, diagnostics and pharmacies — verified, rated and bookable in seconds. Plus a private vault for every report.
+          </p>
+
+          {/* Hero CTAs (Apple-style: primary + secondary link with chevron) */}
+          <div className="fade-up mt-9 flex items-center justify-center gap-5 flex-wrap">
+            <Btn as="a" href="#/doctors" variant="accent" size="lg" className="!px-7">Find a doctor</Btn>
+            <a href="#/vault" className="text-[15px] font-medium text-brand-300 hover:text-brand-200 inline-flex items-center gap-1 transition-colors">
+              Open my vault <Icon name="arrowRight" className="w-4 h-4"/>
+            </a>
+          </div>
+
+          {/* Search panel — floating glass */}
+          <div className="fade-up mt-14 max-w-3xl mx-auto">
+            <SearchBar inHero/>
+          </div>
+
+          {/* Trust strip */}
+          <div className="fade-up mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-white/55">
+            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> NABH / NABL verified</span>
+            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> ABDM (ABHA) ready</span>
+            <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> Cashless network</span>
+          </div>
+
+          {/* Next available — floating strip */}
+          <div className="fade-up mt-16 max-w-md mx-auto">
+            <a href={`#/doctor/${nextDoc.slug}`}
+               className="group flex items-center gap-3 p-3 rounded-full bg-white/[0.06] border border-white/10 hover:bg-white/[0.09] transition-colors text-left backdrop-blur-md">
+              <Avatar name={nextDoc.name} hue={nextDoc.image_hue} size={40}/>
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-medium text-white truncate">Next consult · {nextDoc.name}</div>
+                <div className="text-[11px] text-white/60">{nextDoc.specialty} · {nextDoc.city} · {nextDoc.next_slot}</div>
               </div>
-            </div>
+              <span className="text-[11px] font-medium text-heal-400 inline-flex items-center gap-1 pr-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-heal-400"/> Online
+              </span>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* CATEGORY GRID */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {categories.map(c => (
-            <a key={c.kind} href={`#/${c.kind}`}
-               className="group bg-white card-soft rounded-2xl p-5 border border-ink-200 hover:border-brand-400 transition-all">
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${c.tone}`}>
-                <Icon name={c.icon} className="w-5 h-5"/>
-              </div>
-              <div className="mt-3 font-bold text-ink-900">{c.title}</div>
-              <div className="text-xs text-ink-500 mt-0.5">{c.desc}</div>
-              <div className="mt-3 text-xs font-semibold text-brand-600 inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                Explore <Icon name="arrowRight" className="w-3.5 h-3.5"/>
-              </div>
-            </a>
+      {/* Apple-style sticky stat bar */}
+      <section className="bg-white border-y border-ink-200/60">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-ink-200/60">
+          {[
+            { v: DATA.hospitals.length + "+", l: "Hospitals" },
+            { v: DATA.doctors.length + "+", l: "Doctors" },
+            { v: DATA.pathology.length + "+", l: "NABL labs" },
+            { v: DATA.pharmacies.length + "+", l: "Pharmacies" }
+          ].map((s,i) => (
+            <div key={s.l} className={`text-center py-4 md:py-2 ${i % 2 ? 'md:pl-6' : 'md:pr-6'}`}>
+              <div className="text-[32px] sm:text-[42px] font-semibold text-ink-900 tracking-tightest">{s.v}</div>
+              <div className="text-[12px] text-ink-500 mt-1">{s.l}</div>
+            </div>
           ))}
         </div>
       </section>
 
+      {/* CATEGORY TILES — Apple product-grid style */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+        <Reveal>
+          <SectionTitle
+            eyebrow="Discover"
+            title="Everything for your health."
+            accent="In one place."
+            sub="Hospitals, doctors, diagnostics and pharmacies — verified, rated, and bookable in seconds."
+          />
+        </Reveal>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {(() => {
+            const tiles = [
+              { kind: "hospitals", title: "Hospitals", tagline: "NABH-accredited care, near you.", count: DATA.hospitals.length, icon: "building", tone: "from-sky-400/30 via-sky-500/10 to-transparent", iconBg: "bg-sky-500" },
+              { kind: "doctors", title: "Doctors", tagline: "Specialists in 17 fields.", count: DATA.doctors.length, icon: "stethoscope", tone: "from-emerald-400/30 via-emerald-500/10 to-transparent", iconBg: "bg-emerald-500" },
+              { kind: "pathology", title: "Diagnostics", tagline: "NABL labs. Reports in 12h.", count: DATA.pathology.length, icon: "flask", tone: "from-amber-400/30 via-amber-500/10 to-transparent", iconBg: "bg-amber-500" },
+              { kind: "pharmacies", title: "Pharmacies", tagline: "Genuine meds. 30-min delivery.", count: DATA.pharmacies.length, icon: "pill", tone: "from-rose-400/30 via-rose-500/10 to-transparent", iconBg: "bg-rose-500" }
+            ];
+            return tiles.map((t, i) => (
+              <Reveal key={t.kind} delay={i * 80}>
+                <a href={`#/${t.kind}`}
+                   className="group relative block overflow-hidden rounded-4xl bg-white card-soft hairline aspect-[16/10] sm:aspect-[16/9]">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${t.tone}`}/>
+                  <div className="relative h-full p-8 sm:p-10 flex flex-col justify-between">
+                    <div>
+                      <div className={`w-12 h-12 rounded-2xl ${t.iconBg} text-white flex items-center justify-center shadow-lg`}>
+                        <Icon name={t.icon} className="w-6 h-6"/>
+                      </div>
+                      <h3 className="display-sm mt-5 text-ink-900">{t.title}</h3>
+                      <p className="mt-2 text-[15px] text-ink-600 max-w-[28ch]">{t.tagline}</p>
+                    </div>
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <div className="text-[42px] font-semibold text-ink-900 leading-none tracking-tightest">{t.count}+</div>
+                        <div className="text-[12px] text-ink-500 mt-1">listed</div>
+                      </div>
+                      <span className="text-[13px] font-medium text-ink-900 inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Explore <Icon name="arrowRight" className="w-4 h-4"/>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </Reveal>
+            ));
+          })()}
+        </div>
+      </section>
+
       {/* POPULAR TESTS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        <SectionTitle
-          eyebrow="Lab Tests"
-          title="Popular tests with home collection"
-          sub="NABL-accredited, transparent pricing, reports in 24 hours."
-          action={<a href="#/pathology" className="text-sm font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">View all <Icon name="arrowRight" className="w-4 h-4"/></a>}
-        />
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+        <Reveal>
+          <SectionTitle
+            eyebrow="Lab tests"
+            title="Health checkups,"
+            accent="from ₹199."
+            sub="NABL-accredited labs. Sample collected at home. Reports in your vault within 24 hours."
+          />
+        </Reveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {DATA.popularTests.map(t => (
-            <div key={t.name} className="bg-white border border-ink-200 rounded-2xl p-4 hover:border-brand-400 transition-all card-soft">
-              <div className="flex items-start justify-between gap-3">
-                <div className="font-semibold text-sm text-ink-900 leading-snug">{t.name}</div>
-                <Pill tone="heal">Home</Pill>
-              </div>
-              <div className="mt-3 flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] text-ink-500 uppercase">From</div>
-                  <div className="font-bold text-ink-900">₹{t.price}</div>
+          {DATA.popularTests.map((t, i) => (
+            <Reveal key={t.name} delay={i * 40}>
+              <a href="#/pathology" className="block bg-white rounded-3xl p-5 hairline card-soft h-full">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="font-medium text-[14px] text-ink-900 leading-snug">{t.name}</div>
+                  <Pill tone="heal">Home</Pill>
                 </div>
-                <a href="#/pathology" className="text-xs font-semibold text-brand-600 hover:text-brand-700">Book →</a>
-              </div>
-            </div>
+                <div className="mt-5 flex items-end justify-between">
+                  <div>
+                    <div className="text-[11px] text-ink-500">From</div>
+                    <div className="text-[22px] font-semibold text-ink-900 tracking-tight">₹{t.price}</div>
+                  </div>
+                  <span className="text-[12px] font-medium text-brand-600 inline-flex items-center gap-1">Book <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+                </div>
+              </a>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* FEATURED DOCTORS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        <SectionTitle
-          eyebrow="Top Doctors"
-          title="Specialists you can trust"
-          sub="Verified credentials, real reviews, instant booking."
-          action={<a href="#/doctors" className="text-sm font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">All doctors <Icon name="arrowRight" className="w-4 h-4"/></a>}
-        />
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+        <Reveal>
+          <SectionTitle
+            eyebrow="Top doctors"
+            title="Specialists"
+            accent="you can trust."
+            sub="Verified credentials. Real reviews. Instant booking."
+            action={<a href="#/doctors" className="text-[14px] font-medium text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">All doctors <Icon name="arrowRight" className="w-4 h-4"/></a>}
+          />
+        </Reveal>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {featuredDoctors.map(d => <DoctorCard key={d.id} doctor={d}/>)}
+          {featuredDoctors.map((d, i) => <Reveal key={d.id} delay={i * 50}><DoctorCard doctor={d}/></Reveal>)}
         </div>
       </section>
 
       {/* FEATURED HOSPITALS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        <SectionTitle
-          eyebrow="Hospitals"
-          title="Top-rated hospitals near you"
-          action={<a href="#/hospitals" className="text-sm font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">All hospitals <Icon name="arrowRight" className="w-4 h-4"/></a>}
-        />
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+        <Reveal>
+          <SectionTitle
+            eyebrow="Hospitals"
+            title="Top-rated hospitals,"
+            accent="near you."
+            action={<a href="#/hospitals" className="text-[14px] font-medium text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">All hospitals <Icon name="arrowRight" className="w-4 h-4"/></a>}
+          />
+        </Reveal>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {featuredHospitals.map(h => <HospitalCard key={h.id} hospital={h}/>)}
+          {featuredHospitals.map((h, i) => <Reveal key={h.id} delay={i * 50}><HospitalCard hospital={h}/></Reveal>)}
         </div>
       </section>
 
-      {/* VAULT CTA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        <div className="relative overflow-hidden rounded-3xl hero-bg text-white p-8 sm:p-12">
-          <div className="absolute inset-0 hero-grid opacity-100"/>
-          <div className="relative grid md:grid-cols-2 gap-6 items-center">
-            <div>
-              <Pill tone="brand" className="bg-white/10 text-brand-200 border border-white/10">
-                <Icon name="vault" className="w-3.5 h-3.5"/> Patient Vault
-              </Pill>
-              <h3 className="mt-4 text-3xl sm:text-4xl font-extrabold leading-tight">
-                Every report. Every prescription.<br/>
-                <span className="text-brand-300">One private vault.</span>
-              </h3>
-              <p className="mt-3 text-ink-200">ABDM (ABHA)-aligned. End-to-end encryption (planned at GA). Share securely with any doctor in a tap.</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Btn variant="heal" size="lg" as="a" href="#/vault"><Icon name="vault" className="w-4 h-4"/> Open my vault</Btn>
-                {!user && (
-                  <Btn variant="ghost" size="lg" onClick={onLoginClick} className="bg-white/10 text-white border-white/20 hover:bg-white/15">
-                    <Icon name="user" className="w-4 h-4"/> Sign in with demo
-                  </Btn>
-                )}
-              </div>
-            </div>
-            <div className="relative">
-              <div className="rounded-2xl bg-white/5 backdrop-blur border border-white/10 p-5 space-y-3">
-                {DATA.demoVault.slice(0, 3).map(v => (
-                  <div key={v.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-                    <div className="w-10 h-10 rounded-lg bg-brand-500/20 text-brand-300 flex items-center justify-center">
-                      <Icon name={v.type === "Lab Report" ? "flask" : v.type === "Prescription" ? "pill" : "shield"} className="w-5 h-5"/>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-white truncate">{v.title}</div>
-                      <div className="text-xs text-ink-300">{v.source} · {v.date}</div>
-                    </div>
-                    {v.flagged && <Pill tone="amber" className="bg-amber-500/15 text-amber-300 border border-amber-500/30">Flagged</Pill>}
+      {/* VAULT BILLBOARD — Apple Privacy page style */}
+      <section className="pt-32 pb-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <div className="relative overflow-hidden rounded-5xl hero-bg text-white">
+              <div className="absolute inset-0 hero-grid"/>
+              <div className="absolute -top-20 -left-20 w-[420px] h-[420px] rounded-full bg-brand-500/20 blur-3xl pointer-events-none float-slow"/>
+              <div className="relative grid lg:grid-cols-2 gap-12 items-center p-10 sm:p-16 lg:p-20">
+                <div>
+                  <div className="eyebrow !text-white/60">Patient Vault</div>
+                  <h3 className="mt-3 display-lg">
+                    Every report.<br/>
+                    Every prescription.<br/>
+                    <span className="gradient-text-bright italic font-serif font-normal">Sealed.</span>
+                  </h3>
+                  <p className="mt-6 text-[17px] leading-relaxed text-white/65 max-w-md">
+                    ABDM-aligned. End-to-end encrypted (planned at GA). Share with any doctor in a tap — and revoke it just as fast.
+                  </p>
+                  <div className="mt-9 flex flex-wrap items-center gap-5">
+                    <Btn as="a" href="#/vault" variant="ghost" size="lg" className="!bg-white !text-ink-900 !border-0">Open my vault</Btn>
+                    {!user && (
+                      <button onClick={onLoginClick} className="text-[15px] font-medium text-brand-300 hover:text-brand-200 inline-flex items-center gap-1">
+                        Sign in with demo <Icon name="arrowRight" className="w-4 h-4"/>
+                      </button>
+                    )}
                   </div>
-                ))}
+                </div>
+                {/* phone-style preview */}
+                <div className="relative max-w-sm mx-auto w-full">
+                  <div className="absolute -inset-6 bg-gradient-to-tr from-brand-500/30 to-heal-500/30 rounded-[3rem] blur-3xl"/>
+                  <div className="relative rounded-[2.25rem] bg-white/[0.06] backdrop-blur-xl border border-white/15 p-5 shadow-2xl">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-[11px] text-white/60 uppercase tracking-wide">Recent in vault</div>
+                      <span className="text-[11px] text-heal-400 inline-flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-heal-400"/> Live
+                      </span>
+                    </div>
+                    <div className="space-y-2.5">
+                      {DATA.demoVault.slice(0, 4).map(v => (
+                        <div key={v.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/10">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500/30 to-heal-500/30 text-white flex items-center justify-center">
+                            <Icon name={v.type === "Lab Report" ? "flask" : v.type === "Prescription" ? "pill" : v.type === "Imaging" ? "shield" : "award"} className="w-4 h-4"/>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[13px] font-medium text-white truncate">{v.title}</div>
+                            <div className="text-[11px] text-white/55">{v.source} · {v.date}</div>
+                          </div>
+                          {v.flagged && <Pill tone="amber" className="bg-amber-400/15 text-amber-300 border-amber-400/20">Flagged</Pill>}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-white/60">
+                      <span>ABHA · 12 ·••••· ••••· 1234</span>
+                      <span className="text-brand-300">View all</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* TRUST */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { icon: "shield", title: "Verified & accredited", body: "Every listing checked against NABH/NABL registries and council reg numbers." },
-            { icon: "heart", title: "Real patient reviews", body: "No fake reviews. Only patients with appointment confirmations can rate." },
-            { icon: "award", title: "Privacy-first", body: "ABDM-aligned. Your vault is encrypted at rest. You decide who sees what." }
-          ].map(t => (
-            <div key={t.title} className="bg-white rounded-2xl p-6 border border-ink-200">
-              <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center"><Icon name={t.icon}/></div>
-              <div className="mt-4 font-bold text-ink-900">{t.title}</div>
-              <div className="mt-1 text-sm text-ink-500">{t.body}</div>
-            </div>
-          ))}
+      {/* TRUST — Apple feature-strip */}
+      <section className="pt-24 pb-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionTitle
+              eyebrow="Designed for trust"
+              title="Built on the standards"
+              accent="that matter."
+            />
+          </Reveal>
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              { icon: "shield", title: "Verified & accredited", body: "Every listing checked against NABH and NABL registries and council registration numbers." },
+              { icon: "heart", title: "Real patient reviews", body: "Only patients with confirmed appointments can rate — no paid placements, ever." },
+              { icon: "award", title: "Privacy-first", body: "ABDM-aligned. Your vault is encrypted at rest. You decide who sees what, and for how long." }
+            ].map((t, i) => (
+              <Reveal key={t.title} delay={i * 80}>
+                <div className="bg-white rounded-3xl p-8 hairline h-full">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-heal-500 text-white flex items-center justify-center shadow-md">
+                    <Icon name={t.icon} className="w-5 h-5"/>
+                  </div>
+                  <div className="mt-6 text-[20px] font-semibold text-ink-900 tracking-apple-tight">{t.title}</div>
+                  <div className="mt-2 text-[15px] leading-relaxed text-ink-600">{t.body}</div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
     </main>
@@ -759,70 +1006,70 @@ const HomePage = ({ onLoginClick }) => {
 const DoctorCard = ({ doctor: d }) => {
   const hosp = DATA.hospitals.find(h => h.id === d.hospital_id);
   return (
-    <a href={`#/doctor/${d.slug}`} className="block bg-white rounded-2xl border border-ink-200 p-5 hover:border-brand-400 card-soft transition-all">
+    <a href={`#/doctor/${d.slug}`} className="block bg-white rounded-3xl hairline p-6 card-soft h-full">
       <div className="flex gap-4">
-        <Avatar name={d.name} hue={d.image_hue}/>
+        <Avatar name={d.name} hue={d.image_hue} size={56}/>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <div>
-              <div className="font-bold text-ink-900 truncate">{d.name}</div>
-              <div className="text-xs text-ink-500 mt-0.5">{d.specialty} · {d.experience_years} yrs</div>
+            <div className="min-w-0">
+              <div className="font-semibold text-ink-900 text-[16px] truncate tracking-apple-tight">{d.name}</div>
+              <div className="text-[12px] text-ink-500 mt-0.5">{d.specialty} · {d.experience_years} yrs</div>
             </div>
             <Rating value={d.rating} reviews={d.reviews}/>
           </div>
-          <div className="mt-2 text-xs text-ink-500 truncate">{d.qualification}</div>
-          {hosp && <div className="mt-1 text-xs text-ink-500 inline-flex items-center gap-1 truncate"><Icon name="building" className="w-3.5 h-3.5"/> {hosp.name}, {d.city}</div>}
+          <div className="mt-2 text-[12px] text-ink-500 truncate">{d.qualification}</div>
+          {hosp && <div className="mt-1 text-[12px] text-ink-500 inline-flex items-center gap-1 truncate"><Icon name="building" className="w-3.5 h-3.5"/> {hosp.name}, {d.city}</div>}
         </div>
       </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-5 flex flex-wrap items-center gap-1.5">
         {d.available_modes.includes("Video") && <Pill tone="heal"><Icon name="video" className="w-3 h-3"/> Video</Pill>}
-        <Pill tone="brand"><Icon name="rupee" className="w-3 h-3"/>{d.fee} fee</Pill>
+        <Pill tone="ink">₹{d.fee} fee</Pill>
         <Pill tone="amber"><Icon name="clock" className="w-3 h-3"/>{d.next_slot}</Pill>
       </div>
-      <div className="mt-4 flex items-center justify-between">
-        <span className="text-xs text-ink-500">{d.languages.join(" · ")}</span>
-        <span className="text-sm font-semibold text-brand-600 inline-flex items-center gap-1">Book <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+      <div className="mt-5 flex items-center justify-between">
+        <span className="text-[12px] text-ink-500">{d.languages.join(" · ")}</span>
+        <span className="text-[13px] font-medium text-brand-600 inline-flex items-center gap-1">Book <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
       </div>
     </a>
   );
 };
 
 const HospitalCard = ({ hospital: h }) => (
-  <a href={`#/hospital/${h.slug}`} className="block bg-white rounded-2xl border border-ink-200 overflow-hidden hover:border-brand-400 card-soft transition-all">
-    <div className="h-32 relative avatar-gradient" style={{ '--h': h.image_hue }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"/>
-      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+  <a href={`#/hospital/${h.slug}`} className="block bg-white rounded-3xl hairline overflow-hidden card-soft h-full">
+    <div className="h-36 relative avatar-gradient" style={{ '--h': h.image_hue }}>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"/>
+      <div className="absolute top-3 left-3 flex flex-wrap gap-1">
         {h.accreditation.slice(0,2).map(a => (
-          <span key={a} className="text-[10px] font-bold tracking-wide bg-white/95 text-ink-900 px-1.5 py-0.5 rounded">{a}</span>
+          <span key={a} className="text-[10px] font-medium tracking-wide glass !bg-white/85 text-ink-900 px-2 py-0.5 rounded-full">{a}</span>
         ))}
       </div>
       {h.emergency_24x7 && (
-        <span className="absolute top-3 right-3 text-[10px] font-bold tracking-wide bg-red-500 text-white px-1.5 py-0.5 rounded pulse-soft">24×7 Emergency</span>
+        <span className="absolute top-3 right-3 text-[10px] font-medium tracking-wide bg-red-500 text-white px-2 py-0.5 rounded-full pulse-soft">24×7 Emergency</span>
       )}
-      <div className="absolute bottom-3 left-4 right-4 text-white">
-        <div className="text-xs opacity-90">{h.type} · {h.beds} beds</div>
+      <div className="absolute bottom-3 left-5 right-5 text-white">
+        <div className="text-[11px] opacity-90">{h.type} · {h.beds} beds</div>
       </div>
     </div>
-    <div className="p-5">
+    <div className="p-6">
       <div className="flex items-start justify-between gap-2">
-        <div className="font-bold text-ink-900 leading-snug">{h.name}</div>
+        <div className="font-semibold text-ink-900 text-[16px] leading-snug tracking-apple-tight">{h.name}</div>
         <Rating value={h.rating} reviews={h.reviews}/>
       </div>
-      <div className="mt-1 text-xs text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-3.5 h-3.5"/> {h.locality}, {h.city}</div>
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {h.specialties.slice(0,4).map(s => <Pill key={s} tone="ink">{s}</Pill>)}
-        {h.specialties.length > 4 && <Pill tone="ink">+{h.specialties.length - 4}</Pill>}
+      <div className="mt-1 text-[12px] text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-3.5 h-3.5"/> {h.locality}, {h.city}</div>
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {h.specialties.slice(0,3).map(s => <Pill key={s} tone="ink">{s}</Pill>)}
+        {h.specialties.length > 3 && <Pill tone="ink">+{h.specialties.length - 3}</Pill>}
       </div>
-      <div className="mt-4 flex items-center justify-between text-sm">
-        <span className="text-ink-500">{h.doctors_count} doctors · Consult <span className="text-ink-900 font-semibold">₹{h.fee_consultation}</span></span>
-        <span className="text-brand-600 font-semibold inline-flex items-center gap-1">View <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+      <div className="mt-5 flex items-center justify-between text-[13px]">
+        <span className="text-ink-500">{h.doctors_count} doctors · ₹{h.fee_consultation}</span>
+        <span className="text-brand-600 font-medium inline-flex items-center gap-1">View <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
       </div>
     </div>
   </a>
 );
 
 const LabCard = ({ lab: l }) => (
-  <a href={`#/pathology/${l.slug}`} className="block bg-white rounded-2xl border border-ink-200 p-5 hover:border-brand-400 card-soft transition-all">
+  <a href={`#/pathology/${l.slug}`} className="block bg-white rounded-3xl hairline p-6 card-soft h-full">
     <div className="flex items-start gap-4">
       <div className="w-14 h-14 rounded-2xl avatar-gradient flex items-center justify-center text-white" style={{ '--h': l.image_hue }}>
         <Icon name="flask" className="w-6 h-6"/>
@@ -830,29 +1077,29 @@ const LabCard = ({ lab: l }) => (
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <div className="font-bold text-ink-900">{l.name}</div>
-            <div className="text-xs text-ink-500 inline-flex items-center gap-1 mt-0.5"><Icon name="map" className="w-3.5 h-3.5"/>{l.locality}, {l.city}</div>
+            <div className="font-semibold text-ink-900 text-[16px] tracking-apple-tight">{l.name}</div>
+            <div className="text-[12px] text-ink-500 inline-flex items-center gap-1 mt-0.5"><Icon name="map" className="w-3.5 h-3.5"/>{l.locality}, {l.city}</div>
           </div>
           <Rating value={l.rating} reviews={l.reviews}/>
         </div>
       </div>
     </div>
-    <div className="mt-3 flex flex-wrap gap-1.5">
+    <div className="mt-4 flex flex-wrap gap-1.5">
       {l.nabl && <Pill tone="heal"><Icon name="check" className="w-3 h-3"/> NABL</Pill>}
       {l.home_collection && <Pill tone="brand"><Icon name="truck" className="w-3 h-3"/> Home collection</Pill>}
       {l.open_24x7 && <Pill tone="amber"><Icon name="clock" className="w-3 h-3"/> 24×7</Pill>}
       <Pill tone="ink">{l.report_tat_hours}h TAT</Pill>
     </div>
-    <div className="mt-3 text-xs text-ink-500 line-clamp-2">{l.popular_tests.slice(0,5).join(" · ")}</div>
-    <div className="mt-4 flex items-center justify-between text-sm">
-      <span className="text-ink-500">Tests from <span className="text-ink-900 font-semibold">₹{l.starting_price}</span></span>
-      <span className="text-brand-600 font-semibold inline-flex items-center gap-1">Book <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+    <div className="mt-4 text-[13px] text-ink-500 line-clamp-2">{l.popular_tests.slice(0,5).join(" · ")}</div>
+    <div className="mt-5 flex items-center justify-between text-[13px]">
+      <span className="text-ink-500">From <span className="text-ink-900 font-semibold">₹{l.starting_price}</span></span>
+      <span className="text-brand-600 font-medium inline-flex items-center gap-1">Book <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
     </div>
   </a>
 );
 
 const PharmacyCard = ({ pharmacy: p }) => (
-  <a href={`#/pharmacy/${p.slug}`} className="block bg-white rounded-2xl border border-ink-200 p-5 hover:border-brand-400 card-soft transition-all">
+  <a href={`#/pharmacy/${p.slug}`} className="block bg-white rounded-3xl hairline p-6 card-soft h-full">
     <div className="flex items-start gap-4">
       <div className="w-14 h-14 rounded-2xl avatar-gradient flex items-center justify-center text-white" style={{ '--h': p.image_hue }}>
         <Icon name="pill" className="w-6 h-6"/>
@@ -860,23 +1107,23 @@ const PharmacyCard = ({ pharmacy: p }) => (
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <div className="font-bold text-ink-900">{p.name}</div>
-            <div className="text-xs text-ink-500 inline-flex items-center gap-1 mt-0.5"><Icon name="map" className="w-3.5 h-3.5"/>{p.locality}, {p.city}</div>
+            <div className="font-semibold text-ink-900 text-[16px] tracking-apple-tight">{p.name}</div>
+            <div className="text-[12px] text-ink-500 inline-flex items-center gap-1 mt-0.5"><Icon name="map" className="w-3.5 h-3.5"/>{p.locality}, {p.city}</div>
           </div>
           <Rating value={p.rating} reviews={p.reviews}/>
         </div>
       </div>
     </div>
-    <div className="mt-3 flex flex-wrap gap-1.5">
+    <div className="mt-4 flex flex-wrap gap-1.5">
       {p.open_24x7 && <Pill tone="amber"><Icon name="clock" className="w-3 h-3"/> 24×7</Pill>}
       {p.home_delivery && <Pill tone="brand"><Icon name="truck" className="w-3 h-3"/> {p.delivery_eta_minutes} min</Pill>}
       {p.online_consult && <Pill tone="heal"><Icon name="chat" className="w-3 h-3"/> Free consult</Pill>}
-      <Pill tone="red">{p.discount_pct}% off meds</Pill>
+      <Pill tone="red">{p.discount_pct}% off</Pill>
     </div>
-    <div className="mt-4 text-sm text-ink-500 line-clamp-2">{p.about}</div>
-    <div className="mt-4 flex items-center justify-between text-sm">
+    <div className="mt-4 text-[13px] text-ink-500 line-clamp-2">{p.about}</div>
+    <div className="mt-5 flex items-center justify-between text-[13px]">
       <span className="text-ink-500"><Icon name="phone" className="w-3.5 h-3.5 inline mr-1"/>{p.phone}</span>
-      <span className="text-brand-600 font-semibold inline-flex items-center gap-1">Order <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+      <span className="text-brand-600 font-medium inline-flex items-center gap-1">Order <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
     </div>
   </a>
 );
@@ -950,7 +1197,7 @@ const ListingShell = ({ kind, params }) => {
         <div className="mt-6 grid lg:grid-cols-12 gap-6">
           {/* Filters */}
           <aside className="lg:col-span-3">
-            <div className="bg-white border border-ink-200 rounded-2xl p-5 sticky top-20">
+            <div className="bg-white hairline rounded-3xl p-6 sticky top-20">
               <div className="flex items-center justify-between mb-4">
                 <div className="font-bold text-ink-900 inline-flex items-center gap-2"><Icon name="filter" className="w-4 h-4"/> Filters</div>
                 <button onClick={resetAll} className="text-xs font-semibold text-brand-600 hover:text-brand-700">Reset</button>
@@ -959,7 +1206,7 @@ const ListingShell = ({ kind, params }) => {
               <div className="space-y-5">
                 <div>
                   <label className="text-xs font-semibold text-ink-700 uppercase tracking-wide">City</label>
-                  <select value={city} onChange={e => setCity(e.target.value)} className="mt-2 w-full text-sm py-2.5 px-3 rounded-xl border border-ink-200 bg-white">
+                  <select value={city} onChange={e => setCity(e.target.value)} className="mt-2 w-full text-sm py-2.5 px-3 rounded-full hairline bg-white">
                     <option value="">All cities</option>
                     {DATA.CITIES.map(c => <option key={c}>{c}</option>)}
                   </select>
@@ -968,7 +1215,7 @@ const ListingShell = ({ kind, params }) => {
                 {(kind === "doctors" || kind === "hospitals") && (
                   <div>
                     <label className="text-xs font-semibold text-ink-700 uppercase tracking-wide">Specialty</label>
-                    <select value={specialty} onChange={e => setSpecialty(e.target.value)} className="mt-2 w-full text-sm py-2.5 px-3 rounded-xl border border-ink-200 bg-white">
+                    <select value={specialty} onChange={e => setSpecialty(e.target.value)} className="mt-2 w-full text-sm py-2.5 px-3 rounded-full hairline bg-white">
                       <option value="">All specialties</option>
                       {DATA.SPECIALTIES.map(s => <option key={s}>{s}</option>)}
                     </select>
@@ -1023,7 +1270,7 @@ const ListingShell = ({ kind, params }) => {
                   {filtered.length} {titles.h.toLowerCase()} found{city ? ` in ${city}` : ""}
                 </h1>
               </div>
-              <select value={sort} onChange={e => setSort(e.target.value)} className="text-sm py-2.5 px-3 rounded-xl border border-ink-200 bg-white">
+              <select value={sort} onChange={e => setSort(e.target.value)} className="text-sm py-2.5 px-3 rounded-full hairline bg-white">
                 <option value="relevance">Relevance</option>
                 <option value="rating">Top rated</option>
                 <option value="reviews">Most reviewed</option>
@@ -1099,7 +1346,7 @@ const ReviewsBlock = ({ rating, reviews }) => {
   const list = SAMPLE_REVIEWS.slice(0, 3);
   const dist = [5,4,3,2,1].map(s => ({ s, pct: s === 5 ? 68 : s === 4 ? 22 : s === 3 ? 7 : s === 2 ? 2 : 1 }));
   return (
-    <div className="bg-white border border-ink-200 rounded-2xl p-6">
+    <div className="bg-white hairline rounded-3xl p-7">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <h2 className="font-bold text-ink-900 text-lg">Patient reviews</h2>
         <Pill tone="ink">Only verified patients can review</Pill>
@@ -1147,31 +1394,32 @@ const ReviewsBlock = ({ rating, reviews }) => {
 
 /* ─── DETAIL PAGES ───────────────────────────────────────────── */
 const DetailHeader = ({ title, subtitle, badges = [], image_hue = 200, icon = "building", rating, reviews, back = "/", backLabel = "Back" }) => (
-  <div className="hero-bg text-white pt-24 pb-10 relative">
-    <div className="absolute inset-0 hero-grid opacity-100 pointer-events-none"/>
-    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <nav className="text-sm text-ink-300 mb-4 flex items-center gap-2 flex-wrap" aria-label="Breadcrumb">
-        <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3.5 h-3.5"/> Home</a>
-        <span className="text-ink-500">/</span>
+  <div className="hero-bg text-white pt-20 pb-16 relative">
+    <div className="absolute inset-0 hero-grid pointer-events-none"/>
+    <div className="absolute -top-32 left-1/3 w-[500px] h-[500px] rounded-full bg-brand-500/15 blur-3xl pointer-events-none"/>
+    <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="text-[12px] text-white/60 mb-8 flex items-center gap-2 flex-wrap" aria-label="Breadcrumb">
+        <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+        <span className="text-white/30">/</span>
         <a href={`#${back}`} className="hover:text-white">{backLabel}</a>
-        <span className="text-ink-500">/</span>
-        <span className="text-white truncate max-w-[200px]">{title}</span>
+        <span className="text-white/30">/</span>
+        <span className="text-white truncate max-w-[260px]">{title}</span>
       </nav>
-      <div className="flex items-start gap-5 flex-wrap">
-        <div className="w-20 h-20 rounded-3xl avatar-gradient flex items-center justify-center text-white shrink-0" style={{ '--h': image_hue }}>
-          <Icon name={icon} className="w-9 h-9"/>
+      <div className="flex items-start gap-6 flex-wrap">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl avatar-gradient flex items-center justify-center text-white shrink-0 shadow-2xl" style={{ '--h': image_hue }}>
+          <Icon name={icon} className="w-10 h-10 sm:w-11 sm:h-11"/>
         </div>
         <div className="flex-1 min-w-[280px]">
-          <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight">{title}</h1>
-          <div className="text-ink-300 mt-1">{subtitle}</div>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+          <h1 className="display-md text-white">{title}</h1>
+          <div className="text-[15px] text-white/65 mt-2">{subtitle}</div>
+          <div className="mt-5 flex flex-wrap items-center gap-1.5">
             {rating != null && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/15 text-amber-300 text-sm font-semibold border border-amber-300/20">
-                <Icon name="star" className="w-3.5 h-3.5 fill-current" strokeWidth={0}/> {rating} ({reviews?.toLocaleString()} reviews)
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 text-amber-300 text-[12px] font-medium border border-amber-300/20">
+                <Icon name="star" className="w-3.5 h-3.5 fill-current" strokeWidth={0}/> {rating} <span className="text-amber-300/70">· {reviews?.toLocaleString()} reviews</span>
               </span>
             )}
             {badges.map((b,i) => (
-              <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-white text-xs font-semibold border border-white/10">{b}</span>
+              <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-white text-[11px] font-medium border border-white/10">{b}</span>
             ))}
           </div>
         </div>
@@ -1197,7 +1445,7 @@ const HospitalDetail = ({ slug }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">About</h2>
               <p className="mt-2 text-ink-700 leading-relaxed">{h.about}</p>
               <div className="mt-5 grid sm:grid-cols-3 gap-3 text-center">
@@ -1207,14 +1455,14 @@ const HospitalDetail = ({ slug }) => {
               </div>
             </div>
 
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">Specialties</h2>
               <div className="mt-3 flex flex-wrap gap-2">
                 {h.specialties.map(s => <Pill key={s} tone="brand">{s}</Pill>)}
               </div>
             </div>
 
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">Facilities</h2>
               <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {h.facilities.map(f => (
@@ -1226,7 +1474,7 @@ const HospitalDetail = ({ slug }) => {
             </div>
 
             {hospDoctors.length > 0 && (
-              <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <div className="bg-white hairline rounded-3xl p-7">
                 <h2 className="font-bold text-ink-900 text-lg">Doctors at {h.name}</h2>
                 <div className="mt-3 grid sm:grid-cols-2 gap-3">
                   {hospDoctors.map(d => <DoctorCard key={d.id} doctor={d}/>)}
@@ -1238,7 +1486,7 @@ const HospitalDetail = ({ slug }) => {
           </div>
 
           <aside className="space-y-4">
-            <div className="bg-white border border-ink-200 rounded-2xl p-6 sticky top-20">
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20">
               <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Get in touch</div>
               <div className="mt-3 space-y-2 text-sm text-ink-700">
                 <div className="flex items-start gap-2"><Icon name="map" className="w-4 h-4 mt-0.5 text-ink-400"/> {h.address}</div>
@@ -1283,7 +1531,7 @@ const DoctorDetail = ({ slug, onBook }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">About Dr. {d.name.replace(/^Dr\.\s*/, '').split(' ')[0]}</h2>
               <p className="mt-2 text-ink-700 leading-relaxed">{d.about}</p>
               {d.awards.length > 0 && (
@@ -1296,12 +1544,12 @@ const DoctorDetail = ({ slug, onBook }) => {
               )}
             </div>
             {hosp && (
-              <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <div className="bg-white hairline rounded-3xl p-7">
                 <h2 className="font-bold text-ink-900 text-lg">Practices at</h2>
                 <div className="mt-3"><HospitalCard hospital={hosp}/></div>
               </div>
             )}
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">Languages spoken</h2>
               <div className="mt-3 flex gap-2 flex-wrap">{d.languages.map(l => <Pill key={l}>{l}</Pill>)}</div>
             </div>
@@ -1310,7 +1558,7 @@ const DoctorDetail = ({ slug, onBook }) => {
           </div>
 
           <aside className="space-y-4">
-            <div className="bg-white border border-ink-200 rounded-2xl p-6 sticky top-20">
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20">
               <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Book consultation</div>
               <div className="mt-3 flex items-center justify-between">
                 <div>
@@ -1364,13 +1612,13 @@ const PathologyDetail = ({ slug }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">About</h2>
               <p className="mt-2 text-ink-700 leading-relaxed">{l.about}</p>
               <div className="mt-3 text-sm text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {l.address}</div>
             </div>
 
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">Popular tests at this lab</h2>
               <div className="mt-3 divide-y divide-ink-100">
                 {l.popular_tests.map(t => (
@@ -1391,7 +1639,7 @@ const PathologyDetail = ({ slug }) => {
               </div>
             </div>
 
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">Radiology & scans</h2>
               <div className="mt-3 flex flex-wrap gap-2">
                 {l.scans.map(s => <Pill key={s} tone="brand">{s}</Pill>)}
@@ -1402,7 +1650,7 @@ const PathologyDetail = ({ slug }) => {
           </div>
 
           <aside className="space-y-4">
-            <div className="bg-white border border-ink-200 rounded-2xl p-6 sticky top-20">
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20">
               <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Book a test</div>
               <div className="mt-3 space-y-2 text-sm text-ink-700">
                 <div className="flex items-center gap-2"><Icon name="truck" className="w-4 h-4 text-ink-400"/> Home collection in your area</div>
@@ -1437,19 +1685,19 @@ const PharmacyDetail = ({ slug }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">About</h2>
               <p className="mt-2 text-ink-700 leading-relaxed">{p.about}</p>
               <div className="mt-3 text-sm text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {p.address}</div>
             </div>
 
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">Upload prescription</h2>
               <p className="mt-1 text-sm text-ink-500">Snap your prescription. We'll source genuine meds with up to {p.discount_pct}% off.</p>
               <UploadDropzone p={p}/>
             </div>
 
-            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+            <div className="bg-white hairline rounded-3xl p-7">
               <h2 className="font-bold text-ink-900 text-lg">Popular medicines</h2>
               <p className="mt-1 text-sm text-ink-500">All prices include {p.discount_pct}% off MRP. Demo catalogue.</p>
               <div className="mt-3 divide-y divide-ink-100">
@@ -1478,7 +1726,7 @@ const PharmacyDetail = ({ slug }) => {
           </div>
 
           <aside className="space-y-4">
-            <div className="bg-white border border-ink-200 rounded-2xl p-6 sticky top-20">
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20">
               <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Order medicines</div>
               <div className="mt-3 space-y-2 text-sm text-ink-700">
                 {p.home_delivery && <div className="flex items-center gap-2"><Icon name="truck" className="w-4 h-4 text-ink-400"/> Delivery in {p.delivery_eta_minutes} min</div>}
@@ -1526,7 +1774,7 @@ const VaultPage = ({ onLoginClick }) => {
   if (!user) {
     return (
       <main className="pt-28 pb-16 max-w-3xl mx-auto px-4">
-        <div className="bg-white border border-ink-200 rounded-3xl p-10 text-center card-soft">
+        <div className="bg-white hairline rounded-4xl p-12 text-center card-soft">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center"><Icon name="vault" className="w-8 h-8"/></div>
           <h1 className="mt-5 text-3xl font-extrabold text-ink-900">Sign in to open your vault</h1>
           <p className="mt-3 text-ink-500">Your prescriptions, lab reports, scans and insurance — secured and ABDM-linked.</p>
@@ -1577,7 +1825,7 @@ const VaultPage = ({ onLoginClick }) => {
         <div className="grid lg:grid-cols-12 gap-6 mt-6">
           {/* Profile sidebar */}
           <aside className="lg:col-span-3 space-y-4">
-            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+            <div className="bg-white hairline rounded-3xl p-6">
               <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Vitals</div>
               <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                 <div><div className="text-xs text-ink-500">Height</div><div className="font-semibold">{user.height_cm} cm</div></div>
@@ -1586,19 +1834,19 @@ const VaultPage = ({ onLoginClick }) => {
                 <div><div className="text-xs text-ink-500">Blood</div><div className="font-semibold">{user.blood_group}</div></div>
               </div>
             </div>
-            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+            <div className="bg-white hairline rounded-3xl p-6">
               <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Allergies</div>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {user.allergies.map(a => <Pill key={a} tone="red">{a}</Pill>)}
               </div>
             </div>
-            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+            <div className="bg-white hairline rounded-3xl p-6">
               <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Chronic conditions</div>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {user.chronic.map(c => <Pill key={c} tone="amber">{c}</Pill>)}
               </div>
             </div>
-            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+            <div className="bg-white hairline rounded-3xl p-6">
               <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Emergency contact</div>
               <div className="mt-2 text-sm text-ink-700">{user.emergency_contact.name}</div>
               <div className="text-sm text-ink-500">{user.emergency_contact.phone}</div>
@@ -1607,7 +1855,7 @@ const VaultPage = ({ onLoginClick }) => {
 
           {/* Records area */}
           <div className="lg:col-span-9">
-            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+            <div className="bg-white hairline rounded-3xl p-6">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                   {types.map(t => (
@@ -1628,7 +1876,7 @@ const VaultPage = ({ onLoginClick }) => {
                 {visible.length === 0 ? (
                   <div className="sm:col-span-2 text-center py-12 text-ink-500">No {filter.toLowerCase()} records yet.</div>
                 ) : visible.map(v => (
-                  <div key={v.id} className="border border-ink-200 rounded-2xl p-4 hover:border-brand-400 transition-colors">
+                  <div key={v.id} className="hairline rounded-3xl p-5 transition-colors hover:bg-ink-50/50">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
@@ -1686,13 +1934,13 @@ const ShareVaultModal = ({ items, onClose }) => {
       {step === 1 && (
         <div>
           <Field label="Choose doctor">
-            <select value={doctorId} onChange={e => setDoctorId(e.target.value)} className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm">
+            <select value={doctorId} onChange={e => setDoctorId(e.target.value)} className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white">
               {DATA.doctors.map(d => <option key={d.id} value={d.id}>{d.name} — {d.specialty} ({d.city})</option>)}
             </select>
           </Field>
           <div className="mt-3">
             <div className="text-xs font-semibold uppercase tracking-wide text-ink-500 mb-1.5">Select records ({selected.length} of {items.length})</div>
-            <div className="border border-ink-200 rounded-xl max-h-52 overflow-y-auto">
+            <div className="hairline rounded-2xl max-h-52 overflow-y-auto">
               {items.length === 0 && <div className="p-4 text-sm text-ink-500">No records to share.</div>}
               {items.map(i => (
                 <label key={i.id} className="flex items-start gap-2 p-3 border-b border-ink-100 last:border-b-0 cursor-pointer hover:bg-ink-50">
@@ -1706,7 +1954,7 @@ const ShareVaultModal = ({ items, onClose }) => {
             </div>
           </div>
           <Field label="Access valid for">
-            <select value={hours} onChange={e => setHours(+e.target.value)} className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm">
+            <select value={hours} onChange={e => setHours(+e.target.value)} className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white">
               <option value={24}>24 hours</option>
               <option value={72}>3 days</option>
               <option value={168}>7 days</option>
@@ -1723,7 +1971,7 @@ const ShareVaultModal = ({ items, onClose }) => {
           <div className="w-14 h-14 mx-auto rounded-2xl bg-heal-50 text-heal-600 flex items-center justify-center"><Icon name="check" className="w-7 h-7" strokeWidth={3}/></div>
           <h3 className="mt-4 text-xl font-extrabold text-ink-900">Consent created</h3>
           <p className="mt-1 text-sm text-ink-500">{doc.name} can view {selected.length} record(s) for the next {hours} hours.</p>
-          <div className="mt-3 inline-block bg-ink-50 border border-ink-200 rounded-xl px-3 py-1.5 text-xs font-mono text-ink-700">
+          <div className="mt-3 inline-block bg-ink-100 hairline rounded-full px-3 py-1.5 text-[11px] font-mono text-ink-700">
             consent-artefact: CA-{Date.now().toString(36).toUpperCase()}
           </div>
           <Btn className="mt-5" onClick={() => { c.notify("Consent shared with " + doc.name + "."); onClose(); }}>Done</Btn>
@@ -1743,26 +1991,26 @@ const AddRecordModal = ({ onClose, onSave }) => {
     <Modal onClose={onClose} title="Add a record">
       <div className="space-y-3">
         <Field label="Record type">
-          <select value={type} onChange={e => setType(e.target.value)} className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm">
+          <select value={type} onChange={e => setType(e.target.value)} className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white">
             {["Lab Report","Prescription","Imaging","Vaccination","Insurance"].map(t => <option key={t}>{t}</option>)}
           </select>
         </Field>
         <Field label="Title">
           <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. CBC at Krishna PathLab"
-                 className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/>
+                 className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/>
         </Field>
         <Field label="Source / facility">
           <input value={source} onChange={e => setSource(e.target.value)} placeholder="e.g. Veda Diagnostics"
-                 className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/>
+                 className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/>
         </Field>
         <Field label="Date">
           <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                 className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/>
+                 className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/>
         </Field>
         <Field label="Notes / summary">
           <textarea value={summary} onChange={e => setSummary(e.target.value)} rows={3}
                     placeholder="Key findings or doctor instructions"
-                    className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/>
+                    className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/>
         </Field>
         <Field label="Attach file (demo)">
           <label className="block border-2 border-dashed border-ink-200 rounded-xl p-5 text-center cursor-pointer hover:border-brand-400">
@@ -1795,7 +2043,7 @@ const LoginModal = ({ open, onClose }) => {
   return (
     <Modal onClose={onClose} title="Sign in to MediNext">
       <p className="text-sm text-ink-500">For this demo, sign in as our pre-loaded patient. In production this will connect to ABDM (ABHA) + OTP / Google.</p>
-      <div className="mt-4 p-4 rounded-2xl bg-ink-50 border border-ink-200 flex items-center gap-3">
+      <div className="mt-4 p-4 rounded-3xl bg-ink-100 hairline flex items-center gap-3">
         <Avatar name={DATA.demoPatient.name} hue={DATA.demoPatient.avatar_hue} size={44}/>
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-ink-900">{DATA.demoPatient.name}</div>
@@ -1843,9 +2091,9 @@ const BookingModal = ({ booking, onClose }) => {
       )}
       {step === 2 && (
         <div>
-          <Field label="Patient name"><input value={name} onChange={e => setName(e.target.value)} placeholder="Full name" className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
+          <Field label="Patient name"><input value={name} onChange={e => setName(e.target.value)} placeholder="Full name" className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/></Field>
           <div className="mt-3"/>
-          <Field label="Phone (we'll send OTP)"><input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91" className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
+          <Field label="Phone (we'll send OTP)"><input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91" className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/></Field>
           <div className="mt-5 flex justify-between">
             <Btn variant="ghost" onClick={() => setStep(1)}>Back</Btn>
             <Btn variant="heal" disabled={!name || !phone} onClick={() => setStep(3)}>Confirm booking</Btn>
@@ -1909,7 +2157,7 @@ const StaticPage = ({ title, eyebrow, children }) => (
       </div>
     </div>
     <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 pb-16">
-      <div className="bg-white border border-ink-200 rounded-2xl p-6 sm:p-8">{children}</div>
+      <div className="bg-white hairline rounded-3xl p-7 sm:p-8">{children}</div>
     </section>
   </main>
 );
@@ -1937,9 +2185,9 @@ const ContactPage = () => {
             </ul>
           </div>
           <form onSubmit={e => { e.preventDefault(); c.notify("Message sent."); setSent(true); }} className="space-y-3">
-            <Field label="Your name"><input value={name} onChange={e=>setName(e.target.value)} required className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
-            <Field label="Email"><input type="email" value={email} onChange={e=>setEmail(e.target.value)} required className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
-            <Field label="Message"><textarea value={msg} onChange={e=>setMsg(e.target.value)} required rows={4} className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
+            <Field label="Your name"><input value={name} onChange={e=>setName(e.target.value)} required className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/></Field>
+            <Field label="Email"><input type="email" value={email} onChange={e=>setEmail(e.target.value)} required className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/></Field>
+            <Field label="Message"><textarea value={msg} onChange={e=>setMsg(e.target.value)} required rows={4} className="w-full py-2.5 px-3 rounded-2xl hairline text-sm bg-white"/></Field>
             <Btn type="submit" className="w-full justify-center">Send message</Btn>
           </form>
         </div>
@@ -1960,7 +2208,7 @@ const ListWithUsPage = () => (
           <li className="flex items-start gap-2"><Icon name="check" className="w-4 h-4 text-heal-500 mt-0.5"/> Free for the first 12 months</li>
         </ul>
       </div>
-      <div className="bg-ink-50 border border-ink-200 rounded-2xl p-5">
+      <div className="panel-cream hairline rounded-3xl p-6">
         <div className="font-bold text-ink-900">Get a callback</div>
         <p className="text-sm text-ink-500 mt-1">A partnerships manager will reach out within 24 hours.</p>
         <a href="#/contact" className="mt-4 inline-flex"><Btn>Request a callback</Btn></a>

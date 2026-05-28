@@ -302,6 +302,289 @@ const portraitFor = (doc) => {
   return `https://i.pravatar.cc/600?img=${id}`;
 };
 
+/* ─── Community config (WhatsApp deep-links) ────────────────── */
+const WA_NUMBER = "917408344401"; // +91 7408344401 — founder line for community joins
+const waLink = (msg) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+/* ─── Community data ────────────────────────────────────────── */
+const COMMUNITIES = [
+  {
+    slug: "cancer-warriors", name: "Cancer Warriors",
+    tagline: "Beating cancer, together.",
+    desc: "A peer-support circle for survivors, patients in active treatment, and primary caregivers. Trauma-informed, doctor-moderated, never paid.",
+    members: 1240, growth: "+62 this week",
+    moderator_doctor_id: "d7", icon: "heart", hue: 340,
+    cover_id: "1576091160550-2173dba999ef",
+    threads: [
+      "Immunotherapy at TMH Mumbai — what to expect (week-by-week)",
+      "How I won my Star Health denied claim. Sharing the appeal letter.",
+      "Coping with chemo nausea: 6 things that actually worked"
+    ]
+  },
+  {
+    slug: "diabetes-warriors", name: "Diabetes Warriors",
+    tagline: "Live well with T1, T2, and pre-diabetes.",
+    desc: "Daily check-ins, low-glycemic meal swaps, CGM tips, insulin pricing hacks, and weekly Q&A with an endocrinologist.",
+    members: 3140, growth: "+118 this week",
+    moderator_doctor_id: "d12", icon: "shield", hue: 50,
+    cover_id: "1559757175-5700dde675bc",
+    threads: [
+      "Is Ozempic worth it at ₹15K/month in India? Cost vs outcomes.",
+      "Best Indian breakfast for HbA1c < 6.5 — community recipes",
+      "CGM brands compared: Libre vs Dexcom vs Abbott Glow"
+    ]
+  },
+  {
+    slug: "ivf-journey", name: "IVF Journey",
+    tagline: "You're not alone. We've been there.",
+    desc: "For couples on the IVF / ICSI / IUI path. Anonymous mode available. Real clinic reviews, real cycle costs, real outcomes.",
+    members: 870, growth: "+34 this week",
+    moderator_doctor_id: "d2", icon: "heart", hue: 320,
+    cover_id: "1666214280391-8ff5bd3c0bf0",
+    threads: [
+      "FET cycle 3 — finally a positive. AMA from someone who's been through it all.",
+      "Why I switched clinics after cycle 2 — read this before signing your package",
+      "Insurance for IVF in India: which policies actually cover what (2026)"
+    ]
+  },
+  {
+    slug: "post-cardiac", name: "Post-Cardiac Recovery",
+    tagline: "Life after a cardiac event.",
+    desc: "Stent, bypass, heart-attack survivors. Cardiac rehab tips, exercise protocols, medication management, and emotional recovery.",
+    members: 620, growth: "+27 this week",
+    moderator_doctor_id: "d1", icon: "heart", hue: 0,
+    cover_id: "1631815589968-fdb09a223b1e",
+    threads: [
+      "Walking after CABG: a 12-week return-to-fitness protocol from real survivors",
+      "Statin side effects vs benefits — what my cardiologist won't say",
+      "Cost of cardiac rehab in India: ₹45K vs ₹2.5L — what's actually different?"
+    ]
+  },
+  {
+    slug: "mental-health", name: "Mental Health Circle",
+    tagline: "It's okay not to be okay.",
+    desc: "Anxiety, depression, bipolar, OCD, ADHD. Anonymous-first. Peer support + verified psychiatrist office hours every Sunday.",
+    members: 2410, growth: "+204 this week",
+    moderator_doctor_id: "d11", icon: "heart", hue: 140,
+    cover_id: "1614935151651-0bea6508db6b",
+    threads: [
+      "Therapy in India: how to find an affordable, queer-affirming therapist",
+      "Coming off SSRIs without disaster — what the literature actually says",
+      "ADHD diagnosis as an adult in India — my full timeline and bills"
+    ]
+  },
+  {
+    slug: "mom-to-be", name: "Mom-to-Be",
+    tagline: "Pregnant in India. Informed and unafraid.",
+    desc: "Hospital reviews, doula recommendations, real bill ranges, C-section rates, breastfeeding support. Run by mothers, with OBGYNs on call.",
+    members: 4180, growth: "+312 this week",
+    moderator_doctor_id: "d2", icon: "heart", hue: 280,
+    cover_id: "1551076805-e1869033e561",
+    threads: [
+      "Why I picked a hospital with a 12% C-section rate (and how to find one)",
+      "True maternity cost across 8 Mumbai hospitals — crowdsourced spreadsheet",
+      "Doula vs midwife vs OB: who actually does what in India?"
+    ]
+  }
+];
+
+/* ─── Treatment journals (seed feed) ─────────────────────────── */
+const JOURNALS = [
+  {
+    id: "j1", slug: "vbac-at-lotus-bandra",
+    title: "VBAC after a previous C-section — Lotus Women & Child, Bandra",
+    author: "Priya R.", anon: false, when: "3 weeks ago",
+    hospital_slug: "lotus-women-child-mumbai", doctor_slug: "dr-meera-iyer",
+    procedure: "VBAC delivery", duration: "9 months prenatal + 18h labour",
+    bill_quoted: 110000, bill_final: 142000, insurance_paid: 95000, oop: 47000,
+    outcome: "Successful natural delivery", outcome_score: 5,
+    what_worked: "Doula support throughout. Clear pre-op briefing. Dr. Meera did NOT push for elective C-section like my previous hospital did.",
+    what_didnt: "Two surprise charges in the final bill — ₹3,200 biomedical waste fee and ₹500 ID-card fee that weren't in the package. Got them removed after asking.",
+    advice: "Demand the itemized package list IN WRITING before admission. Ask explicitly: 'What is NOT included?'",
+    image_id: "1551076805-e1869033e561", hue: 340
+  },
+  {
+    id: "j2", slug: "stent-at-ganga-cardiac",
+    title: "Heart attack at 38. Stent placement at Ganga Cardiac, Bangalore.",
+    author: "Anonymous", anon: true, when: "6 weeks ago",
+    hospital_slug: "ganga-cardiac-bangalore", doctor_slug: "dr-rohit-bhalla",
+    procedure: "PCI with 2 drug-eluting stents", duration: "Emergency admission, 4-day stay",
+    bill_quoted: 0, bill_final: 285000, insurance_paid: 250000, oop: 35000,
+    outcome: "Full recovery, back to work in 6 weeks", outcome_score: 5,
+    what_worked: "Door-to-balloon time was under 45 minutes. Cath lab was ready. Dr. Bhalla explained every step in plain language to my wife.",
+    what_didnt: "₹18,000 in 'misc consumables' on the bill, never itemized. Took me 9 days of follow-ups to get a line-item breakdown.",
+    advice: "If you have any chest discomfort lasting >10 minutes, GO. Don't wait. I almost waited. Don't be me.",
+    image_id: "1631815589968-fdb09a223b1e", hue: 0
+  },
+  {
+    id: "j3", slug: "ivf-3-cycles",
+    title: "3 cycles, 2 clinics, one baby. What I'd tell my younger self.",
+    author: "Anonymous", anon: true, when: "2 months ago",
+    hospital_slug: "ananta-fertility-delhi", doctor_slug: "dr-tara-mathew",
+    procedure: "IVF with PGT-A", duration: "11 months across 3 cycles",
+    bill_quoted: 280000, bill_final: 720000, insurance_paid: 0, oop: 720000,
+    outcome: "Pregnancy in cycle 3, baby born healthy", outcome_score: 5,
+    what_worked: "Switching to Ananta after a failed first clinic. Dr. Tara is genuinely transparent about per-cycle success rates by age.",
+    what_didnt: "First clinic upsold ICSI, assisted hatching, and embryo glue when none were medically indicated. Cost me ₹2.4L extra with zero outcome benefit.",
+    advice: "Ask EVERY recommended add-on: 'Show me the evidence this improves my live-birth rate for my profile.' If they can't, it's marketing.",
+    image_id: "1666214280391-8ff5bd3c0bf0", hue: 320
+  },
+  {
+    id: "j4", slug: "knee-replacement-neelkanth",
+    title: "Robotic knee replacement at 62 — Neel Kanth Ortho, Chennai",
+    author: "Ramesh K.", anon: false, when: "5 weeks ago",
+    hospital_slug: "neel-kanth-orthopaedics-chennai", doctor_slug: "dr-karthik-balaji",
+    procedure: "Total knee replacement (robotic)", duration: "5-day stay + 6 weeks rehab",
+    bill_quoted: 320000, bill_final: 348000, insurance_paid: 300000, oop: 48000,
+    outcome: "Walking unassisted in 4 weeks. Pain-free in 8.", outcome_score: 5,
+    what_worked: "Robotic precision was real, not marketing. Same-day mobilization. Physiotherapy plan was excellent.",
+    what_didnt: "Hospital pharmacy meds were 1.6x the price of outside. They didn't allow outside medicines during stay.",
+    advice: "Get a SECOND opinion before agreeing to knee replacement. 30% of recommendations don't need surgery yet.",
+    image_id: "1571772996211-2f02c9727629", hue: 220
+  },
+  {
+    id: "j5", slug: "cataract-at-marwar",
+    title: "Cataract surgery for my mom — Marwar Eye, Jaipur",
+    author: "Anjali D.", anon: false, when: "1 week ago",
+    hospital_slug: "marwar-eye-jaipur", doctor_slug: "dr-isha-sharma",
+    procedure: "Phacoemulsification + premium IOL", duration: "Day care, 30 minutes",
+    bill_quoted: 65000, bill_final: 65000, insurance_paid: 55000, oop: 10000,
+    outcome: "Mom can read again without glasses", outcome_score: 5,
+    what_worked: "Pricing was upfront. No upselling. The premium IOL was offered with clear cost-benefit (we chose it, mom is delighted).",
+    what_didnt: "Nothing material. Honestly the smoothest hospital experience I've had.",
+    advice: "For routine eye surgery, smaller specialty hospitals often beat the big chains on outcome and pricing.",
+    image_id: "1559757148-5c350d0d3c56", hue: 190
+  },
+  {
+    id: "j6", slug: "depression-recovery",
+    title: "Two years out of severe depression. Here's the bill, the meds, the truth.",
+    author: "Anonymous", anon: true, when: "4 days ago",
+    hospital_slug: "prana-wellness-bangalore", doctor_slug: "dr-vivek-malhotra",
+    procedure: "Outpatient psychiatry + therapy", duration: "24 months ongoing",
+    bill_quoted: 0, bill_final: 156000, insurance_paid: 22000, oop: 134000,
+    outcome: "Functional, working, sleeping, hopeful", outcome_score: 5,
+    what_worked: "Dr. Vivek's slow, trauma-informed approach. He didn't rush to medication. When he did prescribe, he explained why and what to expect.",
+    what_didnt: "Indian insurance still covers mental health badly. ₹22K out of ₹1.56L is shameful. IRDAI mandate isn't enforced.",
+    advice: "If you're struggling: it gets better, but it takes longer than you think. Budget for therapy. Treat it like a non-negotiable.",
+    image_id: "1614935151651-0bea6508db6b", hue: 140
+  }
+];
+
+/* ─── Doctor Q&A (seed forum) ────────────────────────────────── */
+const QA = [
+  {
+    id: "q1", slug: "vitamin-d-annual",
+    title: "Is annual Vitamin D testing actually necessary for healthy Indian adults?",
+    asked_by: "Anonymous", when: "5 days ago", upvotes: 47, answers_count: 1,
+    tags: ["Preventive care", "Vitamin D", "Lab tests"],
+    body: "My GP orders Vit D, B12, full lipid every year. My HR-led corporate health check too. Am I being over-tested, or is this evidence-based?",
+    answer: {
+      doctor_id: "d9",
+      body: "Short answer: for most healthy Indian adults with normal sun exposure, annual screening is not evidence-based. The ICMR 2022 advisory and Endocrine Society 2023 guidance recommend testing only if you have risk factors — limited sun exposure, dark skin, exclusively vegan diet, malabsorption, age >65, osteoporosis, or unexplained fatigue. If you've been treated for deficiency, retest once at 3 months. After that, supplement maintenance dose and skip the test. Corporate panels test annually because labs sell more tests — not because patients benefit.",
+      citations: ["ICMR Dietary Guidelines 2022", "Endocrine Society Clinical Practice Guideline 2023", "JAMA Network Open 2021"],
+      upvotes: 89, when: "3 days ago"
+    }
+  },
+  {
+    id: "q2", slug: "csection-rate-question",
+    title: "My hospital has a 65% C-section rate. Should I switch at 30 weeks?",
+    asked_by: "Pregnant in Pune", when: "2 days ago", upvotes: 124, answers_count: 1,
+    tags: ["Maternity", "C-section", "Hospital choice"],
+    body: "I'm 30 weeks. Loved my obstetrician but found out the hospital's overall C-section rate is 65%. WHO says 10-15%. Is switching risky this late?",
+    answer: {
+      doctor_id: "d2",
+      body: "Honest answer: a 65% C-section rate is a serious red flag and yes, you can absolutely switch at 30 weeks — many obstetricians take transfers up to 36 weeks. The C-section rate alone doesn't tell you the WHY (referral hospital, high-risk pregnancies). But also ask: what is YOUR obstetrician's personal rate? What's the rate for low-risk primigravidas at this hospital? If the answer is also >40%, that's an institutional pattern, not patient risk. Take your scans, blood work, and ANC chart with you to your new consult. Prioritize hospitals with a documented VBAC and trial-of-labour policy.",
+      citations: ["WHO Statement on Caesarean Section Rates 2015", "FOGSI guidance 2021", "NEJM 2018 — Indication for Cesarean Delivery"],
+      upvotes: 187, when: "1 day ago"
+    }
+  },
+  {
+    id: "q3", slug: "generic-vs-brand-meds",
+    title: "My doctor prescribed Crocin 650 but Jan Aushadhi has paracetamol for 1/10th the price. Is it actually the same?",
+    asked_by: "Vikram, Hyderabad", when: "1 week ago", upvotes: 89, answers_count: 1,
+    tags: ["Generics", "Pricing", "Medications"],
+    body: "Crocin 650 strip costs ₹35. Jan Aushadhi paracetamol 650 is ₹4 for 10 tabs. Is there any quality difference? Why does every doctor write brand names?",
+    answer: {
+      doctor_id: "d9",
+      body: "Crocin is just paracetamol with a brand wrapper. CDSCO regulates both brand and generic paracetamol identically — same active ingredient, same purity standards. The price difference is purely marketing + distribution margin. Jan Aushadhi medicines are bioequivalent. The reason most doctors write brand names: (1) habit and memory ('Crocin' is shorter than the molecule), (2) some doctors have referral arrangements with chemists, (3) some patients distrust generics because they're cheaper (sad but real). Ask your doctor to write the salt name (paracetamol) — they are legally required to do so under the NMC Code of Ethics 2002 (Regulation 1.5).",
+      citations: ["NMC Code of Ethics Regulation 1.5", "CDSCO bioequivalence guidelines 2019", "Lancet 2018 — Generics in India"],
+      upvotes: 134, when: "6 days ago"
+    }
+  },
+  {
+    id: "q4", slug: "knee-pain-mri",
+    title: "GP says I need an MRI for knee pain. Is this needed for routine knee pain?",
+    asked_by: "Anita M.", when: "4 days ago", upvotes: 31, answers_count: 1,
+    tags: ["Imaging", "Orthopaedics", "Over-testing"],
+    body: "I'm 47, recently started knee pain when climbing stairs. No injury. GP wants ₹8,500 MRI. Necessary?",
+    answer: {
+      doctor_id: "d5",
+      body: "For routine knee pain without trauma, lock-up, instability, or fever — MRI is NOT first-line. Start with a clinical exam, basic X-rays (₹400), and a 4-6 week trial of physiotherapy + NSAIDs + activity modification. MRI is indicated only if symptoms persist beyond 6 weeks OR you have specific red flags (locking, giving way, post-trauma swelling, night pain, weight loss). Over 50% of asymptomatic adults over 45 have 'abnormal' findings on knee MRI that aren't clinically meaningful. Get the X-ray and a physio consult first.",
+      citations: ["AAOS Clinical Practice Guidelines 2021", "BMJ 2018 — When to image the knee"],
+      upvotes: 56, when: "3 days ago"
+    }
+  },
+  {
+    id: "q5", slug: "thyroid-routine",
+    title: "TSH is 4.2 (range 0.4-4.5). Doctor put me on Thyronorm. Is this needed?",
+    asked_by: "Anonymous", when: "6 days ago", upvotes: 64, answers_count: 1,
+    tags: ["Endocrinology", "Thyroid", "Over-medication"],
+    body: "No symptoms. TSH on routine check is 4.2 mIU/L. T3 and T4 are normal. Doctor prescribed Thyronorm 25 mcg lifelong. Is this evidence-based?",
+    answer: {
+      doctor_id: "d12",
+      body: "TSH 4.2 with normal T3/T4 and NO symptoms is 'subclinical hypothyroidism' at the upper edge of normal. Most international guidelines (American Thyroid Association 2014, NICE 2019) recommend NOT treating subclinical hypothyroidism in asymptomatic adults under 65 unless TSH is >10, OR you're pregnant or trying to conceive. The recommendation: repeat TSH in 6-8 weeks (it fluctuates). If still 4-7 and asymptomatic, monitor annually. Lifelong levothyroxine for TSH 4.2 in an asymptomatic person is over-treatment. Get a second opinion.",
+      citations: ["ATA 2014 Subclinical Hypothyroidism Guidelines", "NICE NG145 (2019)", "JAMA 2019 — Over-treatment of mild hypothyroidism"],
+      upvotes: 102, when: "4 days ago"
+    }
+  },
+  {
+    id: "q6", slug: "second-opinion-cancer",
+    title: "Diagnosed with early breast cancer. Hospital is pushing immediate surgery. Should I seek second opinion?",
+    asked_by: "Anonymous", when: "2 days ago", upvotes: 198, answers_count: 1,
+    tags: ["Cancer", "Second opinion", "Decision-making"],
+    body: "Diagnosed yesterday. Stage 1 invasive ductal carcinoma. Hospital says lumpectomy + radiation, schedule next week. I feel rushed.",
+    answer: {
+      doctor_id: "d7",
+      body: "Stage 1 IDC is highly curable (>95% 5-year survival) and you absolutely have time — typically 2-4 weeks of planning is normal and recommended. Always seek a second opinion for any new cancer diagnosis. Specifically ask the second oncologist: (1) Should I get Oncotype DX or MammaPrint testing? This can spare 70% of patients from chemotherapy. (2) Lumpectomy vs mastectomy — what are MY specific risk numbers? (3) Sentinel node biopsy timing. (4) Genetic testing (BRCA) — if positive, it changes everything for you and your family. Take your slides, scans, and pathology report to a comprehensive cancer centre. Do not let anyone rush you.",
+      citations: ["NCCN Breast Cancer Guidelines 2025", "ASCO Choosing Wisely", "Lancet Oncology 2023 — De-escalation in early breast cancer"],
+      upvotes: 287, when: "1 day ago"
+    }
+  }
+];
+
+/* ─── Most Transparent Hospital Awards 2026 ──────────────────── */
+const AWARDS_2026 = {
+  year: 2026,
+  ceremony_when: "March 15, 2026",
+  ceremony_where: "Hyatt Regency, New Delhi",
+  nominations_close: "January 31, 2026",
+  categories: [
+    { name: "Pricing Transparency", icon: "rupee", desc: "Hospitals publishing binding estimates and itemized bills before admission." },
+    { name: "Outcome Disclosure", icon: "shield", desc: "Public infection rates, mortality rates, readmission rates, and patient-reported outcomes." },
+    { name: "Lowest C-Section Rate", icon: "heart", desc: "Maternity hospitals closest to the WHO 10–15% target without compromising safety." },
+    { name: "Insurance Honesty", icon: "check", desc: "Lowest pre-auth turnaround time and lowest claim rejection rate." },
+    { name: "Patient Communication", icon: "chat", desc: "Best discharge summaries, informed-consent processes, and complaint response." }
+  ],
+  jury: [
+    { name: "Dr. Soumya Swaminathan", role: "Former Chief Scientist, WHO", hue: 200 },
+    { name: "Sucheta Dalal", role: "Investigative journalist, Moneylife", hue: 320 },
+    { name: "Dr. Yogesh Jain", role: "Co-founder, Jan Swasthya Sahyog", hue: 50 },
+    { name: "Adv. Anant Bhan", role: "Bioethics researcher", hue: 280 }
+  ]
+};
+
+/* ─── Patient Power advocate cities ──────────────────────────── */
+const ADVOCATE_CITIES = [
+  { city: "Mumbai", advocates: 12, openings: 4, monthly_hours: 15 },
+  { city: "Delhi NCR", advocates: 18, openings: 5, monthly_hours: 15 },
+  { city: "Bangalore", advocates: 8, openings: 4, monthly_hours: 12 },
+  { city: "Hyderabad", advocates: 6, openings: 3, monthly_hours: 12 },
+  { city: "Chennai", advocates: 5, openings: 3, monthly_hours: 12 },
+  { city: "Pune", advocates: 4, openings: 2, monthly_hours: 10 },
+  { city: "Kolkata", advocates: 4, openings: 3, monthly_hours: 10 },
+  { city: "Ahmedabad", advocates: 3, openings: 2, monthly_hours: 10 }
+];
+
 /* ─── tiny icon set (SVG, no dep) ─────────────────────────────── */
 const Icon = ({ name, className = "w-5 h-5", strokeWidth = 1.8 }) => {
   const paths = {
@@ -563,7 +846,8 @@ const Navbar = ({ onLoginClick }) => {
     { label: "Doctors", href: "#/doctors" },
     { label: "Diagnostics", href: "#/pathology" },
     { label: "Pharmacies", href: "#/pharmacies" },
-    { label: "Patient Vault", href: "#/vault" }
+    { label: "Community", href: "#/community" },
+    { label: "Vault", href: "#/vault" }
   ];
 
   const navText = overlay ? "text-white/80 hover:text-white" : "text-ink-700 hover:text-ink-900";
@@ -673,12 +957,13 @@ const Footer = () => (
           </ul>
         </div>
         <div>
-          <div className="text-[12px] font-semibold text-ink-900 mb-3">For patients</div>
+          <div className="text-[12px] font-semibold text-ink-900 mb-3">Community</div>
           <ul className="space-y-2.5 text-[13px] text-ink-600">
-            <li><a href="#/vault" className="hover:text-ink-900">Health vault</a></li>
-            <li><a href="#/pathology" className="hover:text-ink-900">Book lab tests</a></li>
-            <li><a href="#/doctors" className="hover:text-ink-900">Video consults</a></li>
-            <li><a href="tel:102" className="hover:text-ink-900">Emergency · 102</a></li>
+            <li><a href="#/community" className="hover:text-ink-900">Communities</a></li>
+            <li><a href="#/journals" className="hover:text-ink-900">Treatment journals</a></li>
+            <li><a href="#/qa" className="hover:text-ink-900">Verified Q&A</a></li>
+            <li><a href="#/awards" className="hover:text-ink-900">Transparency Awards</a></li>
+            <li><a href="#/patient-power" className="hover:text-ink-900">Patient Power</a></li>
           </ul>
         </div>
         <div>
@@ -1037,6 +1322,47 @@ const HomePage = ({ onLoginClick }) => {
                       <span className="text-brand-300">View all</span>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* COMMUNITY BILLBOARD */}
+      <section className="pt-32 pb-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <div className="bg-white hairline rounded-5xl card-soft overflow-hidden">
+              <div className="grid lg:grid-cols-5 gap-0">
+                <div className="lg:col-span-3 p-10 sm:p-14">
+                  <div className="eyebrow">Community</div>
+                  <h3 className="mt-3 display-lg">
+                    Healthcare is better,<br/>
+                    <span className="gradient-text italic font-serif font-normal">together.</span>
+                  </h3>
+                  <p className="mt-5 text-[17px] leading-relaxed text-ink-600 max-w-md">
+                    {COMMUNITIES.length} doctor-moderated communities on WhatsApp. Real treatment journals. Verified doctor Q&A. The Most Transparent Hospital Awards. Boots on the ground in {ADVOCATE_CITIES.length} cities.
+                  </p>
+                  <div className="mt-8 flex items-center gap-5 flex-wrap">
+                    <Btn as="a" href="#/community" size="lg">Explore communities</Btn>
+                    <a href="#/journals" className="text-[15px] font-medium text-brand-600 inline-flex items-center gap-1">Read journals <Icon name="arrowRight" className="w-4 h-4"/></a>
+                  </div>
+                  <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-ink-500">
+                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> {COMMUNITIES.reduce((a,c) => a + c.members, 0).toLocaleString()} patients</span>
+                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Anonymous-friendly</span>
+                    <span className="inline-flex items-center gap-1.5"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> No paid placements</span>
+                  </div>
+                </div>
+                <div className="lg:col-span-2 p-6 sm:p-8 bg-ink-100 grid grid-cols-2 gap-3">
+                  {COMMUNITIES.slice(0,4).map((c, i) => (
+                    <a key={c.slug} href={`#/community/${c.slug}`}
+                       className="block rounded-2xl bg-white p-4 hairline card-soft">
+                      <div className="w-10 h-10 rounded-xl avatar-gradient" style={{ '--h': c.hue }}/>
+                      <div className="mt-3 text-[14px] font-semibold text-ink-900 tracking-apple-tight leading-tight">{c.name}</div>
+                      <div className="text-[11px] text-ink-500 mt-0.5">{c.members.toLocaleString()} members</div>
+                    </a>
+                  ))}
                 </div>
               </div>
             </div>
@@ -2658,6 +2984,934 @@ const PrivacyPage = () => (
   </StaticPage>
 );
 
+/* ─── COMMUNITY PAGES ──────────────────────────────────────── */
+
+// shared "join on WhatsApp" button
+const WAJoinBtn = ({ msg, label = "Join on WhatsApp", size = "lg", variant = "heal", className = "" }) => (
+  <Btn as="a" target="_blank" rel="noreferrer" href={waLink(msg)} variant={variant} size={size} className={className}>
+    <Icon name="chat" className="w-4 h-4"/> {label}
+  </Btn>
+);
+
+// COMMUNITY LANDING (/community)
+const CommunityHome = () => (
+  <main>
+    {/* Hero */}
+    <section className="relative pt-24 pb-20 hero-bg overflow-hidden">
+      <div className="absolute inset-0 hero-grid pointer-events-none"/>
+      <div className="absolute -top-32 left-1/4 w-[520px] h-[520px] rounded-full bg-brand-500/20 blur-3xl pointer-events-none"/>
+      <div className="absolute top-1/3 right-1/4 w-[420px] h-[420px] rounded-full bg-heal-500/15 blur-3xl pointer-events-none float-slow"/>
+
+      <nav className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-8" aria-label="Breadcrumb">
+        <div className="text-[12px] text-white/60 flex items-center gap-2">
+          <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+          <span className="text-white/30">/</span>
+          <span className="text-white">Community</span>
+        </div>
+      </nav>
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="eyebrow !text-white/60 mb-4">Community</div>
+        <h1 className="display-xl text-white">
+          Healthcare is better,<br/>
+          <span className="gradient-text-bright italic font-serif font-normal">together.</span>
+        </h1>
+        <p className="mt-6 text-[19px] leading-[1.45] text-white/70 max-w-2xl mx-auto font-light">
+          {COMMUNITIES.length} doctor-moderated communities. {JOURNALS.length}+ real treatment journeys. {QA.length}+ verified-doctor answers. No ads, no paid placements — ever.
+        </p>
+        <div className="mt-9 flex items-center justify-center gap-5 flex-wrap">
+          <Btn as="a" href="#/journals" variant="accent" size="lg">Read treatment journals</Btn>
+          <a href="#/qa" className="text-[15px] font-medium text-brand-300 hover:text-brand-200 inline-flex items-center gap-1">
+            Ask a verified doctor <Icon name="arrowRight" className="w-4 h-4"/>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    {/* The 5 pillars */}
+    <section className="bg-white border-y border-ink-200/60">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-ink-200/60">
+        {[
+          { v: COMMUNITIES.reduce((a,c) => a + c.members, 0).toLocaleString(), l: "Patients" },
+          { v: COMMUNITIES.length, l: "Communities" },
+          { v: JOURNALS.length + "+", l: "Journeys shared" },
+          { v: QA.length + "+", l: "Doctor answers" },
+          { v: ADVOCATE_CITIES.length, l: "Cities" }
+        ].map((s,i) => (
+          <div key={s.l} className={`text-center py-4 md:py-2 ${i ? 'md:px-4' : 'md:pr-4'}`}>
+            <div className="text-[28px] sm:text-[34px] font-semibold text-ink-900 tracking-tightest">{s.v}</div>
+            <div className="text-[12px] text-ink-500 mt-1">{s.l}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* DISEASE COMMUNITIES */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+      <Reveal>
+        <SectionTitle
+          eyebrow="Communities"
+          title="Find your people."
+          accent="By condition. By chapter."
+          sub="Anonymous-friendly. Moderated by patient advocates and verified doctors. Available on WhatsApp."
+        />
+      </Reveal>
+      <div className="grid md:grid-cols-2 gap-4">
+        {COMMUNITIES.map((c, i) => {
+          const mod = DATA.doctors.find(d => d.id === c.moderator_doctor_id);
+          return (
+            <Reveal key={c.slug} delay={i * 60}>
+              <a href={`#/community/${c.slug}`}
+                 className="block bg-white hairline rounded-4xl overflow-hidden card-soft h-full">
+                <SmartImage src={UNSPLASH(c.cover_id, 1200, 70)} hue={c.hue} className="h-40 relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"/>
+                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-[11px] font-semibold text-ink-900">{c.members.toLocaleString()} members</div>
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-heal-500/85 backdrop-blur-md text-[11px] font-medium text-white inline-flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/> {c.growth}
+                  </div>
+                </SmartImage>
+                <div className="p-7">
+                  <h3 className="display-sm text-ink-900">{c.name}</h3>
+                  <p className="mt-1 text-[15px] text-ink-600">{c.tagline}</p>
+                  <p className="mt-3 text-[13px] text-ink-500 line-clamp-2">{c.desc}</p>
+                  {mod && (
+                    <div className="mt-5 flex items-center gap-3 p-3 rounded-2xl bg-ink-100">
+                      <SmartImage src={portraitFor(mod)} hue={mod.image_hue} className="w-10 h-10 rounded-xl shrink-0"/>
+                      <div className="min-w-0">
+                        <div className="text-[11px] text-ink-500 uppercase tracking-wide">Moderator</div>
+                        <div className="text-[13px] font-medium text-ink-900 truncate">{mod.name} · {mod.specialty}</div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-5 flex items-center justify-between">
+                    <span className="text-[12px] text-ink-500">{c.threads.length} active threads</span>
+                    <span className="text-[13px] font-medium text-brand-600 inline-flex items-center gap-1">Open <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+                  </div>
+                </div>
+              </a>
+            </Reveal>
+          );
+        })}
+      </div>
+    </section>
+
+    {/* TREATMENT JOURNALS */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+      <Reveal>
+        <SectionTitle
+          eyebrow="Treatment journals"
+          title="Real journeys."
+          accent="Real bills. Real outcomes."
+          sub="The truth your hospital won't tell you — from patients who've been there."
+          action={<a href="#/journals" className="text-[14px] font-medium text-brand-600 inline-flex items-center gap-1">Read all journals <Icon name="arrowRight" className="w-4 h-4"/></a>}
+        />
+      </Reveal>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {JOURNALS.slice(0,3).map((j, i) => (
+          <Reveal key={j.id} delay={i * 60}><JournalCard journal={j}/></Reveal>
+        ))}
+      </div>
+    </section>
+
+    {/* Q&A FORUM */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+      <Reveal>
+        <SectionTitle
+          eyebrow="Verified Q&A"
+          title="Ask. Get a real answer."
+          accent="From a real doctor."
+          sub="Every answer is from a verified, licensed doctor — with citations."
+          action={<a href="#/qa" className="text-[14px] font-medium text-brand-600 inline-flex items-center gap-1">Browse all questions <Icon name="arrowRight" className="w-4 h-4"/></a>}
+        />
+      </Reveal>
+      <div className="space-y-3">
+        {QA.slice(0,3).map((q, i) => (
+          <Reveal key={q.id} delay={i * 50}><QAListItem q={q}/></Reveal>
+        ))}
+      </div>
+    </section>
+
+    {/* AWARDS PROMO */}
+    <section className="pt-24 pb-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Reveal>
+          <a href="#/awards" className="relative block overflow-hidden rounded-5xl hero-bg text-white">
+            <div className="absolute inset-0 hero-grid"/>
+            <div className="absolute -top-24 -right-24 w-[500px] h-[500px] rounded-full bg-amber-500/20 blur-3xl"/>
+            <div className="relative p-10 sm:p-14 grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <div className="eyebrow !text-amber-300/80">Awards · {AWARDS_2026.year}</div>
+                <h3 className="mt-3 display-lg">
+                  Most Transparent<br/>
+                  <span className="gradient-text-bright italic font-serif font-normal">Hospital Awards.</span>
+                </h3>
+                <p className="mt-5 text-[16px] text-white/70 max-w-md">
+                  {AWARDS_2026.ceremony_when} · {AWARDS_2026.ceremony_where}. {AWARDS_2026.categories.length} categories. Independent jury. Nominate the hospital that earned your trust.
+                </p>
+                <div className="mt-7 inline-flex items-center gap-2 text-[14px] font-medium text-amber-300">
+                  See categories & nominate <Icon name="arrowRight" className="w-4 h-4"/>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 max-w-md ml-auto">
+                {AWARDS_2026.categories.slice(0, 4).map(c => (
+                  <div key={c.name} className="rounded-2xl bg-white/[0.06] border border-white/10 p-4 backdrop-blur-md">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center"><Icon name={c.icon} className="w-4 h-4"/></div>
+                    <div className="mt-3 text-[13px] font-medium text-white">{c.name}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </a>
+        </Reveal>
+      </div>
+    </section>
+
+    {/* PATIENT POWER PROMO */}
+    <section className="pt-12 pb-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Reveal>
+          <div className="bg-white rounded-5xl hairline card-soft p-10 sm:p-14 grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <div className="eyebrow">Patient Power</div>
+              <h3 className="mt-3 display-md">Boots on the ground. <span className="text-ink-500 font-normal">In every metro.</span></h3>
+              <p className="mt-5 text-[16px] text-ink-600 max-w-md">
+                Become a MediNext patient advocate. Help patients navigate bills, claims, second opinions, and complaints — in your city.
+              </p>
+              <div className="mt-7"><Btn as="a" href="#/patient-power" variant="primary" size="lg">Apply to be an advocate</Btn></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {ADVOCATE_CITIES.slice(0,4).map(c => (
+                <div key={c.city} className="rounded-2xl bg-ink-100 hairline p-4">
+                  <div className="text-[14px] font-semibold text-ink-900">{c.city}</div>
+                  <div className="text-[12px] text-ink-500 mt-0.5">{c.advocates} advocates · {c.openings} openings</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  </main>
+);
+
+// COMMUNITY DETAIL (/community/:slug)
+const CommunityDetail = ({ slug }) => {
+  const c = COMMUNITIES.find(x => x.slug === slug);
+  if (!c) return <NotFound/>;
+  const mod = DATA.doctors.find(d => d.id === c.moderator_doctor_id);
+  const joinMsg = `Hi MediNext! I want to join the ${c.name} community.\n\nA bit about me:\n\nThanks!`;
+
+  return (
+    <main className="-mt-px">
+      {/* Cover */}
+      <section className="relative">
+        <SmartImage src={UNSPLASH(c.cover_id, 1600, 75)} hue={c.hue} className="w-full h-[52vh] min-h-[360px] max-h-[620px]"/>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"/>
+        <nav className="absolute top-16 inset-x-0 z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-[12px] text-white/70 flex items-center gap-2 flex-wrap" aria-label="Breadcrumb">
+          <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+          <span className="text-white/40">/</span>
+          <a href="#/community" className="hover:text-white">Community</a>
+          <span className="text-white/40">/</span>
+          <span className="text-white">{c.name}</span>
+        </nav>
+        <div className="absolute bottom-0 inset-x-0 pb-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <div className="flex flex-wrap items-center gap-1.5 mb-4">
+              <span className="text-[11px] font-medium bg-white/15 backdrop-blur-md text-white border border-white/15 px-3 py-1 rounded-full">{c.members.toLocaleString()} members</span>
+              <span className="text-[11px] font-medium bg-heal-500/20 backdrop-blur-md text-heal-300 border border-heal-400/30 px-3 py-1 rounded-full">{c.growth}</span>
+              <span className="text-[11px] font-medium bg-white/15 backdrop-blur-md text-white border border-white/15 px-3 py-1 rounded-full">Doctor-moderated</span>
+            </div>
+            <h1 className="display-lg">{c.name}</h1>
+            <p className="mt-3 text-[16px] text-white/80 max-w-2xl">{c.tagline}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">About this community</div>
+                <h2 className="display-sm">{c.tagline}</h2>
+                <p className="mt-4 text-[15px] leading-relaxed text-ink-700">{c.desc}</p>
+                <div className="mt-6 grid sm:grid-cols-3 gap-3">
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[24px] font-semibold text-ink-900 tracking-tightest">{c.members.toLocaleString()}</div>
+                    <div className="text-[11px] text-ink-500 mt-1 uppercase tracking-wide">Members</div>
+                  </div>
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[24px] font-semibold text-ink-900 tracking-tightest">7 days</div>
+                    <div className="text-[11px] text-ink-500 mt-1 uppercase tracking-wide">Avg first reply</div>
+                  </div>
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[24px] font-semibold text-ink-900 tracking-tightest">100%</div>
+                    <div className="text-[11px] text-ink-500 mt-1 uppercase tracking-wide">Anonymous-friendly</div>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Active threads</div>
+                <h2 className="display-sm">What people are talking about.</h2>
+                <div className="mt-5 divide-y divide-ink-200/60">
+                  {c.threads.map((t, i) => (
+                    <div key={i} className="py-4 first:pt-0 last:pb-0 flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-brand-50 text-brand-700 flex items-center justify-center text-[12px] font-semibold shrink-0">{i+1}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[15px] font-medium text-ink-900 leading-snug">{t}</div>
+                        <div className="text-[12px] text-ink-500 mt-1">{Math.floor(Math.random()*40)+12} replies · {Math.floor(Math.random()*200)+30} reactions · today</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-6 text-[13px] text-ink-500">Threads are previewed here. The full conversation lives in the WhatsApp community — join below to participate.</p>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Community guidelines</div>
+                <h2 className="display-sm">Kindness is non-negotiable.</h2>
+                <ul className="mt-5 space-y-3 text-[15px] text-ink-700">
+                  {[
+                    "Real names or anonymous — both welcome. Either way, your privacy is protected.",
+                    "No medical advice from non-doctors. Share experience, not prescriptions.",
+                    "No paid placements, brand endorsements, or affiliate links — ever.",
+                    "Verified doctors only answer in their specialty area, with citations.",
+                    "Report harassment or misinformation — a moderator responds within 24 hours."
+                  ].map((g, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="w-5 h-5 rounded-full bg-heal-500 text-white flex items-center justify-center shrink-0 mt-0.5">
+                        <Icon name="check" className="w-3 h-3" strokeWidth={3}/>
+                      </span>
+                      <span>{g}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          </div>
+
+          {/* Sticky join sidebar */}
+          <aside className="space-y-4">
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20 card-soft">
+              <div className="eyebrow">Join the conversation</div>
+              <div className="mt-3 text-[34px] font-semibold text-ink-900 tracking-tightest leading-none">Free</div>
+              <div className="text-[12px] text-ink-500 mt-1">No ads. No data sold. Ever.</div>
+
+              {mod && (
+                <div className="mt-6 flex items-center gap-3 p-4 rounded-2xl bg-ink-100">
+                  <SmartImage src={portraitFor(mod)} hue={mod.image_hue} className="w-12 h-12 rounded-2xl shrink-0"/>
+                  <div className="min-w-0">
+                    <div className="text-[11px] text-ink-500 uppercase tracking-wide">Lead moderator</div>
+                    <div className="text-[14px] font-semibold text-ink-900 truncate">{mod.name}</div>
+                    <div className="text-[12px] text-ink-500 truncate">{mod.specialty}</div>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-6 grid gap-2">
+                <WAJoinBtn msg={joinMsg} label="Join on WhatsApp"/>
+                <Btn as="a" href="#/journals" variant="ghost" size="lg">Read journals</Btn>
+              </div>
+              <div className="mt-5 hr-apple"/>
+              <div className="mt-4 text-[12px] text-ink-500 space-y-1.5">
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> 7-day average first reply</div>
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Verified doctor on call weekly</div>
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Anonymous mode available</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+// JOURNAL CARD (used in lists)
+const JournalCard = ({ journal: j }) => {
+  const hosp = DATA.hospitals.find(h => h.slug === j.hospital_slug);
+  const doc = DATA.doctors.find(d => d.slug === j.doctor_slug);
+  return (
+    <a href={`#/journals/${j.slug}`} className="block bg-white hairline rounded-3xl overflow-hidden card-soft h-full">
+      <SmartImage src={UNSPLASH(j.image_id, 1000, 70)} hue={j.hue} className="h-44 relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent"/>
+        <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-[11px] font-semibold text-ink-900">{j.procedure}</div>
+        {j.anon && <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-ink-900/70 backdrop-blur-md text-[11px] font-medium text-white">Anonymous</div>}
+      </SmartImage>
+      <div className="p-6">
+        <h3 className="text-[17px] font-semibold text-ink-900 leading-snug tracking-apple-tight">{j.title}</h3>
+        <div className="mt-3 text-[12px] text-ink-500">{j.author} · {j.when}</div>
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-ink-100 p-3">
+            <div className="text-[10px] text-ink-500 uppercase tracking-wide">Quoted</div>
+            <div className="text-[14px] font-semibold text-ink-900">{j.bill_quoted ? "₹" + (j.bill_quoted/1000).toFixed(0) + "K" : "—"}</div>
+          </div>
+          <div className={`rounded-xl p-3 ${j.bill_final > j.bill_quoted * 1.1 ? "bg-rose-50" : "bg-heal-50"}`}>
+            <div className="text-[10px] text-ink-500 uppercase tracking-wide">Final</div>
+            <div className={`text-[14px] font-semibold ${j.bill_final > j.bill_quoted * 1.1 ? "text-rose-700" : "text-heal-700"}`}>₹{(j.bill_final/1000).toFixed(0)}K</div>
+          </div>
+        </div>
+        <div className="mt-4 flex items-center justify-between">
+          <div className="text-[12px] text-ink-500 truncate">{hosp ? hosp.name : ""}</div>
+          <span className="text-[13px] font-medium text-brand-600 inline-flex items-center gap-1">Read <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+        </div>
+      </div>
+    </a>
+  );
+};
+
+// JOURNALS LISTING (/journals)
+const JournalsPage = () => (
+  <main>
+    <section className="hero-bg text-white pt-20 pb-12 relative">
+      <div className="absolute inset-0 hero-grid pointer-events-none"/>
+      <div className="absolute -top-24 left-1/3 w-[500px] h-[500px] rounded-full bg-brand-500/20 blur-3xl"/>
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="text-[12px] text-white/60 mb-6 flex items-center gap-2" aria-label="Breadcrumb">
+          <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+          <span className="text-white/30">/</span>
+          <a href="#/community" className="hover:text-white">Community</a>
+          <span className="text-white/30">/</span>
+          <span className="text-white">Treatment Journals</span>
+        </nav>
+        <div className="eyebrow !text-white/60">Treatment journals</div>
+        <h1 className="display-lg mt-2">Real bills. Real outcomes.<br/><span className="gradient-text-bright italic font-serif font-normal">Real talk.</span></h1>
+        <p className="mt-5 text-[17px] text-white/70 max-w-2xl">
+          Patients sharing their full journey — hospital, doctor, what they were quoted, what they actually paid, and what they'd tell you to do differently.
+        </p>
+        <div className="mt-7">
+          <WAJoinBtn msg={"Hi MediNext! I want to share my treatment journey.\n\nHospital:\nDoctor:\nProcedure:\nQuoted bill:\nFinal bill:\nOutcome:\nWhat worked:\nWhat didn't:\n\nThanks!"} label="Share your journey"/>
+        </div>
+      </div>
+    </section>
+
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {JOURNALS.map((j, i) => (
+          <Reveal key={j.id} delay={i * 50}><JournalCard journal={j}/></Reveal>
+        ))}
+      </div>
+    </section>
+  </main>
+);
+
+// JOURNAL DETAIL (/journals/:slug)
+const JournalDetail = ({ slug }) => {
+  const j = JOURNALS.find(x => x.slug === slug);
+  if (!j) return <NotFound/>;
+  const hosp = DATA.hospitals.find(h => h.slug === j.hospital_slug);
+  const doc = DATA.doctors.find(d => d.slug === j.doctor_slug);
+  const overrun = j.bill_quoted ? Math.round((j.bill_final - j.bill_quoted) / j.bill_quoted * 100) : 0;
+
+  return (
+    <main className="-mt-px">
+      <section className="relative">
+        <SmartImage src={UNSPLASH(j.image_id, 1600, 75)} hue={j.hue} className="w-full h-[48vh] min-h-[340px] max-h-[560px]"/>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"/>
+        <nav className="absolute top-16 inset-x-0 z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-[12px] text-white/70 flex items-center gap-2 flex-wrap" aria-label="Breadcrumb">
+          <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+          <span className="text-white/40">/</span>
+          <a href="#/journals" className="hover:text-white">Journals</a>
+          <span className="text-white/40">/</span>
+          <span className="text-white truncate max-w-[260px]">{j.title}</span>
+        </nav>
+        <div className="absolute bottom-0 inset-x-0 pb-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <div className="flex flex-wrap items-center gap-1.5 mb-4">
+              <span className="text-[11px] font-medium bg-white/15 backdrop-blur-md text-white border border-white/15 px-3 py-1 rounded-full">{j.procedure}</span>
+              {j.anon && <span className="text-[11px] font-medium bg-ink-900/70 backdrop-blur-md text-white px-3 py-1 rounded-full">Anonymous</span>}
+              <span className="text-[11px] font-medium bg-heal-500/20 backdrop-blur-md text-heal-300 border border-heal-400/30 px-3 py-1 rounded-full inline-flex items-center gap-1">
+                <Icon name="check" className="w-3 h-3"/> Verified bill uploaded
+              </span>
+            </div>
+            <h1 className="display-md">{j.title}</h1>
+            <div className="mt-3 text-[15px] text-white/80">{j.author} · {j.when}</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* Bill breakdown */}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">The numbers</div>
+                <h2 className="display-sm">What it actually cost.</h2>
+                <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[11px] text-ink-500 uppercase tracking-wide">Quoted</div>
+                    <div className="text-[22px] font-semibold text-ink-900 mt-1">{j.bill_quoted ? "₹" + j.bill_quoted.toLocaleString() : "—"}</div>
+                  </div>
+                  <div className={`rounded-2xl p-5 ${overrun > 10 ? "bg-rose-50" : "bg-heal-50"}`}>
+                    <div className="text-[11px] text-ink-500 uppercase tracking-wide">Final</div>
+                    <div className={`text-[22px] font-semibold mt-1 ${overrun > 10 ? "text-rose-700" : "text-heal-700"}`}>₹{j.bill_final.toLocaleString()}</div>
+                    {overrun !== 0 && j.bill_quoted > 0 && <div className={`text-[11px] mt-1 ${overrun > 10 ? "text-rose-600" : "text-heal-600"}`}>{overrun > 0 ? `+${overrun}%` : `${overrun}%`} vs quote</div>}
+                  </div>
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[11px] text-ink-500 uppercase tracking-wide">Insurance paid</div>
+                    <div className="text-[22px] font-semibold text-ink-900 mt-1">₹{j.insurance_paid.toLocaleString()}</div>
+                  </div>
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[11px] text-ink-500 uppercase tracking-wide">Out of pocket</div>
+                    <div className="text-[22px] font-semibold text-ink-900 mt-1">₹{j.oop.toLocaleString()}</div>
+                  </div>
+                </div>
+                <div className="mt-5 text-[13px] text-ink-500">Duration: {j.duration}</div>
+              </div>
+            </Reveal>
+
+            {/* Outcome */}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Outcome</div>
+                <h2 className="display-sm">{j.outcome}</h2>
+                <div className="mt-4 flex items-center gap-1">
+                  {[1,2,3,4,5].map(i => (
+                    <Icon key={i} name="star" className={`w-5 h-5 ${i <= j.outcome_score ? "text-amber-500 fill-current" : "text-ink-300"}`} strokeWidth={0}/>
+                  ))}
+                  <span className="ml-2 text-[14px] text-ink-600">Patient-rated</span>
+                </div>
+              </div>
+            </Reveal>
+
+            {/* What worked */}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2 !text-heal-600">What worked</div>
+                <h2 className="display-sm">The good.</h2>
+                <p className="mt-4 text-[16px] leading-relaxed text-ink-700">{j.what_worked}</p>
+              </div>
+            </Reveal>
+
+            {/* What didn't */}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2 !text-rose-600">What didn't</div>
+                <h2 className="display-sm">The not-so-good.</h2>
+                <p className="mt-4 text-[16px] leading-relaxed text-ink-700">{j.what_didnt}</p>
+              </div>
+            </Reveal>
+
+            {/* Advice */}
+            <Reveal>
+              <div className="bg-ink-900 text-white rounded-3xl p-8 card-soft">
+                <div className="eyebrow !text-amber-300/80">Advice to my past self</div>
+                <p className="mt-4 text-[18px] leading-relaxed font-serif italic">"{j.advice}"</p>
+                <div className="mt-4 text-[13px] text-white/60">— {j.author}</div>
+              </div>
+            </Reveal>
+
+            {(hosp || doc) && (
+              <Reveal>
+                <div>
+                  <div className="eyebrow mb-2">The hospital & doctor</div>
+                  <h2 className="display-sm mb-6">Where this happened.</h2>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {hosp && <HospitalCard hospital={hosp}/>}
+                    {doc && <DoctorCard doctor={doc}/>}
+                  </div>
+                </div>
+              </Reveal>
+            )}
+          </div>
+
+          <aside className="space-y-4">
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20 card-soft">
+              <div className="eyebrow">Help others</div>
+              <h3 className="mt-2 text-[20px] font-semibold text-ink-900">Share your journey.</h3>
+              <p className="mt-3 text-[14px] text-ink-600">Your story could save another patient ₹50,000 — or steer them away from the wrong hospital.</p>
+              <div className="mt-5 grid gap-2">
+                <WAJoinBtn msg={"Hi MediNext! I want to share my treatment journey.\n\nHospital:\nDoctor:\nProcedure:\nQuoted bill:\nFinal bill:\nOutcome:\nWhat worked:\nWhat didn't:\n\nThanks!"} label="Share on WhatsApp"/>
+                <Btn as="a" href="#/journals" variant="ghost" size="lg">Read more journals</Btn>
+              </div>
+              <div className="mt-5 hr-apple"/>
+              <div className="mt-4 text-[12px] text-ink-500 space-y-1.5">
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Anonymous mode available</div>
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Bill verified before publishing</div>
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> You control what's shared</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+// Q&A LIST ITEM (used in feed)
+const QAListItem = ({ q }) => {
+  const doc = DATA.doctors.find(d => d.id === q.answer.doctor_id);
+  return (
+    <a href={`#/qa/${q.slug}`} className="block bg-white hairline rounded-3xl p-6 card-soft hover:bg-white">
+      <div className="flex items-start gap-5">
+        <div className="hidden sm:flex flex-col items-center gap-1 shrink-0 w-14 text-center">
+          <div className="text-[22px] font-semibold text-ink-900 tracking-tightest">{q.upvotes}</div>
+          <div className="text-[10px] text-ink-500 uppercase tracking-wide">votes</div>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-[17px] font-semibold text-ink-900 leading-snug tracking-apple-tight">{q.title}</h3>
+          <p className="mt-2 text-[14px] text-ink-600 line-clamp-2">{q.body}</p>
+          <div className="mt-3 flex items-center gap-1.5 flex-wrap">
+            {q.tags.map(t => <Pill key={t}>{t}</Pill>)}
+          </div>
+          <div className="mt-4 flex items-center justify-between text-[12px] text-ink-500">
+            <span>Asked by {q.asked_by} · {q.when}</span>
+            {doc && (
+              <span className="inline-flex items-center gap-2">
+                <SmartImage src={portraitFor(doc)} hue={doc.image_hue} className="w-5 h-5 rounded-full"/>
+                <span className="hidden sm:inline">Answered by {doc.name}</span>
+                <span className="sm:hidden">{doc.name.split(" ").slice(-1)[0]}</span>
+                <Icon name="check" className="w-3.5 h-3.5 text-heal-500"/>
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </a>
+  );
+};
+
+// Q&A LISTING (/qa)
+const QAPage = () => (
+  <main>
+    <section className="hero-bg text-white pt-20 pb-12 relative">
+      <div className="absolute inset-0 hero-grid pointer-events-none"/>
+      <div className="absolute -top-24 right-1/4 w-[500px] h-[500px] rounded-full bg-heal-500/20 blur-3xl"/>
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="text-[12px] text-white/60 mb-6 flex items-center gap-2" aria-label="Breadcrumb">
+          <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+          <span className="text-white/30">/</span>
+          <a href="#/community" className="hover:text-white">Community</a>
+          <span className="text-white/30">/</span>
+          <span className="text-white">Verified Q&A</span>
+        </nav>
+        <div className="eyebrow !text-white/60">Verified Q&A</div>
+        <h1 className="display-lg mt-2">Real questions.<br/><span className="gradient-text-bright italic font-serif font-normal">Real doctors. Cited answers.</span></h1>
+        <p className="mt-5 text-[17px] text-white/70 max-w-2xl">
+          Every answer comes from a verified, licensed doctor. With sources. No paid placements, no influencer hot-takes.
+        </p>
+        <div className="mt-7">
+          <WAJoinBtn msg={"Hi MediNext! I want to ask a verified doctor a question.\n\nMy question:\n\n(I'm happy to be anonymous in the public Q&A.)"} label="Ask a doctor"/>
+        </div>
+      </div>
+    </section>
+
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+      <div className="space-y-3">
+        {QA.map((q, i) => (
+          <Reveal key={q.id} delay={i * 40}><QAListItem q={q}/></Reveal>
+        ))}
+      </div>
+    </section>
+  </main>
+);
+
+// Q&A DETAIL (/qa/:slug)
+const QADetail = ({ slug }) => {
+  const q = QA.find(x => x.slug === slug);
+  if (!q) return <NotFound/>;
+  const doc = DATA.doctors.find(d => d.id === q.answer.doctor_id);
+
+  return (
+    <main className="pt-20 pb-16">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="text-[12px] text-ink-500 mb-6 flex items-center gap-2 flex-wrap" aria-label="Breadcrumb">
+          <a href="#/" className="hover:text-ink-900 inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+          <span className="text-ink-300">/</span>
+          <a href="#/qa" className="hover:text-ink-900">Q&A</a>
+          <span className="text-ink-300">/</span>
+          <span className="text-ink-900 truncate max-w-[260px]">{q.title}</span>
+        </nav>
+
+        {/* Question */}
+        <Reveal>
+          <div className="bg-white hairline rounded-3xl p-8 card-soft">
+            <div className="flex items-center gap-1.5 mb-4 flex-wrap">
+              {q.tags.map(t => <Pill key={t} tone="brand">{t}</Pill>)}
+            </div>
+            <h1 className="display-md">{q.title}</h1>
+            <div className="mt-4 text-[13px] text-ink-500">Asked by {q.asked_by} · {q.when} · {q.upvotes} upvotes</div>
+            <p className="mt-5 text-[16px] leading-relaxed text-ink-700">{q.body}</p>
+          </div>
+        </Reveal>
+
+        {/* Accepted answer */}
+        <Reveal>
+          <div className="mt-6 bg-white rounded-3xl card-soft overflow-hidden">
+            <div className="bg-heal-50 px-8 py-4 flex items-center gap-2 border-b border-heal-100">
+              <span className="w-7 h-7 rounded-full bg-heal-500 text-white flex items-center justify-center"><Icon name="check" className="w-4 h-4" strokeWidth={3}/></span>
+              <span className="text-[13px] font-semibold text-heal-700 uppercase tracking-wide">Verified doctor answer</span>
+            </div>
+            <div className="p-8">
+              {doc && (
+                <div className="flex items-center gap-4 mb-6">
+                  <SmartImage src={portraitFor(doc)} hue={doc.image_hue} className="w-14 h-14 rounded-2xl shrink-0"/>
+                  <div className="min-w-0">
+                    <div className="text-[16px] font-semibold text-ink-900">{doc.name}</div>
+                    <div className="text-[13px] text-ink-500">{doc.specialty} · {doc.qualification}</div>
+                    <div className="text-[12px] text-ink-500 mt-0.5">NMC Reg {doc.reg_no} · Verified</div>
+                  </div>
+                </div>
+              )}
+              <p className="text-[17px] leading-relaxed text-ink-800">{q.answer.body}</p>
+              <div className="mt-7 pt-6 border-t border-ink-200/60">
+                <div className="eyebrow mb-3">Citations</div>
+                <ul className="space-y-1.5 text-[14px] text-ink-700">
+                  {q.answer.citations.map((c, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-ink-400 mt-0.5">{i+1}.</span>
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-6 flex items-center justify-between">
+                <span className="text-[13px] text-ink-500">{q.answer.upvotes} doctors agree · {q.answer.when}</span>
+                <Btn variant="soft" size="sm">Helpful</Btn>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal>
+          <div className="mt-8 bg-ink-100 hairline rounded-3xl p-8 text-center">
+            <h3 className="display-sm">Have your own question?</h3>
+            <p className="mt-3 text-[15px] text-ink-600 max-w-md mx-auto">Get a cited answer from a verified specialist. Anonymous by default.</p>
+            <div className="mt-6 inline-flex">
+              <WAJoinBtn msg={"Hi MediNext! I want to ask a verified doctor a question.\n\nMy question:"} label="Ask on WhatsApp"/>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+    </main>
+  );
+};
+
+// AWARDS PAGE (/awards)
+const AwardsPage = () => (
+  <main className="-mt-px">
+    <section className="relative hero-bg text-white pt-20 pb-16">
+      <div className="absolute inset-0 hero-grid pointer-events-none"/>
+      <div className="absolute -top-32 right-1/3 w-[600px] h-[600px] rounded-full bg-amber-500/25 blur-3xl"/>
+      <div className="absolute top-1/4 left-1/4 w-[420px] h-[420px] rounded-full bg-rose-500/15 blur-3xl float-slow"/>
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="text-[12px] text-white/60 mb-8 flex items-center gap-2" aria-label="Breadcrumb">
+          <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+          <span className="text-white/30">/</span>
+          <a href="#/community" className="hover:text-white">Community</a>
+          <span className="text-white/30">/</span>
+          <span className="text-white">Awards {AWARDS_2026.year}</span>
+        </nav>
+        <div className="eyebrow !text-amber-300/80">MediNext Transparency Awards · {AWARDS_2026.year}</div>
+        <h1 className="display-xl mt-3">Honouring the hospitals<br/><span className="gradient-text-bright italic font-serif font-normal">who earned our trust.</span></h1>
+        <p className="mt-7 text-[19px] leading-[1.45] text-white/70 max-w-2xl font-light">
+          The first national awards judging Indian hospitals on transparency — pricing, outcomes, communication, and patient honesty. Independent jury. Patient-nominated.
+        </p>
+        <div className="mt-8 grid sm:grid-cols-3 gap-3 max-w-2xl">
+          <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-5 backdrop-blur-md">
+            <div className="text-[11px] text-white/55 uppercase tracking-wide">When</div>
+            <div className="text-[16px] font-semibold mt-1">{AWARDS_2026.ceremony_when}</div>
+          </div>
+          <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-5 backdrop-blur-md">
+            <div className="text-[11px] text-white/55 uppercase tracking-wide">Where</div>
+            <div className="text-[16px] font-semibold mt-1">{AWARDS_2026.ceremony_where}</div>
+          </div>
+          <div className="rounded-2xl bg-amber-400/15 border border-amber-300/30 p-5 backdrop-blur-md">
+            <div className="text-[11px] text-amber-200 uppercase tracking-wide">Nominations close</div>
+            <div className="text-[16px] font-semibold mt-1 text-amber-200">{AWARDS_2026.nominations_close}</div>
+          </div>
+        </div>
+        <div className="mt-9 flex flex-wrap items-center gap-4">
+          <WAJoinBtn msg={"Hi MediNext! I want to nominate a hospital for the MediNext Transparency Awards 2026.\n\nHospital name:\nCity:\nCategory:\nWhy they deserve it:\n\nMy story (optional):"} label="Nominate a hospital" variant="accent"/>
+          <a href="#/" className="text-[15px] font-medium text-amber-300 hover:text-amber-200 inline-flex items-center gap-1">View past winners <Icon name="arrowRight" className="w-4 h-4"/></a>
+        </div>
+      </div>
+    </section>
+
+    {/* Categories */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+      <Reveal>
+        <SectionTitle eyebrow="Categories" title="Five awards." accent={`${AWARDS_2026.categories.length} kinds of courage.`}/>
+      </Reveal>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {AWARDS_2026.categories.map((c, i) => (
+          <Reveal key={c.name} delay={i * 60}>
+            <div className="bg-white hairline rounded-3xl p-7 card-soft h-full">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-500 text-white flex items-center justify-center shadow-md">
+                <Icon name={c.icon} className="w-5 h-5"/>
+              </div>
+              <h3 className="mt-5 text-[20px] font-semibold text-ink-900 tracking-apple-tight">{c.name}</h3>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-600">{c.desc}</p>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+
+    {/* Jury */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+      <Reveal>
+        <SectionTitle eyebrow="Independent jury" title="No conflicts." accent="No paid placements."/>
+      </Reveal>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {AWARDS_2026.jury.map((j, i) => (
+          <Reveal key={j.name} delay={i * 60}>
+            <div className="bg-white hairline rounded-3xl p-6 card-soft text-center h-full">
+              <div className="w-20 h-20 mx-auto rounded-3xl avatar-gradient" style={{ '--h': j.hue }}/>
+              <div className="mt-5 text-[16px] font-semibold text-ink-900">{j.name}</div>
+              <div className="mt-1 text-[13px] text-ink-500">{j.role}</div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+
+    {/* How nominations work */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <Reveal>
+        <div className="bg-ink-900 text-white rounded-5xl p-10 sm:p-14 relative overflow-hidden">
+          <div className="absolute inset-0 hero-grid"/>
+          <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-amber-500/20 blur-3xl"/>
+          <div className="relative grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <div className="eyebrow !text-amber-300/80">How it works</div>
+              <h3 className="display-md mt-3">Patient-nominated. Jury-decided.</h3>
+              <ol className="mt-7 space-y-4 text-[15px] text-white/80">
+                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">1</span><span>Patients nominate any hospital via WhatsApp. Share what made them transparent.</span></li>
+                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">2</span><span>MediNext team verifies the nomination — bills, outcomes, communication records.</span></li>
+                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">3</span><span>Top 5 finalists per category go to the independent jury for final selection.</span></li>
+                <li className="flex items-start gap-3"><span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[12px] font-semibold shrink-0">4</span><span>Winners announced at the ceremony. No hospital pays a single rupee to win.</span></li>
+              </ol>
+            </div>
+            <div className="text-center md:text-right">
+              <WAJoinBtn msg={"Hi MediNext! I want to nominate a hospital for the MediNext Transparency Awards 2026.\n\nHospital name:\nCity:\nCategory:\nWhy they deserve it:\n\nMy story (optional):"} label="Nominate now" variant="accent" size="lg"/>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  </main>
+);
+
+// PATIENT POWER PAGE (/patient-power)
+const PatientPowerPage = () => (
+  <main className="-mt-px">
+    <section className="relative hero-bg text-white pt-20 pb-16">
+      <div className="absolute inset-0 hero-grid pointer-events-none"/>
+      <div className="absolute -top-32 left-1/3 w-[500px] h-[500px] rounded-full bg-heal-500/25 blur-3xl"/>
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="text-[12px] text-white/60 mb-8 flex items-center gap-2" aria-label="Breadcrumb">
+          <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+          <span className="text-white/30">/</span>
+          <a href="#/community" className="hover:text-white">Community</a>
+          <span className="text-white/30">/</span>
+          <span className="text-white">Patient Power</span>
+        </nav>
+        <div className="eyebrow !text-white/60">Patient Power</div>
+        <h1 className="display-xl mt-3">Be the advocate<br/><span className="gradient-text-bright italic font-serif font-normal">your city needs.</span></h1>
+        <p className="mt-7 text-[19px] leading-[1.45] text-white/70 max-w-2xl font-light">
+          Help patients in your city navigate hospital bills, insurance denials, second opinions, and complaints. Paid stipend. Real impact. Boots on the ground.
+        </p>
+        <div className="mt-9">
+          <WAJoinBtn msg={"Hi MediNext! I want to apply to be a Patient Power advocate.\n\nMy city:\nMy background (healthcare/legal/social work):\nWhy I want to help:\nMonthly hours I can commit:\n\nThanks!"} label="Apply now" variant="accent"/>
+        </div>
+      </div>
+    </section>
+
+    {/* What you do */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+      <Reveal>
+        <SectionTitle eyebrow="The role" title="What advocates actually do."/>
+      </Reveal>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { icon: "rupee", title: "Bill audits", body: "Help patients line-item their hospital bills, flag overcharges, draft negotiation letters." },
+          { icon: "shield", title: "Insurance fights", body: "Support claim rejection appeals to IRDAI and insurance ombudsmen." },
+          { icon: "chat", title: "Second opinions", body: "Connect patients to independent specialists when treatment recommendations feel rushed." },
+          { icon: "alert", title: "Complaint filing", body: "Help families file with NMC, state councils, and consumer courts when things go wrong." }
+        ].map((r, i) => (
+          <Reveal key={r.title} delay={i * 60}>
+            <div className="bg-white hairline rounded-3xl p-7 card-soft h-full">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-heal-500 to-brand-500 text-white flex items-center justify-center shadow-md">
+                <Icon name={r.icon} className="w-5 h-5"/>
+              </div>
+              <h3 className="mt-5 text-[18px] font-semibold text-ink-900 tracking-apple-tight">{r.title}</h3>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-600">{r.body}</p>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+
+    {/* City openings */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+      <Reveal>
+        <SectionTitle eyebrow="Where we're hiring" title={`${ADVOCATE_CITIES.reduce((a,c) => a + c.openings, 0)} openings across ${ADVOCATE_CITIES.length} cities.`}/>
+      </Reveal>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {ADVOCATE_CITIES.map((c, i) => (
+          <Reveal key={c.city} delay={i * 40}>
+            <a href={waLink(`Hi MediNext! I want to apply to be a Patient Power advocate in ${c.city}.\n\nMy background:\nWhy I want to help:\nMonthly hours I can commit:\n\nThanks!`)}
+               target="_blank" rel="noreferrer"
+               className="block bg-white hairline rounded-3xl p-6 card-soft h-full">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-[18px] font-semibold text-ink-900">{c.city}</div>
+                  <div className="text-[12px] text-ink-500 mt-0.5">{c.advocates} active advocates</div>
+                </div>
+                <div className="px-2.5 py-1 rounded-full bg-heal-50 text-heal-700 text-[11px] font-semibold">{c.openings} open</div>
+              </div>
+              <div className="mt-5 hr-apple"/>
+              <div className="mt-4 flex items-center justify-between text-[13px]">
+                <span className="text-ink-500">~{c.monthly_hours} hrs / month · paid stipend</span>
+                <span className="text-brand-600 font-medium inline-flex items-center gap-1">Apply <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+              </div>
+            </a>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+
+    {/* What you get */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <Reveal>
+        <div className="bg-white hairline rounded-5xl p-10 sm:p-14 card-soft">
+          <div className="grid md:grid-cols-2 gap-10">
+            <div>
+              <div className="eyebrow">What you get</div>
+              <h3 className="display-md mt-3">More than a stipend.</h3>
+              <p className="mt-5 text-[15px] leading-relaxed text-ink-600 max-w-md">
+                You'll be trained by healthcare lawyers, doctors, and patient-rights veterans. You'll be backed by a national legal fund. You'll have the data — and the brand — behind you.
+              </p>
+            </div>
+            <ul className="space-y-4 text-[15px] text-ink-700">
+              {[
+                "₹8,000–15,000 monthly stipend (city-based)",
+                "Free training: healthcare law, bill auditing, insurance appeals",
+                "Legal fund backing for high-stakes cases",
+                "Access to MediNext data & verified doctor network",
+                "Annual MediNext summit in Delhi (all expenses paid)",
+                "Direct mentorship from healthcare journalists & researchers"
+              ].map((b, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-heal-500 text-white flex items-center justify-center shrink-0 mt-0.5"><Icon name="check" className="w-3.5 h-3.5" strokeWidth={3}/></span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  </main>
+);
+
 /* ─── 404 ────────────────────────────────────────────────────── */
 const NotFound = () => (
   <main className="pt-32 pb-24 max-w-2xl mx-auto px-4 text-center">
@@ -2689,6 +3943,14 @@ function App() {
     if (first === "pathology" && second)  return <PathologyDetail slug={second}/>;
     if (first === "pharmacy" && second)   return <PharmacyDetail slug={second}/>;
     if (first === "vault")                return <VaultPage onLoginClick={() => setLoginOpen(true)}/>;
+    if (first === "community" && !second) return <CommunityHome/>;
+    if (first === "community" && second)  return <CommunityDetail slug={second}/>;
+    if (first === "journals" && !second)  return <JournalsPage/>;
+    if (first === "journals" && second)   return <JournalDetail slug={second}/>;
+    if (first === "qa" && !second)        return <QAPage/>;
+    if (first === "qa" && second)         return <QADetail slug={second}/>;
+    if (first === "awards")               return <AwardsPage/>;
+    if (first === "patient-power")        return <PatientPowerPage/>;
     if (first === "contact")              return <ContactPage/>;
     if (first === "list-with-us")         return <ListWithUsPage/>;
     if (first === "privacy")              return <PrivacyPage/>;

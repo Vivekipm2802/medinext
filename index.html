@@ -194,6 +194,16 @@ tailwind.config = {
   @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
   @keyframes float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
   .float-slow { animation: float-slow 6s ease-in-out infinite; }
+  @keyframes float-med { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-18px) rotate(-1.5deg); } }
+  .float-med { animation: float-med 7s ease-in-out infinite; }
+  @keyframes float-fast { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+  .float-fast { animation: float-fast 5s ease-in-out infinite; }
+  @keyframes ken-burns { 0%,100% { transform: scale(1.02) translate(0,0); } 50% { transform: scale(1.10) translate(-1.2%, -0.8%); } }
+  .ken-burns { animation: ken-burns 22s ease-in-out infinite; }
+  @keyframes scanline { 0% { transform: translateY(-100%); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(120%); opacity: 0; } }
+  .scanline { animation: scanline 5s ease-in-out infinite; }
+  @keyframes pulse-dot { 0%, 100% { opacity: 0.4; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.05); } }
+  .pulse-dot { animation: pulse-dot 1.8s ease-in-out infinite; }
 
   /* Scroll-reveal */
   .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s var(--ease-apple), transform 0.9s var(--ease-apple); }
@@ -778,6 +788,52 @@ const SmartImage = ({ src, alt = "", hue = 200, className = "", imgClass = "", l
   );
 };
 
+/* ─── Legal disclaimer (reusable, variants) ─────────────────── */
+const DISCLAIMER_COPY = {
+  general:
+    "MediNext is a healthcare directory and information service. We are not a hospital, clinic, or medical provider. Information shown — including ratings, pricing, doctor details, and articles — is for general guidance only and is not medical advice. Always consult a licensed medical practitioner for diagnosis, treatment, and emergency care. In a medical emergency, call 102 / 108 immediately.",
+  demo:
+    "Demo build. All hospitals, doctors, labs, pharmacies, prices, reviews, and patient journeys shown on this site are illustrative seed data for product demonstration. Nothing here represents a real booking, real patient, or real medical record.",
+  medical_qna:
+    "These answers are general medical information from verified doctors and are not a substitute for a personal consultation, diagnosis, or treatment plan. Do not start, stop, or change any medication without speaking to your treating physician.",
+  journal:
+    "Patient journals are individual experiences shared voluntarily and anonymised where requested. They are not medical recommendations or endorsements of any hospital or doctor.",
+  vault:
+    "Your vault is a demo. Records you upload are stored only in your browser's localStorage (not on any server). Do not rely on this vault for clinical decisions or as your only copy of any health record.",
+  booking:
+    "Booking confirmation in this demo is illustrative. In production, an appointment is confirmed only after the hospital or doctor's office reconfirms by SMS/WhatsApp. Cancellation policies vary by facility.",
+  community:
+    "Community discussions are moderated peer support. Information shared by members is personal experience, not medical advice. Verified doctor responses are general guidance, not a doctor-patient consultation.",
+  awards:
+    "The MediNext Transparency Awards are independent and patient-nominated. No hospital pays MediNext to be nominated, shortlisted, or to win. We accept no fees, sponsorship, or paid placements from any healthcare facility.",
+  bills:
+    "Bill amounts shown in journals, audits, or comparators are submitted by individual patients. We verify uploaded bills where possible but cannot guarantee accuracy of every figure. Always seek an itemised bill from your provider."
+};
+
+const Disclaimer = ({ variant = "general", className = "", compact = false }) => {
+  const text = DISCLAIMER_COPY[variant] || DISCLAIMER_COPY.general;
+  if (compact) {
+    return (
+      <p className={`text-[11px] leading-relaxed text-ink-500 ${className}`}>
+        <span className="font-semibold text-ink-600">Disclaimer.</span> {text}
+      </p>
+    );
+  }
+  return (
+    <div className={`rounded-2xl bg-ink-100 hairline p-4 sm:p-5 ${className}`}>
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+          <Icon name="alert" className="w-4 h-4"/>
+        </div>
+        <div>
+          <div className="text-[12px] font-semibold uppercase tracking-wide text-ink-700 mb-1">Important</div>
+          <p className="text-[13px] leading-relaxed text-ink-600">{text}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ─── Reveal on scroll wrapper ───────────────────────────────── */
 const Reveal = ({ children, delay = 0, className = "" }) => {
   const ref = useRef(null);
@@ -850,7 +906,7 @@ const Navbar = ({ onLoginClick }) => {
     { label: "Vault", href: "#/vault" }
   ];
 
-  const navText = overlay ? "text-white/80 hover:text-white" : "text-ink-700 hover:text-ink-900";
+  const navText = overlay ? "text-white/95 hover:text-white" : "text-ink-700 hover:text-ink-900";
   const bg = overlay
     ? "glass-dark border-transparent"
     : "glass border-ink-200/60";
@@ -927,6 +983,21 @@ const Navbar = ({ onLoginClick }) => {
     </header>
   );
 };
+
+/* ─── Site-wide disclaimer banner (above footer) ─────────────── */
+const SiteDisclaimerBanner = () => (
+  <section className="bg-amber-50 border-y border-amber-200/60">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-start gap-3">
+      <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+        <Icon name="alert" className="w-4 h-4"/>
+      </div>
+      <div className="text-[12px] sm:text-[13px] leading-relaxed text-amber-900 flex-1">
+        <span className="font-semibold">Medical disclaimer.</span> MediNext is a healthcare directory and information service. We are not a hospital, clinic, or medical provider. Information shown — including ratings, pricing, doctor details, treatment journals, and Q&A — is general guidance only and <span className="font-semibold underline decoration-amber-400 underline-offset-2">not medical advice</span>. Always consult a licensed medical practitioner. <span className="font-semibold">In a medical emergency, call 102 / 108 immediately.</span> Demo build — all data is illustrative.{" "}
+        <a href="#/privacy" className="underline decoration-amber-400 underline-offset-2 font-semibold">Read the full policy</a>.
+      </div>
+    </div>
+  </section>
+);
 
 /* ─── FOOTER ─────────────────────────────────────────────────── */
 const Footer = () => (
@@ -1006,19 +1077,19 @@ const SearchBar = ({ inHero = false, initial = {} }) => {
   // Apple-style: tabs as segmented control on top, glassy capsule search below
   return (
     <div className={inHero
-      ? "rounded-3xl bg-white/[0.08] backdrop-blur-xl border border-white/15 p-2.5 shadow-2xl shadow-black/20"
+      ? "rounded-3xl bg-white/[0.10] backdrop-blur-xl border border-white/20 p-2.5 shadow-2xl shadow-black/30"
       : "rounded-3xl bg-white card-soft hairline p-2.5"}>
       {/* Segmented control */}
       <div className={`flex items-center gap-1 p-1 rounded-full overflow-x-auto no-scrollbar mb-2.5
-                       ${inHero ? "bg-white/[0.06]" : "bg-ink-100"}`}>
+                       ${inHero ? "bg-black/30 border border-white/10" : "bg-ink-100"}`}>
         {tabs.map(t => {
           const active = tab === t.id;
           return (
             <button key={t.id} onClick={() => setTab(t.id)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-medium whitespace-nowrap transition-all duration-300
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all duration-300
                       ${active
-                          ? (inHero ? "bg-white/15 text-white shadow-sm" : "bg-white text-ink-900 shadow-sm")
-                          : (inHero ? "text-white/60 hover:text-white" : "text-ink-600 hover:text-ink-900")}`}>
+                          ? (inHero ? "bg-white text-ink-900 shadow-md" : "bg-white text-ink-900 shadow-sm")
+                          : (inHero ? "text-white/85 hover:text-white hover:bg-white/10" : "text-ink-600 hover:text-ink-900")}`}>
               <Icon name={t.icon} className="w-3.5 h-3.5"/> {t.label}
             </button>
           );
@@ -1135,6 +1206,113 @@ const HomePage = ({ onLoginClick }) => {
                 <span className="w-1.5 h-1.5 rounded-full bg-heal-400"/> Online
               </span>
             </a>
+          </div>
+        </div>
+
+        {/* ─── ANIMATED HERO SHOWCASE ─── */}
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 sm:mt-24">
+          <div className="relative rounded-5xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 aspect-[16/9] sm:aspect-[16/8]">
+            {/* Background photo with ken-burns */}
+            <SmartImage src={UNSPLASH("1666214280391-8ff5bd3c0bf0", 1800, 80)}
+                        hue={200}
+                        className="absolute inset-0 ken-burns"/>
+            {/* Gradient overlay for legibility */}
+            <div className="absolute inset-0 bg-gradient-to-br from-ink-900/70 via-ink-900/30 to-brand-900/60"/>
+            <div className="absolute inset-0 bg-gradient-to-t from-ink-900/80 via-transparent to-transparent"/>
+            {/* Vertical scanline */}
+            <div className="absolute inset-y-0 left-0 right-0 overflow-hidden pointer-events-none">
+              <div className="absolute -inset-x-10 h-px bg-gradient-to-r from-transparent via-brand-400/80 to-transparent scanline"/>
+            </div>
+
+            {/* Floating UI cards */}
+            {/* Top-left: live booking pulse */}
+            <div className="hidden sm:block absolute top-6 sm:top-10 left-6 sm:left-10 float-med">
+              <div className="rounded-3xl bg-white/[0.95] backdrop-blur-xl shadow-2xl p-4 sm:p-5 w-[260px] sm:w-[300px] hairline">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-heal-600 inline-flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-heal-500 pulse-dot"/> Live booking
+                  </div>
+                  <span className="text-[10px] text-ink-500">just now</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <SmartImage src={portraitFor(DATA.doctors[2])} hue={DATA.doctors[2].image_hue} className="w-10 h-10 rounded-2xl shrink-0"/>
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-semibold text-ink-900 truncate">{DATA.doctors[2].name}</div>
+                    <div className="text-[11px] text-ink-500">Video consult · ₹{DATA.doctors[2].fee}</div>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-[11px] text-ink-500">Mumbai · Today 6:30 PM</span>
+                  <span className="text-[11px] font-semibold text-heal-600">Confirmed</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Top-right: bill-saving card */}
+            <div className="hidden md:block absolute top-6 sm:top-12 right-6 sm:right-10 float-fast" style={{ animationDelay: "-1.5s" }}>
+              <div className="rounded-3xl bg-ink-900/85 backdrop-blur-xl shadow-2xl p-4 sm:p-5 w-[240px] border border-white/10">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-300 mb-1.5">Bill audit</div>
+                <div className="text-[16px] font-semibold text-white leading-tight">2 surprise charges flagged</div>
+                <div className="mt-3 flex items-end justify-between">
+                  <div>
+                    <div className="text-[10px] text-white/60">You'd save</div>
+                    <div className="text-[24px] font-bold text-white tracking-tightest leading-none">₹3,700</div>
+                  </div>
+                  <div className="w-9 h-9 rounded-xl bg-amber-400/20 flex items-center justify-center">
+                    <Icon name="alert" className="w-4 h-4 text-amber-300"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom-left: cesarean transparency card */}
+            <div className="hidden lg:block absolute bottom-8 left-12 float-slow" style={{ animationDelay: "-3s" }}>
+              <div className="rounded-3xl bg-white/[0.95] backdrop-blur-xl shadow-2xl p-5 w-[280px] hairline">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-brand-600">Transparency</div>
+                  <span className="text-[10px] text-ink-500">Mumbai · 2026</span>
+                </div>
+                <div className="text-[14px] font-semibold text-ink-900 leading-snug">C-section rates near you</div>
+                <div className="mt-3 space-y-2">
+                  {[
+                    { label: "Lotus Bandra", val: 12, color: "bg-heal-500" },
+                    { label: "Avg metro", val: 47, color: "bg-amber-400" },
+                    { label: "WHO target", val: 15, color: "bg-brand-500" }
+                  ].map(b => (
+                    <div key={b.label} className="flex items-center gap-2 text-[11px]">
+                      <span className="w-20 text-ink-600">{b.label}</span>
+                      <div className="flex-1 h-1.5 rounded-full bg-ink-100 overflow-hidden">
+                        <div className={`h-full ${b.color}`} style={{ width: `${b.val * 1.5}%` }}/>
+                      </div>
+                      <span className="w-8 text-right font-semibold text-ink-900">{b.val}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom-right: vault preview chip */}
+            <div className="absolute bottom-5 right-5 sm:bottom-8 sm:right-10 float-med" style={{ animationDelay: "-4s" }}>
+              <div className="rounded-2xl bg-white/[0.95] backdrop-blur-xl shadow-xl p-3 sm:p-4 w-[200px] sm:w-[230px] hairline">
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-heal-500 text-white flex items-center justify-center">
+                    <Icon name="vault" className="w-4 h-4"/>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[11px] text-ink-500">Latest in vault</div>
+                    <div className="text-[12px] font-semibold text-ink-900 truncate">Thyroid Profile · TSH 3.8</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Center caption */}
+            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 text-center pointer-events-none">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-[11px] font-medium border border-white/15">
+                <span className="w-1.5 h-1.5 rounded-full bg-heal-400 pulse-dot"/>
+                <span>Live demo · scroll to explore</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -2614,8 +2792,8 @@ const VaultPage = ({ onLoginClick }) => {
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                   {types.map(t => (
                     <button key={t} onClick={() => setFilter(t)}
-                            className={`px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors
-                              ${filter === t ? "bg-brand-500 text-white" : "bg-ink-50 text-ink-700 hover:bg-ink-100"}`}>
+                            className={`px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all
+                              ${filter === t ? "bg-ink-900 text-white shadow-md" : "bg-ink-100 text-ink-800 hover:bg-ink-200"}`}>
                       {t}
                     </button>
                   ))}
@@ -2657,6 +2835,10 @@ const VaultPage = ({ onLoginClick }) => {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <Disclaimer variant="vault"/>
       </section>
 
       {adding && <AddRecordModal onClose={() => setAdding(false)} onSave={(rec) => { add(rec); setAdding(false); }}/>}
@@ -2859,6 +3041,7 @@ const BookingModal = ({ booking, onClose }) => {
           <div className="w-14 h-14 mx-auto rounded-2xl bg-heal-50 text-heal-600 flex items-center justify-center"><Icon name="check" className="w-7 h-7" strokeWidth={3}/></div>
           <h3 className="mt-4 text-xl font-extrabold text-ink-900">Booking confirmed</h3>
           <p className="mt-1 text-sm text-ink-500">{mode} with {doctor.name} at <strong>{slot}</strong>. Confirmation sent to {phone}.</p>
+          <div className="mt-4 text-left"><Disclaimer variant="booking" compact/></div>
           <Btn className="mt-5" onClick={onClose}>Done</Btn>
         </div>
       )}
@@ -3272,6 +3455,10 @@ const CommunityDetail = ({ slug }) => {
             </Reveal>
 
             <Reveal>
+              <Disclaimer variant="community"/>
+            </Reveal>
+
+            <Reveal>
               <div className="bg-white hairline rounded-3xl p-8 card-soft">
                 <div className="eyebrow mb-2">Community guidelines</div>
                 <h2 className="display-sm">Kindness is non-negotiable.</h2>
@@ -3519,6 +3706,13 @@ const JournalDetail = ({ slug }) => {
                 </div>
               </Reveal>
             )}
+
+            <Reveal>
+              <div className="space-y-3">
+                <Disclaimer variant="journal"/>
+                <Disclaimer variant="bills" compact/>
+              </div>
+            </Reveal>
           </div>
 
           <aside className="space-y-4">
@@ -3680,6 +3874,10 @@ const QADetail = ({ slug }) => {
         </Reveal>
 
         <Reveal>
+          <div className="mt-6"><Disclaimer variant="medical_qna"/></div>
+        </Reveal>
+
+        <Reveal>
           <div className="mt-8 bg-ink-100 hairline rounded-3xl p-8 text-center">
             <h3 className="display-sm">Have your own question?</h3>
             <p className="mt-3 text-[15px] text-ink-600 max-w-md mx-auto">Get a cited answer from a verified specialist. Anonymous by default.</p>
@@ -3770,6 +3968,11 @@ const AwardsPage = () => (
           </Reveal>
         ))}
       </div>
+    </section>
+
+    {/* Awards integrity disclaimer */}
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+      <Reveal><Disclaimer variant="awards"/></Reveal>
     </section>
 
     {/* How nominations work */}
@@ -3961,6 +4164,7 @@ function App() {
     <>
       <Navbar onLoginClick={() => setLoginOpen(true)}/>
       <div className="min-h-screen">{renderRoute()}</div>
+      <SiteDisclaimerBanner/>
       <Footer/>
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)}/>
       <BookingModal booking={booking} onClose={() => setBooking(null)}/>

@@ -1145,73 +1145,116 @@ const HomePage = ({ onLoginClick }) => {
 
   return (
     <main>
-      {/* HERO — Apple Pro billboard */}
-      <section className="relative pt-24 pb-20 hero-bg overflow-hidden">
+      {/* HERO — transparency-led */}
+      <section className="relative pt-20 pb-14 hero-bg overflow-hidden">
         <div className="absolute inset-0 hero-grid pointer-events-none"/>
 
         {/* subtle floating glow orbs */}
         <div className="absolute -top-32 left-1/4 w-[520px] h-[520px] rounded-full bg-brand-500/20 blur-3xl pointer-events-none"/>
         <div className="absolute top-1/3 right-1/4 w-[420px] h-[420px] rounded-full bg-heal-500/15 blur-3xl pointer-events-none float-slow"/>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* tiny eyebrow */}
-          <div className="fade-up flex items-center justify-center gap-3 mb-8">
-            <span className="text-[12px] font-medium text-white/60 tracking-wide">MediNext · India</span>
-            <span className="text-white/20">·</span>
-            <span className="text-[12px] font-medium text-heal-400 tracking-wide inline-flex items-center gap-1.5">
+          <div className="fade-up flex items-center justify-center gap-3 mb-7">
+            <span className="text-[12px] font-medium text-white/70 tracking-wide">MediNext · India's first transparent healthcare directory</span>
+            <span className="hidden sm:inline text-white/20">·</span>
+            <span className="hidden sm:inline-flex text-[12px] font-medium text-heal-400 tracking-wide items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-heal-400 animate-pulse"/> Demo build
             </span>
           </div>
 
-          {/* Monumental headline */}
-          <h1 className="fade-up display-xl text-white">
-            Find a doctor, hospital or lab.
+          {/* Transparency-led headline */}
+          <h1 className="fade-up display-lg text-white">
+            Healthcare without
             <br/>
-            <span className="gradient-text-bright italic font-serif font-normal">All across&nbsp;India.</span>
+            <span className="gradient-text-bright italic font-serif font-normal">surprise&nbsp;bills.</span>
           </h1>
 
-          <p className="fade-up mt-7 text-[19px] sm:text-[21px] leading-[1.45] text-white/80 max-w-2xl mx-auto font-light">
-            Verified hospitals and doctors. Honest patient reviews. Transparent pricing. Plus a safe place to keep all your prescriptions and lab reports — your private health vault.
+          <p className="fade-up mt-6 text-[17px] sm:text-[19px] leading-[1.5] text-white/80 max-w-xl mx-auto font-light">
+            See what other Indian patients actually paid <em className="not-italic text-white font-medium">before</em> you book. Verified hospitals, doctors and labs. Honest reviews. No paid placements.
           </p>
 
-          {/* Hero CTAs (Apple-style: primary + secondary link with chevron) */}
-          <div className="fade-up mt-9 flex items-center justify-center gap-5 flex-wrap">
+          {/* Hero CTAs */}
+          <div className="fade-up mt-8 flex items-center justify-center gap-6 flex-wrap">
             <Btn as="a" href="#/doctors" variant="accent" size="lg" className="!px-7">Find a doctor</Btn>
-            <a href="#/vault" className="text-[15px] font-medium text-brand-300 hover:text-white inline-flex items-center gap-1 transition-colors">
-              Open my vault <Icon name="arrowRight" className="w-4 h-4"/>
+            <a href="#/journals" className="text-[15px] font-medium text-brand-300 hover:text-white inline-flex items-center gap-1 transition-colors">
+              See real bills <Icon name="arrowRight" className="w-4 h-4"/>
             </a>
           </div>
 
           {/* Search panel — floating glass */}
-          <div className="fade-up mt-14 max-w-3xl mx-auto">
+          <div className="fade-up mt-12 max-w-3xl mx-auto">
             <SearchBar inHero/>
           </div>
 
           {/* Trust strip */}
-          <div className="fade-up mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-white/75">
+          <div className="fade-up mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-white/75">
             <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> NABH and NABL verified</span>
             <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> Works with your ABHA ID</span>
             <span className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-400"/> Cashless insurance accepted</span>
           </div>
+        </div>
 
-          {/* Next available — floating strip */}
-          <div className="fade-up mt-16 max-w-md mx-auto">
-            <a href={`#/doctor/${nextDoc.slug}`}
-               className="group flex items-center gap-3 p-2 pr-4 rounded-full bg-white/[0.06] border border-white/10 hover:bg-white/[0.09] transition-colors text-left backdrop-blur-md">
-              <SmartImage src={portraitFor(nextDoc)} hue={nextDoc.image_hue} className="w-11 h-11 rounded-full shrink-0"/>
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] font-medium text-white truncate">Next consult · {nextDoc.name}</div>
-                <div className="text-[11px] text-white/60">{nextDoc.specialty} · {nextDoc.city} · {nextDoc.next_slot}</div>
+        {/* ─── TRANSPARENCY PROOF CARD ─── */}
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+          <div className="rounded-3xl bg-white/[0.06] backdrop-blur-xl border border-white/15 p-5 sm:p-7 shadow-2xl shadow-black/30">
+            <div className="flex items-center justify-between gap-4 flex-wrap mb-5">
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-white/60">The transparency moat</div>
+                <div className="text-[18px] sm:text-[20px] font-semibold text-white mt-0.5 tracking-apple-tight">What patients actually paid this month</div>
               </div>
-              <span className="text-[11px] font-medium text-heal-400 inline-flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-heal-400"/> Online
+              <span className="text-[11px] font-medium text-heal-300 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-heal-500/10 border border-heal-400/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-heal-400 pulse-dot"/> Updated from verified patient bills
               </span>
-            </a>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-3">
+              {[
+                { proc: "Normal delivery", city: "Mumbai", lo: 18000, med: 120000, hi: 240000, n: 12 },
+                { proc: "Cardiac stent", city: "Bangalore", lo: 140000, med: 285000, hi: 420000, n: 8 },
+                { proc: "Full body check-up", city: "Delhi NCR", lo: 999, med: 2400, hi: 6500, n: 24 }
+              ].map((item, i) => {
+                const fmt = (n) => n >= 100000 ? `₹${(n/100000).toFixed(1)}L` : n >= 1000 ? `₹${(n/1000).toFixed(0)}K` : `₹${n}`;
+                return (
+                  <a key={i} href="#/journals" className="block rounded-2xl bg-white/[0.04] border border-white/10 p-4 hover:bg-white/[0.07] transition-colors">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <div>
+                        <div className="text-[14px] font-semibold text-white">{item.proc}</div>
+                        <div className="text-[11px] text-white/55">{item.city}</div>
+                      </div>
+                      <span className="text-[10px] text-white/50">{item.n} bills</span>
+                    </div>
+                    {/* Visual range bar */}
+                    <div className="relative h-1.5 rounded-full bg-white/10 overflow-hidden mb-3">
+                      <div className="absolute inset-y-0 left-0 right-[15%] bg-gradient-to-r from-heal-500 via-amber-400 to-rose-500 rounded-full"/>
+                      <div className="absolute inset-y-0 w-1 bg-white" style={{ left: `${((item.med - item.lo) / (item.hi - item.lo)) * 85}%` }}/>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1 text-center">
+                      <div>
+                        <div className="text-[9px] text-heal-400 uppercase tracking-wide">Lowest</div>
+                        <div className="text-[13px] font-semibold text-heal-300">{fmt(item.lo)}</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] text-white/60 uppercase tracking-wide">Median</div>
+                        <div className="text-[14px] font-bold text-white">{fmt(item.med)}</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] text-rose-400 uppercase tracking-wide">Highest</div>
+                        <div className="text-[13px] font-semibold text-rose-300">{fmt(item.hi)}</div>
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+            <div className="mt-5 flex items-center justify-between text-[12px] text-white/55 flex-wrap gap-3">
+              <span>Same procedure. Same city. Up to <span className="text-white font-semibold">13× price difference</span>. This is why transparency matters.</span>
+              <a href="#/journals" className="text-brand-300 hover:text-white font-medium inline-flex items-center gap-1">Read patient stories <Icon name="arrowRight" className="w-3.5 h-3.5"/></a>
+            </div>
           </div>
         </div>
 
         {/* ─── ANIMATED HERO SHOWCASE ─── */}
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 sm:mt-24">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-12">
           <div className="relative rounded-5xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 aspect-[16/9] sm:aspect-[16/8]">
             {/* Background photo with ken-burns */}
             <SmartImage src={UNSPLASH("1666214280391-8ff5bd3c0bf0", 1800, 80)}
@@ -1311,7 +1354,7 @@ const HomePage = ({ onLoginClick }) => {
             <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 text-center pointer-events-none">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-[11px] font-medium border border-white/15">
                 <span className="w-1.5 h-1.5 rounded-full bg-heal-400 pulse-dot"/>
-                <span>Scroll down to see how it works</span>
+                <span>Transparency, in action</span>
               </div>
             </div>
           </div>

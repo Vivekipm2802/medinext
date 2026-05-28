@@ -252,6 +252,56 @@ const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
 const DATA = window.MEDINEXT_DATA;
 
+/* ─── DEMO IMAGE LIBRARY (curated, all CDN-verified) ─────────
+   Replace with Supabase Storage signed URLs at GA.            */
+const UNSPLASH = (id, w = 1600, q = 75) =>
+  `https://images.unsplash.com/photo-${id}?w=${w}&q=${q}&auto=format&fit=crop`;
+
+const PHOTO_LIBRARY = {
+  hospitals: [
+    "1586773860418-d37222d8fce3", "1538108149393-fbbd81895907", "1519494026892-80bbd2d6fd0d",
+    "1504439468489-c8920d796a29", "1666214280391-8ff5bd3c0bf0", "1631815589968-fdb09a223b1e",
+    "1551601651-bc60f254d532",   "1559757175-5700dde675bc",   "1551076805-e1869033e561",
+    "1666214280557-f1b5022eb634", "1631217872822-1c2546d6b864", "1584516150909-c43483ee7932"
+  ],
+  pathology: [
+    "1582719471384-894fbb16e074", "1581595220892-b0739db3ba8c", "1532187863486-abf9dbad1b69",
+    "1579154204601-01588f351e67", "1576091160550-2173dba999ef", "1571772996211-2f02c9727629",
+    "1559757148-5c350d0d3c56",   "1614935151651-0bea6508db6b", "1632571401005-458e9d244591",
+    "1587854692152-cbe660dbde88"
+  ],
+  pharmacies: [
+    "1576602976047-174e57a47881", "1585435557343-3b092031a831", "1471864190281-a93a3070b6de",
+    "1631549916768-4119b2e5f926", "1584308666744-24d5c474f2ae", "1587854692152-cbe660dbde88",
+    "1607619056574-7b8d3ee536b2", "1632571401005-458e9d244591", "1666214280557-f1b5022eb634",
+    "1559757175-5700dde675bc"
+  ],
+  // Pravatar portrait IDs — even = F-leaning, odd = M-leaning in pravatar's set; we'll just map sequentially.
+  doctorMale:   [12, 1, 28, 33, 51, 60, 65, 47],
+  doctorFemale: [5, 11, 24, 36, 49, 58]
+};
+
+// Deterministic pick — same entity always gets same photo
+const hash = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); };
+
+const photoFor = (kind, item) => {
+  const pool = PHOTO_LIBRARY[kind] || [];
+  if (!pool.length) return null;
+  return UNSPLASH(pool[hash(item.id || item.slug || "") % pool.length]);
+};
+
+const galleryFor = (kind, item, n = 4) => {
+  const pool = PHOTO_LIBRARY[kind] || [];
+  const base = hash(item.id || item.slug || "");
+  return Array.from({ length: Math.min(n, pool.length) }, (_, i) => UNSPLASH(pool[(base + i + 1) % pool.length], 800, 60));
+};
+
+const portraitFor = (doc) => {
+  const pool = doc.gender === "F" ? PHOTO_LIBRARY.doctorFemale : PHOTO_LIBRARY.doctorMale;
+  const id = pool[hash(doc.id || doc.slug) % pool.length];
+  return `https://i.pravatar.cc/600?img=${id}`;
+};
+
 /* ─── tiny icon set (SVG, no dep) ─────────────────────────────── */
 const Icon = ({ name, className = "w-5 h-5", strokeWidth = 1.8 }) => {
   const paths = {
@@ -418,6 +468,29 @@ const Pill = ({ children, tone = "ink", className = "" }) => {
     red:    "bg-red-50 text-red-600"
   };
   return <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide ${tones[tone]} ${className}`}>{children}</span>;
+};
+
+/* ─── SmartImage with skeleton + gradient fallback ──────────── */
+const SmartImage = ({ src, alt = "", hue = 200, className = "", imgClass = "", children }) => {
+  const [state, setState] = useState("loading"); // loading | ok | error
+  return (
+    <div className={`relative overflow-hidden ${className}`} style={{ '--h': hue }}>
+      {/* Gradient backdrop, visible while loading or if error */}
+      <div className={`absolute inset-0 avatar-gradient transition-opacity duration-700 ${state === "ok" ? "opacity-0" : "opacity-100"}`}/>
+      {/* Shimmer over the gradient while loading */}
+      {state === "loading" && (
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"/>
+      )}
+      {src && (
+        <img src={src} alt={alt}
+             loading="lazy"
+             onLoad={() => setState("ok")}
+             onError={() => setState("error")}
+             className={`relative w-full h-full object-cover transition-opacity duration-700 ${state === "ok" ? "opacity-100" : "opacity-0"} ${imgClass}`}/>
+      )}
+      {children}
+    </div>
+  );
 };
 
 /* ─── Reveal on scroll wrapper ───────────────────────────────── */
@@ -765,13 +838,13 @@ const HomePage = ({ onLoginClick }) => {
           {/* Next available — floating strip */}
           <div className="fade-up mt-16 max-w-md mx-auto">
             <a href={`#/doctor/${nextDoc.slug}`}
-               className="group flex items-center gap-3 p-3 rounded-full bg-white/[0.06] border border-white/10 hover:bg-white/[0.09] transition-colors text-left backdrop-blur-md">
-              <Avatar name={nextDoc.name} hue={nextDoc.image_hue} size={40}/>
+               className="group flex items-center gap-3 p-2 pr-4 rounded-full bg-white/[0.06] border border-white/10 hover:bg-white/[0.09] transition-colors text-left backdrop-blur-md">
+              <SmartImage src={portraitFor(nextDoc)} hue={nextDoc.image_hue} className="w-11 h-11 rounded-full shrink-0"/>
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-medium text-white truncate">Next consult · {nextDoc.name}</div>
                 <div className="text-[11px] text-white/60">{nextDoc.specialty} · {nextDoc.city} · {nextDoc.next_slot}</div>
               </div>
-              <span className="text-[11px] font-medium text-heal-400 inline-flex items-center gap-1 pr-2">
+              <span className="text-[11px] font-medium text-heal-400 inline-flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-heal-400"/> Online
               </span>
             </a>
@@ -1005,10 +1078,11 @@ const HomePage = ({ onLoginClick }) => {
 /* ─── CARD COMPONENTS ────────────────────────────────────────── */
 const DoctorCard = ({ doctor: d }) => {
   const hosp = DATA.hospitals.find(h => h.id === d.hospital_id);
+  const portrait = portraitFor(d);
   return (
     <a href={`#/doctor/${d.slug}`} className="block bg-white rounded-3xl hairline p-6 card-soft h-full">
       <div className="flex gap-4">
-        <Avatar name={d.name} hue={d.image_hue} size={56}/>
+        <SmartImage src={portrait} hue={d.image_hue} className="w-14 h-14 rounded-2xl shrink-0"/>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
@@ -1036,11 +1110,11 @@ const DoctorCard = ({ doctor: d }) => {
 
 const HospitalCard = ({ hospital: h }) => (
   <a href={`#/hospital/${h.slug}`} className="block bg-white rounded-3xl hairline overflow-hidden card-soft h-full">
-    <div className="h-36 relative avatar-gradient" style={{ '--h': h.image_hue }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"/>
+    <SmartImage src={photoFor("hospitals", h)} hue={h.image_hue} className="h-40 relative">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent"/>
       <div className="absolute top-3 left-3 flex flex-wrap gap-1">
         {h.accreditation.slice(0,2).map(a => (
-          <span key={a} className="text-[10px] font-medium tracking-wide glass !bg-white/85 text-ink-900 px-2 py-0.5 rounded-full">{a}</span>
+          <span key={a} className="text-[10px] font-medium tracking-wide bg-white/90 backdrop-blur-md text-ink-900 px-2 py-0.5 rounded-full">{a}</span>
         ))}
       </div>
       {h.emergency_24x7 && (
@@ -1049,7 +1123,7 @@ const HospitalCard = ({ hospital: h }) => (
       <div className="absolute bottom-3 left-5 right-5 text-white">
         <div className="text-[11px] opacity-90">{h.type} · {h.beds} beds</div>
       </div>
-    </div>
+    </SmartImage>
     <div className="p-6">
       <div className="flex items-start justify-between gap-2">
         <div className="font-semibold text-ink-900 text-[16px] leading-snug tracking-apple-tight">{h.name}</div>
@@ -1071,9 +1145,7 @@ const HospitalCard = ({ hospital: h }) => (
 const LabCard = ({ lab: l }) => (
   <a href={`#/pathology/${l.slug}`} className="block bg-white rounded-3xl hairline p-6 card-soft h-full">
     <div className="flex items-start gap-4">
-      <div className="w-14 h-14 rounded-2xl avatar-gradient flex items-center justify-center text-white" style={{ '--h': l.image_hue }}>
-        <Icon name="flask" className="w-6 h-6"/>
-      </div>
+      <SmartImage src={photoFor("pathology", l)} hue={l.image_hue} className="w-14 h-14 rounded-2xl shrink-0"/>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div>
@@ -1101,9 +1173,7 @@ const LabCard = ({ lab: l }) => (
 const PharmacyCard = ({ pharmacy: p }) => (
   <a href={`#/pharmacy/${p.slug}`} className="block bg-white rounded-3xl hairline p-6 card-soft h-full">
     <div className="flex items-start gap-4">
-      <div className="w-14 h-14 rounded-2xl avatar-gradient flex items-center justify-center text-white" style={{ '--h': p.image_hue }}>
-        <Icon name="pill" className="w-6 h-6"/>
-      </div>
+      <SmartImage src={photoFor("pharmacies", p)} hue={p.image_hue} className="w-14 h-14 rounded-2xl shrink-0"/>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div>
@@ -1432,80 +1502,212 @@ const HospitalDetail = ({ slug }) => {
   const h = DATA.hospitals.find(x => x.slug === slug);
   if (!h) return <NotFound/>;
   const hospDoctors = DATA.doctors.filter(d => d.hospital_id === h.id);
+  const cover = photoFor("hospitals", h);
+  const gallery = galleryFor("hospitals", h, 4);
+
   return (
-    <main>
-      <DetailHeader
-        title={h.name}
-        subtitle={`${h.type} · ${h.beds} beds · ${h.locality}, ${h.city}`}
-        badges={[...h.accreditation, h.emergency_24x7 && "24×7 Emergency", h.cashless && "Cashless"].filter(Boolean)}
-        image_hue={h.image_hue} icon="building"
-        rating={h.rating} reviews={h.reviews}
-        back="/hospitals" backLabel="Hospitals"
-      />
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+    <main className="-mt-px">
+      {/* CINEMATIC COVER — Apple product page hero */}
+      <section className="relative">
+        <SmartImage src={cover} hue={h.image_hue} alt={h.name}
+                    className="w-full h-[60vh] sm:h-[68vh] min-h-[420px] max-h-[720px]"/>
+        {/* gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"/>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent pointer-events-none"/>
+
+        {/* Breadcrumb (overlay) */}
+        <nav className="absolute top-16 inset-x-0 z-10" aria-label="Breadcrumb">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-[12px] text-white/70 flex items-center gap-2 flex-wrap">
+              <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+              <span className="text-white/40">/</span>
+              <a href="#/hospitals" className="hover:text-white">Hospitals</a>
+              <span className="text-white/40">/</span>
+              <span className="text-white truncate max-w-[260px]">{h.name}</span>
+            </div>
+          </div>
+        </nav>
+
+        {/* Title block at bottom of cover */}
+        <div className="absolute bottom-0 inset-x-0 pb-10 sm:pb-16">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <div className="flex flex-wrap items-center gap-1.5 mb-4">
+              {h.accreditation.map(a => (
+                <span key={a} className="text-[11px] font-medium tracking-wide bg-white/15 backdrop-blur-md text-white px-3 py-1 rounded-full border border-white/15">{a}</span>
+              ))}
+              {h.emergency_24x7 && <span className="text-[11px] font-medium tracking-wide bg-red-500 text-white px-3 py-1 rounded-full pulse-soft">24×7 Emergency</span>}
+              {h.cashless && <span className="text-[11px] font-medium tracking-wide bg-heal-500/20 backdrop-blur-md text-heal-300 border border-heal-400/30 px-3 py-1 rounded-full">Cashless</span>}
+            </div>
+            <h1 className="display-lg max-w-4xl">{h.name}</h1>
+            <div className="mt-3 text-[16px] text-white/80 flex items-center gap-3 flex-wrap">
+              <span>{h.type}</span>
+              <span className="text-white/40">·</span>
+              <span>{h.beds} beds</span>
+              <span className="text-white/40">·</span>
+              <span className="inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {h.locality}, {h.city}</span>
+            </div>
+            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/15 backdrop-blur-md border border-amber-300/20 text-amber-300 text-[13px] font-medium">
+              <Icon name="star" className="w-3.5 h-3.5 fill-current" strokeWidth={0}/> {h.rating} <span className="text-amber-300/70">· {h.reviews.toLocaleString()} reviews</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* GALLERY STRIP */}
+      <section className="bg-white border-y border-ink-200/60">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {gallery.map((src, i) => (
+              <SmartImage key={i} src={src} hue={(h.image_hue + i * 30) % 360}
+                          className="aspect-[4/3] rounded-2xl"/>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CONTENT */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">About</h2>
-              <p className="mt-2 text-ink-700 leading-relaxed">{h.about}</p>
-              <div className="mt-5 grid sm:grid-cols-3 gap-3 text-center">
-                <div className="rounded-xl bg-ink-50 p-3"><div className="text-2xl font-bold text-ink-900">{h.beds}</div><div className="text-xs text-ink-500 uppercase">Beds</div></div>
-                <div className="rounded-xl bg-ink-50 p-3"><div className="text-2xl font-bold text-ink-900">{h.doctors_count}</div><div className="text-xs text-ink-500 uppercase">Doctors</div></div>
-                <div className="rounded-xl bg-ink-50 p-3"><div className="text-2xl font-bold text-ink-900">{new Date().getFullYear() - h.established}</div><div className="text-xs text-ink-500 uppercase">Years serving</div></div>
-              </div>
-            </div>
 
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">Specialties</h2>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {h.specialties.map(s => <Pill key={s} tone="brand">{s}</Pill>)}
-              </div>
-            </div>
-
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">Facilities</h2>
-              <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {h.facilities.map(f => (
-                  <div key={f} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-ink-50 text-sm text-ink-700">
-                    <Icon name="check" className="w-4 h-4 text-heal-500"/> {f}
+            {/* About + stats */}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">About</div>
+                <h2 className="display-sm">A place built for healing.</h2>
+                <p className="mt-4 text-[15px] leading-relaxed text-ink-700">{h.about}</p>
+                <div className="mt-7 grid grid-cols-3 gap-3 text-center">
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[28px] font-semibold text-ink-900 tracking-tightest">{h.beds}</div>
+                    <div className="text-[11px] text-ink-500 mt-1 uppercase tracking-wide">Beds</div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {hospDoctors.length > 0 && (
-              <div className="bg-white hairline rounded-3xl p-7">
-                <h2 className="font-bold text-ink-900 text-lg">Doctors at {h.name}</h2>
-                <div className="mt-3 grid sm:grid-cols-2 gap-3">
-                  {hospDoctors.map(d => <DoctorCard key={d.id} doctor={d}/>)}
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[28px] font-semibold text-ink-900 tracking-tightest">{h.doctors_count}</div>
+                    <div className="text-[11px] text-ink-500 mt-1 uppercase tracking-wide">Doctors</div>
+                  </div>
+                  <div className="rounded-2xl bg-ink-100 p-5">
+                    <div className="text-[28px] font-semibold text-ink-900 tracking-tightest">{new Date().getFullYear() - h.established}</div>
+                    <div className="text-[11px] text-ink-500 mt-1 uppercase tracking-wide">Years</div>
+                  </div>
                 </div>
               </div>
+            </Reveal>
+
+            {/* Specialties — Apple feature-tile grid */}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Specialties</div>
+                <h2 className="display-sm">{h.specialties.length} fields of medicine.</h2>
+                <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {h.specialties.map(s => (
+                    <div key={s} className="px-4 py-3 rounded-2xl bg-ink-100 hairline text-[14px] font-medium text-ink-900 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-500"/> {s}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+
+            {/* Facilities */}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Facilities</div>
+                <h2 className="display-sm">Built to handle anything.</h2>
+                <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {h.facilities.map(f => (
+                    <div key={f} className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-ink-100 text-[14px] text-ink-700">
+                      <span className="w-5 h-5 rounded-full bg-heal-500 text-white flex items-center justify-center shrink-0">
+                        <Icon name="check" className="w-3 h-3" strokeWidth={3}/>
+                      </span>
+                      {f}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+
+            {hospDoctors.length > 0 && (
+              <Reveal>
+                <div>
+                  <div className="eyebrow mb-2">Our team</div>
+                  <h2 className="display-sm">Doctors at {h.name.split(" ")[0]}.</h2>
+                  <div className="mt-6 grid sm:grid-cols-2 gap-4">
+                    {hospDoctors.map(d => <DoctorCard key={d.id} doctor={d}/>)}
+                  </div>
+                </div>
+              </Reveal>
             )}
 
-            <ReviewsBlock rating={h.rating} reviews={h.reviews}/>
+            <Reveal><ReviewsBlock rating={h.rating} reviews={h.reviews}/></Reveal>
+
+            {/* Location map */}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl overflow-hidden card-soft">
+                <div className="p-8 pb-4">
+                  <div className="eyebrow mb-2">Location</div>
+                  <h2 className="display-sm">{h.locality}, {h.city}.</h2>
+                  <div className="mt-3 text-[14px] text-ink-600">{h.address}</div>
+                </div>
+                <a target="_blank" rel="noreferrer"
+                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name + ", " + h.address)}`}
+                   className="relative block aspect-[16/8] bg-ink-100 mt-3">
+                  <SmartImage src={`https://staticmap.openstreetmap.de/staticmap.php?center=20.5937,78.9629&zoom=5&size=1200x500&maptype=mapnik`}
+                              hue={h.image_hue} className="absolute inset-0"/>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
+                  <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-white">
+                    <div>
+                      <div className="text-[13px] text-white/70">Tap to open</div>
+                      <div className="text-[16px] font-medium inline-flex items-center gap-1">Get directions <Icon name="arrowRight" className="w-4 h-4"/></div>
+                    </div>
+                    <Pill tone="ink" className="!bg-white !text-ink-900">Open in Maps</Pill>
+                  </div>
+                </a>
+              </div>
+            </Reveal>
           </div>
 
+          {/* Sticky booking sidebar */}
           <aside className="space-y-4">
-            <div className="bg-white hairline rounded-3xl p-7 sticky top-20">
-              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Get in touch</div>
-              <div className="mt-3 space-y-2 text-sm text-ink-700">
-                <div className="flex items-start gap-2"><Icon name="map" className="w-4 h-4 mt-0.5 text-ink-400"/> {h.address}</div>
-                <div className="flex items-center gap-2"><Icon name="phone" className="w-4 h-4 text-ink-400"/> {h.phone}</div>
-                <div className="flex items-center gap-2"><Icon name="rupee" className="w-4 h-4 text-ink-400"/> Consult ₹{h.fee_consultation}</div>
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20 card-soft">
+              <div className="eyebrow">Booking</div>
+              <div className="mt-3 flex items-end justify-between">
+                <div>
+                  <div className="text-[12px] text-ink-500">Consult from</div>
+                  <div className="text-[34px] font-semibold text-ink-900 tracking-tightest leading-none">₹{h.fee_consultation}</div>
+                </div>
+                <Pill tone="heal"><Icon name="clock" className="w-3 h-3"/> Same day</Pill>
               </div>
-              <div className="mt-5 grid grid-cols-1 gap-2">
-                <Btn size="lg" as="a" href={`tel:${h.phone}`}><Icon name="phone" className="w-4 h-4"/> Call now</Btn>
-                <Btn size="lg" variant="heal" as="a" href={`#/doctors?city=${encodeURIComponent(h.city)}`}><Icon name="calendar" className="w-4 h-4"/> Book consultation</Btn>
+
+              <div className="mt-6 space-y-2.5 text-[13px] text-ink-700">
+                <div className="flex items-start gap-2.5"><Icon name="map" className="w-4 h-4 mt-0.5 text-ink-400"/> <span className="leading-snug">{h.address}</span></div>
+                <div className="flex items-center gap-2.5"><Icon name="phone" className="w-4 h-4 text-ink-400"/> {h.phone}</div>
+                <div className="flex items-center gap-2.5"><Icon name="shield" className="w-4 h-4 text-ink-400"/> {h.insurance_partners}+ insurance partners</div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 gap-2">
+                <Btn size="lg" variant="primary" as="a" href={`#/doctors?city=${encodeURIComponent(h.city)}`}>Book consultation</Btn>
+                <Btn size="lg" variant="ghost" as="a" href={`tel:${h.phone}`}><Icon name="phone" className="w-4 h-4"/> Call hospital</Btn>
                 <Btn size="lg" variant="ghost" as="a" target="_blank" rel="noreferrer"
                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name + ", " + h.address)}`}>
                   <Icon name="map" className="w-4 h-4"/> Get directions
                 </Btn>
-                {h.emergency_24x7 && (
-                  <Btn size="lg" variant="danger" className="pulse-soft" as="a" href="tel:102">
-                    <Icon name="alert" className="w-4 h-4"/> Emergency · 102
-                  </Btn>
-                )}
               </div>
+
+              {h.emergency_24x7 && (
+                <a href="tel:102" className="mt-3 block">
+                  <div className="rounded-2xl bg-gradient-to-br from-red-500 to-red-600 text-white p-4 hover:brightness-110 transition-all">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-[11px] uppercase tracking-wide text-white/80">Emergency</div>
+                        <div className="text-[18px] font-semibold">Call 102 / 108</div>
+                      </div>
+                      <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center pulse-soft">
+                        <Icon name="alert" className="w-5 h-5"/>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              )}
             </div>
           </aside>
         </div>
@@ -1518,69 +1720,179 @@ const DoctorDetail = ({ slug, onBook }) => {
   const d = DATA.doctors.find(x => x.slug === slug);
   if (!d) return <NotFound/>;
   const hosp = DATA.hospitals.find(h => h.id === d.hospital_id);
+  const portrait = portraitFor(d);
+  const firstName = d.name.replace(/^Dr\.\s*/, '').split(' ')[0];
+
   return (
     <main>
-      <DetailHeader
-        title={d.name}
-        subtitle={`${d.specialty} · ${d.experience_years} years · ${d.locality}, ${d.city}`}
-        badges={[d.qualification, ...(d.available_modes||[]), `Reg ${d.reg_no}`]}
-        image_hue={d.image_hue} icon="stethoscope"
-        rating={d.rating} reviews={d.reviews}
-        back="/doctors" backLabel="Doctors"
-      />
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">About Dr. {d.name.replace(/^Dr\.\s*/, '').split(' ')[0]}</h2>
-              <p className="mt-2 text-ink-700 leading-relaxed">{d.about}</p>
-              {d.awards.length > 0 && (
-                <div className="mt-4">
-                  <div className="text-xs font-semibold uppercase text-ink-500 mb-2">Awards & recognition</div>
-                  <div className="flex flex-wrap gap-2">
-                    {d.awards.map(a => <Pill key={a} tone="amber"><Icon name="award" className="w-3 h-3"/> {a}</Pill>)}
-                  </div>
-                </div>
-              )}
-            </div>
-            {hosp && (
-              <div className="bg-white hairline rounded-3xl p-7">
-                <h2 className="font-bold text-ink-900 text-lg">Practices at</h2>
-                <div className="mt-3"><HospitalCard hospital={hosp}/></div>
-              </div>
-            )}
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">Languages spoken</h2>
-              <div className="mt-3 flex gap-2 flex-wrap">{d.languages.map(l => <Pill key={l}>{l}</Pill>)}</div>
-            </div>
+      {/* PORTRAIT HERO — magazine cover style */}
+      <section className="relative hero-bg overflow-hidden">
+        <div className="absolute inset-0 hero-grid pointer-events-none"/>
+        <div className="absolute -top-32 right-1/3 w-[500px] h-[500px] rounded-full bg-brand-500/20 blur-3xl pointer-events-none"/>
+        <div className="absolute top-1/4 left-1/4 w-[420px] h-[420px] rounded-full bg-heal-500/15 blur-3xl pointer-events-none"/>
 
-            <ReviewsBlock rating={d.rating} reviews={d.reviews}/>
+        {/* Breadcrumb */}
+        <nav className="relative pt-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Breadcrumb">
+          <div className="text-[12px] text-white/60 flex items-center gap-2 flex-wrap">
+            <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+            <span className="text-white/30">/</span>
+            <a href="#/doctors" className="hover:text-white">Doctors</a>
+            <span className="text-white/30">/</span>
+            <span className="text-white truncate max-w-[260px]">{d.name}</span>
+          </div>
+        </nav>
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 grid lg:grid-cols-12 gap-10 items-center">
+          {/* Portrait */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-start">
+            <div className="relative">
+              <div className="absolute -inset-6 bg-gradient-to-br from-brand-500/40 via-heal-500/30 to-purple-500/40 rounded-[3rem] blur-3xl"/>
+              <SmartImage src={portrait} hue={d.image_hue} alt={d.name}
+                          className="relative w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] lg:w-[380px] lg:h-[380px] rounded-[2.5rem] border border-white/15 shadow-2xl"/>
+              <div className="absolute -bottom-4 -right-4 px-4 py-2.5 rounded-2xl glass-dark border border-white/15 text-white shadow-lg">
+                <div className="text-[10px] text-white/60 uppercase tracking-wider">Next slot</div>
+                <div className="text-[14px] font-semibold mt-0.5">{d.next_slot}</div>
+              </div>
+            </div>
           </div>
 
-          <aside className="space-y-4">
-            <div className="bg-white hairline rounded-3xl p-7 sticky top-20">
-              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Book consultation</div>
-              <div className="mt-3 flex items-center justify-between">
+          {/* Title block */}
+          <div className="lg:col-span-7 text-white">
+            <div className="eyebrow !text-white/60">{d.specialty}</div>
+            <h1 className="mt-2 display-lg">{d.name}</h1>
+            <div className="mt-3 text-[16px] text-white/70">
+              {d.qualification}
+            </div>
+            <div className="mt-5 flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 text-amber-300 text-[12px] font-medium border border-amber-300/20">
+                <Icon name="star" className="w-3.5 h-3.5 fill-current" strokeWidth={0}/> {d.rating} · {d.reviews.toLocaleString()} reviews
+              </span>
+              {d.available_modes.includes("Video") && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-heal-500/15 text-heal-300 text-[12px] font-medium border border-heal-400/30">
+                  <Icon name="video" className="w-3 h-3"/> Video consult
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-[12px] font-medium border border-white/10">
+                Reg {d.reg_no}
+              </span>
+            </div>
+
+            {/* Stats grid */}
+            <div className="mt-7 grid grid-cols-3 gap-3 max-w-md">
+              <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-4 backdrop-blur-md">
+                <div className="text-[26px] font-semibold text-white tracking-tightest">{d.experience_years}</div>
+                <div className="text-[10px] text-white/55 uppercase tracking-wide mt-0.5">Yrs experience</div>
+              </div>
+              <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-4 backdrop-blur-md">
+                <div className="text-[26px] font-semibold text-white tracking-tightest">{d.reviews.toLocaleString()}</div>
+                <div className="text-[10px] text-white/55 uppercase tracking-wide mt-0.5">Reviews</div>
+              </div>
+              <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-4 backdrop-blur-md">
+                <div className="text-[26px] font-semibold text-white tracking-tightest">{d.languages.length}</div>
+                <div className="text-[10px] text-white/55 uppercase tracking-wide mt-0.5">Languages</div>
+              </div>
+            </div>
+
+            {/* Hero CTAs */}
+            <div className="mt-7 flex items-center gap-4 flex-wrap">
+              {d.available_modes.includes("Video") && (
+                <Btn variant="heal" size="lg" onClick={() => onBook(d, "Video")}>
+                  <Icon name="video" className="w-4 h-4"/> Video consult · ₹{d.fee}
+                </Btn>
+              )}
+              <button onClick={() => onBook(d, "In-Clinic")}
+                      className="text-[15px] font-medium text-white inline-flex items-center gap-1 hover:gap-2 transition-all">
+                Book in-clinic <Icon name="arrowRight" className="w-4 h-4"/>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTENT */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">About</div>
+                <h2 className="display-sm">Meet Dr. {firstName}.</h2>
+                <p className="mt-4 text-[16px] leading-relaxed text-ink-700">{d.about}</p>
+                {d.awards.length > 0 && (
+                  <div className="mt-7">
+                    <div className="eyebrow mb-3">Awards & recognition</div>
+                    <div className="flex flex-wrap gap-2">
+                      {d.awards.map(a => (
+                        <div key={a} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-50 hairline text-[13px] font-medium text-amber-800">
+                          <Icon name="award" className="w-4 h-4"/> {a}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Languages spoken</div>
+                <h2 className="display-sm">Fluent in {d.languages.length}.</h2>
+                <div className="mt-5 flex gap-2 flex-wrap">
+                  {d.languages.map(l => (
+                    <div key={l} className="px-4 py-2.5 rounded-2xl bg-ink-100 text-[14px] font-medium text-ink-900">{l}</div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+
+            {hosp && (
+              <Reveal>
                 <div>
-                  <div className="text-xs text-ink-500">Consult fee</div>
-                  <div className="text-2xl font-bold text-ink-900">₹{d.fee}</div>
+                  <div className="eyebrow mb-2">Practices at</div>
+                  <h2 className="display-sm mb-6">{hosp.name}.</h2>
+                  <HospitalCard hospital={hosp}/>
+                </div>
+              </Reveal>
+            )}
+
+            <Reveal><ReviewsBlock rating={d.rating} reviews={d.reviews}/></Reveal>
+          </div>
+
+          {/* Booking sidebar */}
+          <aside className="space-y-4">
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20 card-soft">
+              <div className="flex items-center gap-3 pb-5 border-b border-ink-200/60">
+                <SmartImage src={portrait} hue={d.image_hue} className="w-12 h-12 rounded-2xl"/>
+                <div className="min-w-0">
+                  <div className="font-semibold text-ink-900 text-[14px] truncate">{d.name}</div>
+                  <div className="text-[12px] text-ink-500">{d.specialty}</div>
+                </div>
+              </div>
+              <div className="mt-4 flex items-end justify-between">
+                <div>
+                  <div className="text-[12px] text-ink-500">Consult fee</div>
+                  <div className="text-[34px] font-semibold text-ink-900 tracking-tightest leading-none">₹{d.fee}</div>
                 </div>
                 <Pill tone="heal"><Icon name="clock" className="w-3 h-3"/> {d.next_slot}</Pill>
               </div>
 
-              <div className="mt-5 grid grid-cols-1 gap-2">
+              <div className="mt-6 grid grid-cols-1 gap-2">
                 {d.available_modes.includes("Video") && (
                   <Btn size="lg" variant="heal" onClick={() => onBook(d, "Video")}>
                     <Icon name="video" className="w-4 h-4"/> Video consult
                   </Btn>
                 )}
-                <Btn size="lg" onClick={() => onBook(d, "In-Clinic")}>
+                <Btn size="lg" variant="primary" onClick={() => onBook(d, "In-Clinic")}>
                   <Icon name="calendar" className="w-4 h-4"/> Book in-clinic
                 </Btn>
               </div>
 
-              <div className="mt-5 text-xs text-ink-500">
-                100% verified profile · Cancellation up to 1 hour before slot.
+              <div className="mt-6 hr-apple"/>
+              <div className="mt-5 text-[12px] text-ink-500 space-y-2">
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Verified profile</div>
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Free cancellation up to 1 hour before</div>
+                <div className="inline-flex items-center gap-2"><Icon name="check" className="w-3.5 h-3.5 text-heal-500"/> Reports auto-saved to your vault</div>
               </div>
             </div>
           </aside>
@@ -1592,73 +1904,134 @@ const DoctorDetail = ({ slug, onBook }) => {
 
 const PathologyDetail = ({ slug }) => {
   const l = DATA.pathology.find(x => x.slug === slug);
-  // Stable, deterministic per-test prices (no Math.random in render)
   const testPrices = useMemo(() => {
     if (!l) return {};
     const seed = (s) => s.split("").reduce((a,c) => a + c.charCodeAt(0), 0);
     return Object.fromEntries(l.popular_tests.map(t => [t, l.starting_price + (seed(t) % 400)]));
   }, [l && l.id]);
   if (!l) return <NotFound/>;
+  const cover = photoFor("pathology", l);
+  const gallery = galleryFor("pathology", l, 3);
+
   return (
-    <main>
-      <DetailHeader
-        title={l.name}
-        subtitle={`${l.locality}, ${l.city}`}
-        badges={[l.nabl && "NABL accredited", l.home_collection && "Home collection", l.open_24x7 && "24×7", `${l.report_tat_hours}h TAT`].filter(Boolean)}
-        image_hue={l.image_hue} icon="flask"
-        rating={l.rating} reviews={l.reviews}
-        back="/pathology" backLabel="Diagnostics"
-      />
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+    <main className="-mt-px">
+      {/* COVER */}
+      <section className="relative">
+        <SmartImage src={cover} hue={l.image_hue} alt={l.name}
+                    className="w-full h-[52vh] min-h-[360px] max-h-[620px]"/>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"/>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"/>
+
+        <nav className="absolute top-16 inset-x-0 z-10" aria-label="Breadcrumb">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-[12px] text-white/70 flex items-center gap-2 flex-wrap">
+            <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+            <span className="text-white/40">/</span>
+            <a href="#/pathology" className="hover:text-white">Diagnostics</a>
+            <span className="text-white/40">/</span>
+            <span className="text-white truncate max-w-[260px]">{l.name}</span>
+          </div>
+        </nav>
+
+        <div className="absolute bottom-0 inset-x-0 pb-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <div className="flex flex-wrap items-center gap-1.5 mb-4">
+              {l.nabl && <span className="text-[11px] font-medium tracking-wide bg-heal-500/20 backdrop-blur-md text-heal-300 border border-heal-400/30 px-3 py-1 rounded-full">NABL accredited</span>}
+              {l.home_collection && <span className="text-[11px] font-medium tracking-wide bg-white/15 backdrop-blur-md text-white px-3 py-1 rounded-full border border-white/15">Home collection</span>}
+              {l.open_24x7 && <span className="text-[11px] font-medium tracking-wide bg-amber-400/20 backdrop-blur-md text-amber-200 border border-amber-300/30 px-3 py-1 rounded-full">Open 24×7</span>}
+              <span className="text-[11px] font-medium tracking-wide bg-white/15 backdrop-blur-md text-white px-3 py-1 rounded-full border border-white/15">{l.report_tat_hours}h TAT</span>
+            </div>
+            <h1 className="display-lg">{l.name}</h1>
+            <div className="mt-3 text-[16px] text-white/80 flex items-center gap-3 flex-wrap">
+              <span className="inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {l.locality}, {l.city}</span>
+              <span className="text-white/40">·</span>
+              <span className="inline-flex items-center gap-1.5 text-amber-300">
+                <Icon name="star" className="w-3.5 h-3.5 fill-current" strokeWidth={0}/> {l.rating} · {l.reviews.toLocaleString()} reviews
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery */}
+      <section className="bg-white border-y border-ink-200/60">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 grid grid-cols-3 gap-3">
+          {gallery.map((src, i) => (
+            <SmartImage key={i} src={src} hue={(l.image_hue + i * 40) % 360} className="aspect-[4/3] rounded-2xl"/>
+          ))}
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">About</h2>
-              <p className="mt-2 text-ink-700 leading-relaxed">{l.about}</p>
-              <div className="mt-3 text-sm text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {l.address}</div>
-            </div>
 
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">Popular tests at this lab</h2>
-              <div className="mt-3 divide-y divide-ink-100">
-                {l.popular_tests.map(t => (
-                  <div key={t} className="flex items-center justify-between py-3">
-                    <div>
-                      <div className="font-semibold text-ink-900 text-sm">{t}</div>
-                      <div className="text-xs text-ink-500">Sample at home · Report in {l.report_tat_hours}h</div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <div className="text-[11px] text-ink-500">From</div>
-                        <div className="font-bold text-ink-900">₹{testPrices[t]}</div>
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">About</div>
+                <h2 className="display-sm">Diagnostics, done right.</h2>
+                <p className="mt-4 text-[15px] leading-relaxed text-ink-700">{l.about}</p>
+                <div className="mt-4 text-[13px] text-ink-500 inline-flex items-center gap-1.5"><Icon name="map" className="w-4 h-4"/> {l.address}</div>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Popular tests</div>
+                <h2 className="display-sm">Book in seconds.</h2>
+                <div className="mt-6 divide-y divide-ink-200/60">
+                  {l.popular_tests.map(t => (
+                    <div key={t} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
+                      <div className="min-w-0">
+                        <div className="font-medium text-ink-900 text-[15px]">{t}</div>
+                        <div className="text-[12px] text-ink-500 mt-0.5">Home collection · Report in {l.report_tat_hours}h · Auto-saved to vault</div>
                       </div>
-                      <Btn size="sm" variant="soft">Add</Btn>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <div className="text-[11px] text-ink-500">From</div>
+                          <div className="text-[16px] font-semibold text-ink-900">₹{testPrices[t]}</div>
+                        </div>
+                        <Btn size="sm" variant="soft">Add</Btn>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            </Reveal>
 
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">Radiology & scans</h2>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {l.scans.map(s => <Pill key={s} tone="brand">{s}</Pill>)}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Radiology & scans</div>
+                <h2 className="display-sm">Imaging on site.</h2>
+                <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {l.scans.map(s => (
+                    <div key={s} className="px-4 py-3 rounded-2xl bg-ink-100 hairline text-[14px] font-medium text-ink-900 inline-flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-500"/> {s}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </Reveal>
 
-            <ReviewsBlock rating={l.rating} reviews={l.reviews}/>
+            <Reveal><ReviewsBlock rating={l.rating} reviews={l.reviews}/></Reveal>
           </div>
 
           <aside className="space-y-4">
-            <div className="bg-white hairline rounded-3xl p-7 sticky top-20">
-              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Book a test</div>
-              <div className="mt-3 space-y-2 text-sm text-ink-700">
-                <div className="flex items-center gap-2"><Icon name="truck" className="w-4 h-4 text-ink-400"/> Home collection in your area</div>
-                <div className="flex items-center gap-2"><Icon name="clock" className="w-4 h-4 text-ink-400"/> Report in {l.report_tat_hours} hours</div>
-                <div className="flex items-center gap-2"><Icon name="shield" className="w-4 h-4 text-ink-400"/> Auto-saved to your Vault</div>
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20 card-soft">
+              <div className="eyebrow">Book a test</div>
+              <div className="mt-3 flex items-end justify-between">
+                <div>
+                  <div className="text-[12px] text-ink-500">Tests from</div>
+                  <div className="text-[34px] font-semibold text-ink-900 tracking-tightest leading-none">₹{l.starting_price}</div>
+                </div>
+                <Pill tone="heal"><Icon name="clock" className="w-3 h-3"/> {l.report_tat_hours}h</Pill>
               </div>
-              <div className="mt-5 grid gap-2">
-                <Btn size="lg" variant="heal"><Icon name="truck" className="w-4 h-4"/> Schedule home collection</Btn>
+              <div className="mt-6 space-y-2.5 text-[13px] text-ink-700">
+                <div className="inline-flex items-center gap-2"><Icon name="truck" className="w-4 h-4 text-ink-400"/> Home collection in your area</div>
+                <div className="inline-flex items-center gap-2"><Icon name="clock" className="w-4 h-4 text-ink-400"/> Report in {l.report_tat_hours} hours</div>
+                <div className="inline-flex items-center gap-2"><Icon name="shield" className="w-4 h-4 text-ink-400"/> Auto-saved to your Vault</div>
+              </div>
+              <div className="mt-6 grid gap-2">
+                <Btn size="lg" variant="primary"><Icon name="truck" className="w-4 h-4"/> Schedule home collection</Btn>
                 <Btn size="lg" variant="ghost" as="a" href={`tel:${l.phone}`}><Icon name="phone" className="w-4 h-4"/> {l.phone}</Btn>
               </div>
             </div>
@@ -1672,69 +2045,122 @@ const PathologyDetail = ({ slug }) => {
 const PharmacyDetail = ({ slug }) => {
   const p = DATA.pharmacies.find(x => x.slug === slug);
   if (!p) return <NotFound/>;
+  const cover = photoFor("pharmacies", p);
+  const gallery = galleryFor("pharmacies", p, 3);
+
   return (
-    <main>
-      <DetailHeader
-        title={p.name}
-        subtitle={`${p.locality}, ${p.city}`}
-        badges={[p.open_24x7 && "24×7", p.home_delivery && `${p.delivery_eta_minutes} min delivery`, `${p.discount_pct}% off`, p.online_consult && "Free consult"].filter(Boolean)}
-        image_hue={p.image_hue} icon="pill"
-        rating={p.rating} reviews={p.reviews}
-        back="/pharmacies" backLabel="Pharmacies"
-      />
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+    <main className="-mt-px">
+      {/* COVER */}
+      <section className="relative">
+        <SmartImage src={cover} hue={p.image_hue} alt={p.name}
+                    className="w-full h-[52vh] min-h-[360px] max-h-[620px]"/>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"/>
+
+        <nav className="absolute top-16 inset-x-0 z-10" aria-label="Breadcrumb">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-[12px] text-white/70 flex items-center gap-2 flex-wrap">
+            <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3 h-3"/> Home</a>
+            <span className="text-white/40">/</span>
+            <a href="#/pharmacies" className="hover:text-white">Pharmacies</a>
+            <span className="text-white/40">/</span>
+            <span className="text-white truncate max-w-[260px]">{p.name}</span>
+          </div>
+        </nav>
+
+        <div className="absolute bottom-0 inset-x-0 pb-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <div className="flex flex-wrap items-center gap-1.5 mb-4">
+              {p.open_24x7 && <span className="text-[11px] font-medium tracking-wide bg-amber-400/20 backdrop-blur-md text-amber-200 border border-amber-300/30 px-3 py-1 rounded-full">Open 24×7</span>}
+              {p.home_delivery && <span className="text-[11px] font-medium tracking-wide bg-heal-500/20 backdrop-blur-md text-heal-300 border border-heal-400/30 px-3 py-1 rounded-full">{p.delivery_eta_minutes} min delivery</span>}
+              <span className="text-[11px] font-medium tracking-wide bg-rose-500/20 backdrop-blur-md text-rose-300 border border-rose-400/30 px-3 py-1 rounded-full">{p.discount_pct}% off</span>
+              {p.online_consult && <span className="text-[11px] font-medium tracking-wide bg-white/15 backdrop-blur-md text-white border border-white/15 px-3 py-1 rounded-full">Free consult</span>}
+            </div>
+            <h1 className="display-lg">{p.name}</h1>
+            <div className="mt-3 text-[16px] text-white/80 flex items-center gap-3 flex-wrap">
+              <span className="inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {p.locality}, {p.city}</span>
+              <span className="text-white/40">·</span>
+              <span className="inline-flex items-center gap-1.5 text-amber-300">
+                <Icon name="star" className="w-3.5 h-3.5 fill-current" strokeWidth={0}/> {p.rating} · {p.reviews.toLocaleString()} reviews
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery */}
+      <section className="bg-white border-y border-ink-200/60">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 grid grid-cols-3 gap-3">
+          {gallery.map((src, i) => (
+            <SmartImage key={i} src={src} hue={(p.image_hue + i * 40) % 360} className="aspect-[4/3] rounded-2xl"/>
+          ))}
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">About</h2>
-              <p className="mt-2 text-ink-700 leading-relaxed">{p.about}</p>
-              <div className="mt-3 text-sm text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {p.address}</div>
-            </div>
 
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">Upload prescription</h2>
-              <p className="mt-1 text-sm text-ink-500">Snap your prescription. We'll source genuine meds with up to {p.discount_pct}% off.</p>
-              <UploadDropzone p={p}/>
-            </div>
-
-            <div className="bg-white hairline rounded-3xl p-7">
-              <h2 className="font-bold text-ink-900 text-lg">Popular medicines</h2>
-              <p className="mt-1 text-sm text-ink-500">All prices include {p.discount_pct}% off MRP. Demo catalogue.</p>
-              <div className="mt-3 divide-y divide-ink-100">
-                {SAMPLE_MEDS.map(m => {
-                  const price = Math.round(m.mrp * (1 - p.discount_pct/100));
-                  return (
-                    <div key={m.name} className="flex items-center justify-between py-3">
-                      <div className="min-w-0">
-                        <div className="font-semibold text-ink-900 text-sm">{m.name}</div>
-                        <div className="text-xs text-ink-500">{m.pack} · {m.for}</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="text-right">
-                          <div className="text-[11px] text-ink-500 line-through">₹{m.mrp}</div>
-                          <div className="font-bold text-ink-900">₹{price}</div>
-                        </div>
-                        <Btn size="sm" variant="soft">Add</Btn>
-                      </div>
-                    </div>
-                  );
-                })}
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">About</div>
+                <h2 className="display-sm">Genuine meds, fast.</h2>
+                <p className="mt-4 text-[15px] leading-relaxed text-ink-700">{p.about}</p>
+                <div className="mt-4 text-[13px] text-ink-500 inline-flex items-center gap-1.5"><Icon name="map" className="w-4 h-4"/> {p.address}</div>
               </div>
-            </div>
+            </Reveal>
 
-            <ReviewsBlock rating={p.rating} reviews={p.reviews}/>
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Upload prescription</div>
+                <h2 className="display-sm">Skip the queue.</h2>
+                <p className="mt-3 text-[15px] text-ink-600">Snap your prescription. We'll source genuine meds with up to {p.discount_pct}% off and deliver in {p.delivery_eta_minutes} minutes.</p>
+                <UploadDropzone p={p}/>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="bg-white hairline rounded-3xl p-8 card-soft">
+                <div className="eyebrow mb-2">Popular medicines</div>
+                <h2 className="display-sm">{p.discount_pct}% off MRP.</h2>
+                <p className="mt-2 text-[13px] text-ink-500">Demo catalogue · all prices include discount.</p>
+                <div className="mt-6 divide-y divide-ink-200/60">
+                  {SAMPLE_MEDS.map(m => {
+                    const price = Math.round(m.mrp * (1 - p.discount_pct/100));
+                    return (
+                      <div key={m.name} className="flex items-center justify-between py-4 first:pt-0">
+                        <div className="min-w-0">
+                          <div className="font-medium text-ink-900 text-[15px]">{m.name}</div>
+                          <div className="text-[12px] text-ink-500 mt-0.5">{m.pack} · {m.for}</div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <div className="text-[11px] text-ink-500 line-through">₹{m.mrp}</div>
+                            <div className="text-[16px] font-semibold text-ink-900">₹{price}</div>
+                          </div>
+                          <Btn size="sm" variant="soft">Add</Btn>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal><ReviewsBlock rating={p.rating} reviews={p.reviews}/></Reveal>
           </div>
 
           <aside className="space-y-4">
-            <div className="bg-white hairline rounded-3xl p-7 sticky top-20">
-              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Order medicines</div>
-              <div className="mt-3 space-y-2 text-sm text-ink-700">
-                {p.home_delivery && <div className="flex items-center gap-2"><Icon name="truck" className="w-4 h-4 text-ink-400"/> Delivery in {p.delivery_eta_minutes} min</div>}
-                {p.open_24x7 && <div className="flex items-center gap-2"><Icon name="clock" className="w-4 h-4 text-ink-400"/> Open 24×7</div>}
-                {p.online_consult && <div className="flex items-center gap-2"><Icon name="chat" className="w-4 h-4 text-ink-400"/> Free pharmacist chat</div>}
+            <div className="bg-white hairline rounded-3xl p-7 sticky top-20 card-soft">
+              <div className="eyebrow">Order medicines</div>
+              <div className="mt-3 text-[13px] text-ink-500">Up to</div>
+              <div className="text-[34px] font-semibold text-ink-900 tracking-tightest leading-none">{p.discount_pct}% off</div>
+              <div className="text-[12px] text-ink-500 mt-1">on MRP for chronic care</div>
+              <div className="mt-6 space-y-2.5 text-[13px] text-ink-700">
+                {p.home_delivery && <div className="inline-flex items-center gap-2"><Icon name="truck" className="w-4 h-4 text-ink-400"/> Delivery in {p.delivery_eta_minutes} min</div>}
+                {p.open_24x7 && <div className="inline-flex items-center gap-2"><Icon name="clock" className="w-4 h-4 text-ink-400"/> Open 24×7</div>}
+                {p.online_consult && <div className="inline-flex items-center gap-2"><Icon name="chat" className="w-4 h-4 text-ink-400"/> Free pharmacist chat</div>}
               </div>
-              <div className="mt-5 grid gap-2">
-                <Btn size="lg" variant="heal"><Icon name="upload" className="w-4 h-4"/> Upload prescription</Btn>
+              <div className="mt-6 grid gap-2">
+                <Btn size="lg" variant="primary"><Icon name="upload" className="w-4 h-4"/> Upload prescription</Btn>
                 <Btn size="lg" variant="ghost" as="a" href={`tel:${p.phone}`}><Icon name="phone" className="w-4 h-4"/> {p.phone}</Btn>
               </div>
             </div>

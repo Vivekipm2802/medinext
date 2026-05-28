@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#0F172A">
+<meta name="description" content="MediNext — India's trusted directory for hospitals, doctors, diagnostics & pharmacies. Find care. Heal forward.">
+<title>MediNext — Find healthcare. Heal forward.</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230EA5E9'/%3E%3Cpath d='M16 8v16M8 16h16' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['Montserrat', 'sans-serif'],
+        body: ['Inter', 'sans-serif']
+      },
+      colors: {
+        brand: {
+          50:  '#F0F9FF',
+          100: '#E0F2FE',
+          200: '#BAE6FD',
+          400: '#38BDF8',
+          500: '#0EA5E9',   // primary medical blue
+          600: '#0284C7',
+          700: '#0369A1',
+          900: '#0C4A6E'
+        },
+        heal: {
+          50:  '#ECFDF5',
+          100: '#D1FAE5',
+          400: '#34D399',
+          500: '#10B981',   // healing emerald
+          600: '#059669'
+        },
+        ink: {
+          900: '#0F172A',
+          800: '#1E293B',
+          700: '#334155',
+          500: '#64748B',
+          400: '#94A3B8',
+          200: '#E2E8F0',
+          100: '#F1F5F9',
+          50:  '#F8FAFC'
+        }
+      }
+    }
+  }
+};
+</script>
+
+<style>
+  :root { --hero-bg: #0F172A; }
+  html, body { font-family: 'Inter', sans-serif; background: #F8FAFC; color: #0F172A; }
+  body { -webkit-font-smoothing: antialiased; }
+  h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', sans-serif; letter-spacing: -0.01em; }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+  /* Hero gradient (EduNext-inspired dark with healthcare tint) */
+  .hero-bg {
+    background:
+      radial-gradient(1200px 600px at 20% -10%, rgba(14, 165, 233, 0.35), transparent 60%),
+      radial-gradient(800px 400px at 80% 10%, rgba(16, 185, 129, 0.25), transparent 60%),
+      linear-gradient(180deg, #0F172A 0%, #0B1224 100%);
+  }
+  .hero-grid {
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* Soft card shadow */
+  .card-soft { box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.05); }
+  .card-soft:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.06), 0 12px 32px rgba(15,23,42,0.08); }
+
+  /* Hide scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Animations */
+  @keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fade-up 0.35s ease-out both; }
+  @keyframes pulse-soft { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4);} 50% { box-shadow: 0 0 0 10px rgba(239,68,68,0);} }
+  .pulse-soft { animation: pulse-soft 2s infinite; }
+
+  /* Avatar generator */
+  .avatar-gradient { background: linear-gradient(135deg, hsl(var(--h), 70%, 55%), hsl(calc(var(--h) + 30), 70%, 45%)); }
+
+  /* Form basics */
+  input, select, textarea, button { font-family: inherit; }
+  input:focus, select:focus, textarea:focus { outline: none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Demo dataset -->
+<script src="./data.js"></script>
+
+<!-- App -->
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+/* =================================================================
+   MEDINEXT — Single-file React app
+   ─────────────────────────────────────────────────────────────────
+   When wiring to Supabase later:
+   - Replace DATA.* with Supabase queries (table names match keys).
+   - Replace localStorage auth with @supabase/auth-helpers.
+   - Replace localStorage vault with a `vault_records` table
+     (FK: patient_id, RLS: auth.uid() = patient_id).
+   ================================================================= */
+
+const DATA = window.MEDINEXT_DATA;
+
+/* ─── tiny icon set (SVG, no dep) ─────────────────────────────── */
+const Icon = ({ name, className = "w-5 h-5", strokeWidth = 1.8 }) => {
+  const paths = {
+    search:    <><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></>,
+    map:       <><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></>,
+    phone:     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/>,
+    user:      <><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></>,
+    menu:      <><path d="M4 6h16M4 12h16M4 18h16"/></>,
+    x:         <><path d="M18 6 6 18M6 6l12 12"/></>,
+    chevron:   <path d="m9 18 6-6-6-6"/>,
+    star:      <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>,
+    heart:     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>,
+    shield:    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
+    building:  <><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 7h.01M15 7h.01M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></>,
+    stethoscope: <><path d="M4.8 2.3A.3.3 0 1 0 5 2h-.5C3.7 2 3 2.7 3 3.5V8a4 4 0 0 0 8 0V3.5C11 2.7 10.3 2 9.5 2H9"/><path d="M14 22a4 4 0 0 0 4-4v-2a4 4 0 0 0-8 0v2"/><circle cx="18" cy="10" r="2"/><path d="M7 12v3"/></>,
+    flask:     <><path d="M9 2v6L4.5 16a3 3 0 0 0 2.5 4.5h10a3 3 0 0 0 2.5-4.5L15 8V2"/><path d="M9 2h6"/></>,
+    pill:      <><rect x="2" y="9" width="20" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M5 12h14"/></>,
+    vault:     <><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M12 9v1M12 14v1"/></>,
+    upload:    <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></>,
+    calendar:  <><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></>,
+    clock:     <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+    video:     <><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></>,
+    check:     <path d="m5 12 5 5L20 7"/>,
+    filter:    <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>,
+    rupee:     <><path d="M6 4h12M6 8h12M14 16l-7 6h11"/><path d="M6 12c5 0 8-1 8-4"/></>,
+    alert:     <><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><path d="M12 9v4M12 17h.01"/></>,
+    arrowRight:<path d="M5 12h14M13 5l7 7-7 7"/>,
+    sparkles:  <><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></>,
+    download:  <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></>,
+    plus:      <path d="M12 5v14M5 12h14"/>,
+    logout:    <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></>,
+    home:      <><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></>,
+    chat:      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>,
+    award:     <><circle cx="12" cy="8" r="6"/><path d="m8.21 13.89-1.21 7.11L12 17.77l5 3.23-1.21-7.11"/></>,
+    truck:     <><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></>
+  };
+  const p = paths[name];
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
+         className={className} aria-hidden="true">{p}</svg>
+  );
+};
+
+/* ─── routing (hash-based) ───────────────────────────────────── */
+const useRoute = () => {
+  const parse = () => {
+    const h = (window.location.hash || "#/").slice(1);
+    const [path, qs] = h.split("?");
+    const params = Object.fromEntries(new URLSearchParams(qs || ""));
+    const parts = path.split("/").filter(Boolean);
+    return { path, parts, params };
+  };
+  const [route, setRoute] = useState(parse);
+  useEffect(() => {
+    const onHash = () => { setRoute(parse()); window.scrollTo({ top: 0, behavior: "smooth" }); };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+  return route;
+};
+const navigate = (to) => { window.location.hash = to; };
+
+/* ─── Auth + Vault via Context (single source of truth) ───── */
+const AUTH_KEY = "medinext_user";
+const VAULT_KEY = "medinext_vault";
+const AppContext = React.createContext(null);
+
+const AppProvider = ({ children }) => {
+  const [user, setUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(AUTH_KEY) || "null"); } catch { return null; }
+  });
+  const [vault, setVault] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(VAULT_KEY) || "[]"); } catch { return []; }
+  });
+  const [toast, setToast] = useState(null);
+
+  const signIn = (u) => {
+    const finalUser = u || DATA.demoPatient;
+    localStorage.setItem(AUTH_KEY, JSON.stringify(finalUser));
+    setUser(finalUser);
+    if (!localStorage.getItem(VAULT_KEY) || JSON.parse(localStorage.getItem(VAULT_KEY) || "[]").length === 0) {
+      localStorage.setItem(VAULT_KEY, JSON.stringify(DATA.demoVault));
+      setVault(DATA.demoVault);
+    }
+    notify("Welcome back, " + finalUser.name.split(" ")[0] + ".");
+  };
+  const signOut = () => {
+    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(VAULT_KEY);
+    setUser(null); setVault([]);
+    notify("Signed out. Your vault is cleared from this device.");
+  };
+  const vaultAdd = (rec) => {
+    const next = [{ ...rec, id: "v_" + Date.now() }, ...vault];
+    localStorage.setItem(VAULT_KEY, JSON.stringify(next)); setVault(next);
+    notify("Saved to vault.");
+  };
+  const vaultRemove = (id) => {
+    const next = vault.filter(i => i.id !== id);
+    localStorage.setItem(VAULT_KEY, JSON.stringify(next)); setVault(next);
+    notify("Record removed.");
+  };
+  const notify = (msg) => {
+    setToast({ id: Date.now(), msg });
+    setTimeout(() => setToast(t => (t && Date.now() - t.id > 2400) ? null : t), 2800);
+  };
+  return (
+    <AppContext.Provider value={{ user, signIn, signOut, vault, vaultAdd, vaultRemove, notify, toast }}>
+      {children}
+    </AppContext.Provider>
+  );
+};
+
+const useApp  = () => React.useContext(AppContext);
+const useAuth = () => { const c = useApp(); return { user: c.user, signIn: c.signIn, signOut: c.signOut }; };
+const useVault = () => { const c = useApp(); return { items: c.vault, add: c.vaultAdd, remove: c.vaultRemove }; };
+
+/* ─── Toast renderer ─────────────────────────────────────────── */
+const ToastHost = () => {
+  const c = useApp();
+  if (!c?.toast) return null;
+  return (
+    <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 fade-up">
+      <div className="bg-ink-900 text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg flex items-center gap-2">
+        <Icon name="check" className="w-4 h-4 text-heal-400"/> {c.toast.msg}
+      </div>
+    </div>
+  );
+};
+
+/* ─── shared UI atoms ────────────────────────────────────────── */
+const Btn = ({ as = "button", variant = "primary", size = "md", className = "", children, ...rest }) => {
+  const Tag = as;
+  const sizes = { sm: "px-3 py-1.5 text-sm", md: "px-4 py-2.5 text-sm", lg: "px-5 py-3 text-base" };
+  const variants = {
+    primary:  "bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700 shadow-sm",
+    heal:     "bg-heal-500 text-white hover:bg-heal-600",
+    ghost:    "bg-white text-ink-900 hover:bg-ink-50 border border-ink-200",
+    dark:     "bg-ink-900 text-white hover:bg-ink-800",
+    soft:     "bg-brand-50 text-brand-700 hover:bg-brand-100",
+    danger:   "bg-red-500 text-white hover:bg-red-600",
+    link:     "text-brand-600 hover:text-brand-700 underline-offset-2 hover:underline"
+  };
+  return (
+    <Tag className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all ${sizes[size]} ${variants[variant]} ${className}`} {...rest}>
+      {children}
+    </Tag>
+  );
+};
+
+const Pill = ({ children, tone = "ink", className = "" }) => {
+  const tones = {
+    ink:    "bg-ink-100 text-ink-700",
+    brand:  "bg-brand-50 text-brand-700",
+    heal:   "bg-heal-50 text-heal-600",
+    amber:  "bg-amber-50 text-amber-700",
+    red:    "bg-red-50 text-red-600"
+  };
+  return <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${tones[tone]} ${className}`}>{children}</span>;
+};
+
+const Avatar = ({ name, hue = 200, size = 56 }) => {
+  const initials = name.split(/\s+/).slice(0,2).map(n => n[0]).join("").toUpperCase();
+  return (
+    <div className="rounded-2xl flex items-center justify-center text-white font-bold avatar-gradient shrink-0"
+         style={{ width: size, height: size, '--h': hue, fontSize: size * 0.34 }}>
+      {initials}
+    </div>
+  );
+};
+
+const Rating = ({ value, reviews, size = "sm" }) => (
+  <div className={`inline-flex items-center gap-1.5 font-semibold ${size === "lg" ? "text-base" : "text-sm"}`}>
+    <span className="inline-flex items-center gap-0.5 text-amber-500"><Icon name="star" className="w-4 h-4 fill-current" strokeWidth={0}/></span>
+    <span className="text-ink-900">{value}</span>
+    {reviews != null && <span className="text-ink-500 font-normal">({reviews.toLocaleString()})</span>}
+  </div>
+);
+
+const SectionTitle = ({ eyebrow, title, sub, action }) => (
+  <div className="flex items-end justify-between gap-4 mb-6 flex-wrap">
+    <div>
+      {eyebrow && <div className="text-xs font-bold tracking-widest uppercase text-brand-600 mb-1">{eyebrow}</div>}
+      <h2 className="text-2xl md:text-3xl font-bold text-ink-900">{title}</h2>
+      {sub && <p className="text-ink-500 mt-1 max-w-2xl">{sub}</p>}
+    </div>
+    {action}
+  </div>
+);
+
+/* ─── NAVBAR ─────────────────────────────────────────────────── */
+const Navbar = ({ onLoginClick }) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const route = useRoute();
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const isHome = route.path === "" || route.path === "/";
+  const overlay = isHome && !scrolled;
+
+  const links = [
+    { label: "Hospitals", href: "#/hospitals" },
+    { label: "Doctors", href: "#/doctors" },
+    { label: "Diagnostics", href: "#/pathology" },
+    { label: "Pharmacies", href: "#/pharmacies" },
+    { label: "Patient Vault", href: "#/vault" }
+  ];
+
+  const navText = overlay ? "text-white/85 hover:text-white" : "text-ink-700 hover:text-ink-900";
+  const bg = overlay
+    ? "bg-transparent border-transparent"
+    : "bg-white/90 backdrop-blur-md border-ink-200/80";
+
+  return (
+    <header className={`fixed top-0 inset-x-0 z-40 border-b transition-all ${bg}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <a href="#/" className="flex items-center gap-2 group">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-heal-500 flex items-center justify-center text-white font-bold">
+            <Icon name="plus" className="w-5 h-5" strokeWidth={3}/>
+          </div>
+          <div className={`font-display font-extrabold text-lg ${overlay ? "text-white" : "text-ink-900"}`}>
+            Medi<span className="text-brand-500">Next</span>
+          </div>
+        </a>
+
+        <nav className="hidden lg:flex items-center gap-1">
+          {links.map(l => (
+            <a key={l.href} href={l.href}
+               className={`relative px-3 py-2 text-sm font-medium transition-colors ${navText} group`}>
+              {l.label}
+              <span className="absolute left-3 right-3 -bottom-0.5 h-0.5 bg-brand-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left"/>
+            </a>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <a href="tel:+911800633639" className={`hidden md:inline-flex items-center gap-2 text-sm font-semibold ${overlay ? "text-white" : "text-ink-900"}`} title="24x7 Helpline">
+            <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${overlay ? "bg-white/10" : "bg-brand-50 text-brand-600"}`}>
+              <Icon name="phone" className="w-4 h-4"/>
+            </span>
+            <span className="hidden lg:inline">1800-MEDI-NEXT</span>
+          </a>
+
+          {user ? (
+            <div className="hidden lg:flex items-center gap-2">
+              <a href="#/vault" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-ink-100">
+                <Avatar name={user.name} hue={user.avatar_hue || 200} size={32}/>
+                <span className="text-sm font-medium text-ink-900">{user.name.split(" ")[0]}</span>
+              </a>
+              <button onClick={signOut} className="p-2 rounded-xl text-ink-500 hover:bg-ink-100" title="Sign out">
+                <Icon name="logout" className="w-5 h-5"/>
+              </button>
+            </div>
+          ) : (
+            <Btn onClick={onLoginClick} size="sm" variant={overlay ? "ghost" : "primary"} className="hidden md:inline-flex">
+              <Icon name="user" className="w-4 h-4"/> Sign in
+            </Btn>
+          )}
+
+          <button className={`lg:hidden p-2 rounded-xl ${overlay ? "text-white" : "text-ink-900"}`}
+                  onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+            <Icon name={mobileOpen ? "x" : "menu"} className="w-6 h-6"/>
+          </button>
+        </div>
+      </div>
+
+      {mobileOpen && (
+        <div className="lg:hidden bg-white border-t border-ink-200 fade-up">
+          <div className="px-4 py-4 flex flex-col gap-1">
+            {links.map(l => (
+              <a key={l.href} href={l.href}
+                 onClick={() => setMobileOpen(false)}
+                 className="px-3 py-3 rounded-xl text-ink-800 font-medium hover:bg-ink-50">{l.label}</a>
+            ))}
+            {!user && (
+              <Btn onClick={() => { setMobileOpen(false); onLoginClick(); }} className="mt-2"><Icon name="user" className="w-4 h-4"/> Sign in</Btn>
+            )}
+            {user && (
+              <button onClick={() => { signOut(); setMobileOpen(false); }} className="mt-2 px-3 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 text-left flex items-center gap-2">
+                <Icon name="logout" className="w-4 h-4"/> Sign out
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+};
+
+/* ─── FOOTER ─────────────────────────────────────────────────── */
+const Footer = () => (
+  <footer className="bg-ink-900 text-ink-200 mt-20">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-heal-500 flex items-center justify-center text-white">
+            <Icon name="plus" className="w-5 h-5" strokeWidth={3}/>
+          </div>
+          <div className="font-display font-extrabold text-lg text-white">Medi<span className="text-brand-400">Next</span></div>
+        </div>
+        <p className="text-sm text-ink-400 leading-relaxed">India's trusted healthcare directory. Discover hospitals, doctors, diagnostics & pharmacies. Heal forward.</p>
+        <div className="flex items-center gap-2 mt-4 flex-wrap">
+          {DATA.trustLogos.map(l => (
+            <span key={l} className="px-2.5 py-1 rounded-md bg-white/5 text-xs text-ink-200 border border-white/10">{l}</span>
+          ))}
+        </div>
+      </div>
+      <div>
+        <div className="text-sm font-semibold text-white mb-3">Discover</div>
+        <ul className="space-y-2 text-sm text-ink-400">
+          <li><a href="#/hospitals" className="hover:text-white">Hospitals</a></li>
+          <li><a href="#/doctors" className="hover:text-white">Doctors</a></li>
+          <li><a href="#/pathology" className="hover:text-white">Diagnostics & Labs</a></li>
+          <li><a href="#/pharmacies" className="hover:text-white">Pharmacies</a></li>
+        </ul>
+      </div>
+      <div>
+        <div className="text-sm font-semibold text-white mb-3">For Patients</div>
+        <ul className="space-y-2 text-sm text-ink-400">
+          <li><a href="#/vault" className="hover:text-white">Health Vault</a></li>
+          <li><a href="#/pathology" className="hover:text-white">Book Lab Tests</a></li>
+          <li><a href="#/doctors" className="hover:text-white">Video Consults</a></li>
+          <li><a href="tel:102" className="hover:text-white">Emergency · 102</a></li>
+        </ul>
+      </div>
+      <div>
+        <div className="text-sm font-semibold text-white mb-3">Company</div>
+        <ul className="space-y-2 text-sm text-ink-400">
+          <li><a href="#/contact" className="hover:text-white">Contact</a></li>
+          <li><a href="#/list-with-us" className="hover:text-white">List your facility</a></li>
+          <li><a href="#/privacy" className="hover:text-white">Privacy & ABDM</a></li>
+          <li><a href="mailto:hello@medinext.in" className="hover:text-white">hello@medinext.in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div className="border-t border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-400">
+        <div>© {new Date().getFullYear()} MediNext — a sister brand of EduNext. Demo build.</div>
+        <div className="flex items-center gap-4"><span>Emergency: 102 / 108</span><span>·</span><span>Made in India</span></div>
+      </div>
+    </div>
+  </footer>
+);
+
+/* ─── SEARCH BAR (unified) ───────────────────────────────────── */
+const SearchBar = ({ inHero = false, initial = {} }) => {
+  const [tab, setTab] = useState(initial.kind || "doctors");
+  const [q, setQ] = useState(initial.q || "");
+  const [city, setCity] = useState(initial.city || "Delhi");
+  const tabs = [
+    { id: "doctors", label: "Doctors", icon: "stethoscope" },
+    { id: "hospitals", label: "Hospitals", icon: "building" },
+    { id: "pathology", label: "Lab Tests", icon: "flask" },
+    { id: "pharmacies", label: "Pharmacy", icon: "pill" }
+  ];
+  const submit = (e) => {
+    e?.preventDefault?.();
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (city) params.set("city", city);
+    navigate(`/${tab}?${params.toString()}`);
+  };
+
+  return (
+    <div className={`${inHero ? "" : "card-soft"} rounded-2xl ${inHero ? "bg-white" : "bg-white border border-ink-200"}`}>
+      <div className="flex items-center gap-1 px-2 pt-2 overflow-x-auto no-scrollbar">
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all
+                    ${tab === t.id ? "bg-brand-50 text-brand-700" : "text-ink-500 hover:text-ink-900 hover:bg-ink-50"}`}>
+            <Icon name={t.icon} className="w-4 h-4"/> {t.label}
+          </button>
+        ))}
+      </div>
+
+      <form onSubmit={submit} className="flex flex-col md:flex-row items-stretch gap-2 p-2">
+        <div className="flex items-center gap-2 flex-1 px-3 rounded-xl border border-ink-200 hover:border-brand-400 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100 bg-white">
+          <Icon name="search" className="w-5 h-5 text-ink-400"/>
+          <input value={q} onChange={e => setQ(e.target.value)}
+                 placeholder={tab === "doctors" ? "Search 'Cardiologist', 'Dr. Rao'…" : tab === "hospitals" ? "Search hospital, specialty…" : tab === "pathology" ? "Search 'HbA1c', 'CBC', 'Thyroid'…" : "Search 'Pharmacy near me'…"}
+                 className="w-full py-3.5 text-sm placeholder:text-ink-400 bg-transparent"/>
+        </div>
+        <div className="flex items-center gap-2 px-3 rounded-xl border border-ink-200 hover:border-brand-400 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100 bg-white md:w-48">
+          <Icon name="map" className="w-5 h-5 text-ink-400"/>
+          <select value={city} onChange={e => setCity(e.target.value)}
+                  className="w-full py-3.5 text-sm bg-transparent text-ink-900">
+            {DATA.CITIES.map(c => <option key={c}>{c}</option>)}
+          </select>
+        </div>
+        <Btn type="submit" size="lg" className="md:px-7">
+          <Icon name="search" className="w-4 h-4"/> Search
+        </Btn>
+      </form>
+    </div>
+  );
+};
+
+/* ─── HOME PAGE ──────────────────────────────────────────────── */
+const HomePage = ({ onLoginClick }) => {
+  const { user } = useAuth();
+  const categories = [
+    { kind: "hospitals", title: "Hospitals", desc: `${DATA.hospitals.length}+ verified hospitals`, icon: "building", tone: "bg-brand-50 text-brand-600" },
+    { kind: "doctors", title: "Doctors", desc: `${DATA.doctors.length}+ specialists`, icon: "stethoscope", tone: "bg-heal-50 text-heal-600" },
+    { kind: "pathology", title: "Diagnostics", desc: `${DATA.pathology.length}+ NABL labs`, icon: "flask", tone: "bg-amber-50 text-amber-600" },
+    { kind: "pharmacies", title: "Pharmacies", desc: `${DATA.pharmacies.length}+ partner pharmacies`, icon: "pill", tone: "bg-rose-50 text-rose-600" }
+  ];
+
+  const featuredDoctors = DATA.doctors.slice(0, 6);
+  const featuredHospitals = DATA.hospitals.slice(0, 6);
+
+  return (
+    <main>
+      {/* HERO */}
+      <section className="relative pt-28 pb-24 hero-bg overflow-hidden">
+        <div className="absolute inset-0 hero-grid opacity-100 pointer-events-none"/>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-7 text-white">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Pill tone="brand" className="bg-white/10 text-brand-200 border border-white/10">
+                  <Icon name="sparkles" className="w-3.5 h-3.5"/> India's most-loved healthcare directory
+                </Pill>
+                <Pill tone="amber" className="bg-amber-400/15 text-amber-300 border border-amber-400/20">
+                  Demo build
+                </Pill>
+              </div>
+              <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">
+                Find healthcare.<br/>
+                <span className="bg-gradient-to-r from-brand-400 to-heal-400 bg-clip-text text-transparent">Heal forward.</span>
+              </h1>
+              <p className="mt-5 text-lg text-ink-200 max-w-xl">
+                Hospitals, doctors, diagnostics and pharmacies — verified, rated, and bookable in seconds. Plus a secure vault for every prescription and report.
+              </p>
+
+              <div className="mt-8 max-w-3xl">
+                <SearchBar inHero/>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ink-300">
+                <span className="inline-flex items-center gap-2"><Icon name="check" className="w-4 h-4 text-heal-400"/> NABH/NABL verified</span>
+                <span className="inline-flex items-center gap-2"><Icon name="check" className="w-4 h-4 text-heal-400"/> ABDM (ABHA) compatible</span>
+                <span className="inline-flex items-center gap-2"><Icon name="check" className="w-4 h-4 text-heal-400"/> Cashless at 320+ hospitals</span>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 hidden lg:block">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-tr from-brand-500/30 to-heal-500/30 rounded-3xl blur-2xl"/>
+                <div className="relative rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-6">
+                  <div className="text-sm text-ink-300">Live now</div>
+                  <div className="flex items-center justify-between mt-1">
+                    <div className="text-2xl font-bold text-white">Next available doctor</div>
+                    <Pill tone="heal" className="bg-heal-500/15 text-heal-400 border border-heal-500/30">● online</Pill>
+                  </div>
+                  {(() => {
+                    // pick the soonest "Today" doctor with Video available
+                    const next = DATA.doctors.find(d => d.next_slot.startsWith("Today") && d.available_modes.includes("Video")) || DATA.doctors[0];
+                    return (
+                      <div className="mt-4 flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10">
+                        <Avatar name={next.name} hue={next.image_hue} size={52}/>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-white truncate">{next.name}</div>
+                          <div className="text-xs text-ink-300">{next.specialty} · {next.experience_years} yrs · {next.city}</div>
+                        </div>
+                        <Btn variant="heal" size="sm" as="a" href={`#/doctor/${next.slug}`}><Icon name="video" className="w-4 h-4"/> Consult</Btn>
+                      </div>
+                    );
+                  })()}
+                  <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+                    {[
+                      { v: DATA.doctors.length + "+", l: "Doctors" },
+                      { v: DATA.hospitals.length + "+", l: "Hospitals" },
+                      { v: (DATA.pathology.length + DATA.pharmacies.length) + "+", l: "Labs & pharmacies" }
+                    ].map(s => (
+                      <div key={s.l} className="rounded-xl bg-white/5 border border-white/10 py-3">
+                        <div className="text-lg font-bold text-white">{s.v}</div>
+                        <div className="text-[11px] text-ink-300 uppercase tracking-wide">{s.l}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 text-[11px] text-ink-400 text-center">Demo dataset. Scaling to 1,800+ hospitals & 12,400+ doctors at launch.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CATEGORY GRID */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {categories.map(c => (
+            <a key={c.kind} href={`#/${c.kind}`}
+               className="group bg-white card-soft rounded-2xl p-5 border border-ink-200 hover:border-brand-400 transition-all">
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${c.tone}`}>
+                <Icon name={c.icon} className="w-5 h-5"/>
+              </div>
+              <div className="mt-3 font-bold text-ink-900">{c.title}</div>
+              <div className="text-xs text-ink-500 mt-0.5">{c.desc}</div>
+              <div className="mt-3 text-xs font-semibold text-brand-600 inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                Explore <Icon name="arrowRight" className="w-3.5 h-3.5"/>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* POPULAR TESTS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <SectionTitle
+          eyebrow="Lab Tests"
+          title="Popular tests with home collection"
+          sub="NABL-accredited, transparent pricing, reports in 24 hours."
+          action={<a href="#/pathology" className="text-sm font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">View all <Icon name="arrowRight" className="w-4 h-4"/></a>}
+        />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {DATA.popularTests.map(t => (
+            <div key={t.name} className="bg-white border border-ink-200 rounded-2xl p-4 hover:border-brand-400 transition-all card-soft">
+              <div className="flex items-start justify-between gap-3">
+                <div className="font-semibold text-sm text-ink-900 leading-snug">{t.name}</div>
+                <Pill tone="heal">Home</Pill>
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <div>
+                  <div className="text-[11px] text-ink-500 uppercase">From</div>
+                  <div className="font-bold text-ink-900">₹{t.price}</div>
+                </div>
+                <a href="#/pathology" className="text-xs font-semibold text-brand-600 hover:text-brand-700">Book →</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FEATURED DOCTORS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <SectionTitle
+          eyebrow="Top Doctors"
+          title="Specialists you can trust"
+          sub="Verified credentials, real reviews, instant booking."
+          action={<a href="#/doctors" className="text-sm font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">All doctors <Icon name="arrowRight" className="w-4 h-4"/></a>}
+        />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {featuredDoctors.map(d => <DoctorCard key={d.id} doctor={d}/>)}
+        </div>
+      </section>
+
+      {/* FEATURED HOSPITALS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <SectionTitle
+          eyebrow="Hospitals"
+          title="Top-rated hospitals near you"
+          action={<a href="#/hospitals" className="text-sm font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1">All hospitals <Icon name="arrowRight" className="w-4 h-4"/></a>}
+        />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {featuredHospitals.map(h => <HospitalCard key={h.id} hospital={h}/>)}
+        </div>
+      </section>
+
+      {/* VAULT CTA */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <div className="relative overflow-hidden rounded-3xl hero-bg text-white p-8 sm:p-12">
+          <div className="absolute inset-0 hero-grid opacity-100"/>
+          <div className="relative grid md:grid-cols-2 gap-6 items-center">
+            <div>
+              <Pill tone="brand" className="bg-white/10 text-brand-200 border border-white/10">
+                <Icon name="vault" className="w-3.5 h-3.5"/> Patient Vault
+              </Pill>
+              <h3 className="mt-4 text-3xl sm:text-4xl font-extrabold leading-tight">
+                Every report. Every prescription.<br/>
+                <span className="text-brand-300">One private vault.</span>
+              </h3>
+              <p className="mt-3 text-ink-200">ABDM (ABHA)-aligned. End-to-end encryption (planned at GA). Share securely with any doctor in a tap.</p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Btn variant="heal" size="lg" as="a" href="#/vault"><Icon name="vault" className="w-4 h-4"/> Open my vault</Btn>
+                {!user && (
+                  <Btn variant="ghost" size="lg" onClick={onLoginClick} className="bg-white/10 text-white border-white/20 hover:bg-white/15">
+                    <Icon name="user" className="w-4 h-4"/> Sign in with demo
+                  </Btn>
+                )}
+              </div>
+            </div>
+            <div className="relative">
+              <div className="rounded-2xl bg-white/5 backdrop-blur border border-white/10 p-5 space-y-3">
+                {DATA.demoVault.slice(0, 3).map(v => (
+                  <div key={v.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+                    <div className="w-10 h-10 rounded-lg bg-brand-500/20 text-brand-300 flex items-center justify-center">
+                      <Icon name={v.type === "Lab Report" ? "flask" : v.type === "Prescription" ? "pill" : "shield"} className="w-5 h-5"/>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-white truncate">{v.title}</div>
+                      <div className="text-xs text-ink-300">{v.source} · {v.date}</div>
+                    </div>
+                    {v.flagged && <Pill tone="amber" className="bg-amber-500/15 text-amber-300 border border-amber-500/30">Flagged</Pill>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TRUST */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <div className="grid md:grid-cols-3 gap-4">
+          {[
+            { icon: "shield", title: "Verified & accredited", body: "Every listing checked against NABH/NABL registries and council reg numbers." },
+            { icon: "heart", title: "Real patient reviews", body: "No fake reviews. Only patients with appointment confirmations can rate." },
+            { icon: "award", title: "Privacy-first", body: "ABDM-aligned. Your vault is encrypted at rest. You decide who sees what." }
+          ].map(t => (
+            <div key={t.title} className="bg-white rounded-2xl p-6 border border-ink-200">
+              <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center"><Icon name={t.icon}/></div>
+              <div className="mt-4 font-bold text-ink-900">{t.title}</div>
+              <div className="mt-1 text-sm text-ink-500">{t.body}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+};
+
+/* ─── CARD COMPONENTS ────────────────────────────────────────── */
+const DoctorCard = ({ doctor: d }) => {
+  const hosp = DATA.hospitals.find(h => h.id === d.hospital_id);
+  return (
+    <a href={`#/doctor/${d.slug}`} className="block bg-white rounded-2xl border border-ink-200 p-5 hover:border-brand-400 card-soft transition-all">
+      <div className="flex gap-4">
+        <Avatar name={d.name} hue={d.image_hue}/>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <div className="font-bold text-ink-900 truncate">{d.name}</div>
+              <div className="text-xs text-ink-500 mt-0.5">{d.specialty} · {d.experience_years} yrs</div>
+            </div>
+            <Rating value={d.rating} reviews={d.reviews}/>
+          </div>
+          <div className="mt-2 text-xs text-ink-500 truncate">{d.qualification}</div>
+          {hosp && <div className="mt-1 text-xs text-ink-500 inline-flex items-center gap-1 truncate"><Icon name="building" className="w-3.5 h-3.5"/> {hosp.name}, {d.city}</div>}
+        </div>
+      </div>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {d.available_modes.includes("Video") && <Pill tone="heal"><Icon name="video" className="w-3 h-3"/> Video</Pill>}
+        <Pill tone="brand"><Icon name="rupee" className="w-3 h-3"/>{d.fee} fee</Pill>
+        <Pill tone="amber"><Icon name="clock" className="w-3 h-3"/>{d.next_slot}</Pill>
+      </div>
+      <div className="mt-4 flex items-center justify-between">
+        <span className="text-xs text-ink-500">{d.languages.join(" · ")}</span>
+        <span className="text-sm font-semibold text-brand-600 inline-flex items-center gap-1">Book <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+      </div>
+    </a>
+  );
+};
+
+const HospitalCard = ({ hospital: h }) => (
+  <a href={`#/hospital/${h.slug}`} className="block bg-white rounded-2xl border border-ink-200 overflow-hidden hover:border-brand-400 card-soft transition-all">
+    <div className="h-32 relative avatar-gradient" style={{ '--h': h.image_hue }}>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"/>
+      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+        {h.accreditation.slice(0,2).map(a => (
+          <span key={a} className="text-[10px] font-bold tracking-wide bg-white/95 text-ink-900 px-1.5 py-0.5 rounded">{a}</span>
+        ))}
+      </div>
+      {h.emergency_24x7 && (
+        <span className="absolute top-3 right-3 text-[10px] font-bold tracking-wide bg-red-500 text-white px-1.5 py-0.5 rounded pulse-soft">24×7 Emergency</span>
+      )}
+      <div className="absolute bottom-3 left-4 right-4 text-white">
+        <div className="text-xs opacity-90">{h.type} · {h.beds} beds</div>
+      </div>
+    </div>
+    <div className="p-5">
+      <div className="flex items-start justify-between gap-2">
+        <div className="font-bold text-ink-900 leading-snug">{h.name}</div>
+        <Rating value={h.rating} reviews={h.reviews}/>
+      </div>
+      <div className="mt-1 text-xs text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-3.5 h-3.5"/> {h.locality}, {h.city}</div>
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {h.specialties.slice(0,4).map(s => <Pill key={s} tone="ink">{s}</Pill>)}
+        {h.specialties.length > 4 && <Pill tone="ink">+{h.specialties.length - 4}</Pill>}
+      </div>
+      <div className="mt-4 flex items-center justify-between text-sm">
+        <span className="text-ink-500">{h.doctors_count} doctors · Consult <span className="text-ink-900 font-semibold">₹{h.fee_consultation}</span></span>
+        <span className="text-brand-600 font-semibold inline-flex items-center gap-1">View <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+      </div>
+    </div>
+  </a>
+);
+
+const LabCard = ({ lab: l }) => (
+  <a href={`#/pathology/${l.slug}`} className="block bg-white rounded-2xl border border-ink-200 p-5 hover:border-brand-400 card-soft transition-all">
+    <div className="flex items-start gap-4">
+      <div className="w-14 h-14 rounded-2xl avatar-gradient flex items-center justify-center text-white" style={{ '--h': l.image_hue }}>
+        <Icon name="flask" className="w-6 h-6"/>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <div className="font-bold text-ink-900">{l.name}</div>
+            <div className="text-xs text-ink-500 inline-flex items-center gap-1 mt-0.5"><Icon name="map" className="w-3.5 h-3.5"/>{l.locality}, {l.city}</div>
+          </div>
+          <Rating value={l.rating} reviews={l.reviews}/>
+        </div>
+      </div>
+    </div>
+    <div className="mt-3 flex flex-wrap gap-1.5">
+      {l.nabl && <Pill tone="heal"><Icon name="check" className="w-3 h-3"/> NABL</Pill>}
+      {l.home_collection && <Pill tone="brand"><Icon name="truck" className="w-3 h-3"/> Home collection</Pill>}
+      {l.open_24x7 && <Pill tone="amber"><Icon name="clock" className="w-3 h-3"/> 24×7</Pill>}
+      <Pill tone="ink">{l.report_tat_hours}h TAT</Pill>
+    </div>
+    <div className="mt-3 text-xs text-ink-500 line-clamp-2">{l.popular_tests.slice(0,5).join(" · ")}</div>
+    <div className="mt-4 flex items-center justify-between text-sm">
+      <span className="text-ink-500">Tests from <span className="text-ink-900 font-semibold">₹{l.starting_price}</span></span>
+      <span className="text-brand-600 font-semibold inline-flex items-center gap-1">Book <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+    </div>
+  </a>
+);
+
+const PharmacyCard = ({ pharmacy: p }) => (
+  <a href={`#/pharmacy/${p.slug}`} className="block bg-white rounded-2xl border border-ink-200 p-5 hover:border-brand-400 card-soft transition-all">
+    <div className="flex items-start gap-4">
+      <div className="w-14 h-14 rounded-2xl avatar-gradient flex items-center justify-center text-white" style={{ '--h': p.image_hue }}>
+        <Icon name="pill" className="w-6 h-6"/>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <div className="font-bold text-ink-900">{p.name}</div>
+            <div className="text-xs text-ink-500 inline-flex items-center gap-1 mt-0.5"><Icon name="map" className="w-3.5 h-3.5"/>{p.locality}, {p.city}</div>
+          </div>
+          <Rating value={p.rating} reviews={p.reviews}/>
+        </div>
+      </div>
+    </div>
+    <div className="mt-3 flex flex-wrap gap-1.5">
+      {p.open_24x7 && <Pill tone="amber"><Icon name="clock" className="w-3 h-3"/> 24×7</Pill>}
+      {p.home_delivery && <Pill tone="brand"><Icon name="truck" className="w-3 h-3"/> {p.delivery_eta_minutes} min</Pill>}
+      {p.online_consult && <Pill tone="heal"><Icon name="chat" className="w-3 h-3"/> Free consult</Pill>}
+      <Pill tone="red">{p.discount_pct}% off meds</Pill>
+    </div>
+    <div className="mt-4 text-sm text-ink-500 line-clamp-2">{p.about}</div>
+    <div className="mt-4 flex items-center justify-between text-sm">
+      <span className="text-ink-500"><Icon name="phone" className="w-3.5 h-3.5 inline mr-1"/>{p.phone}</span>
+      <span className="text-brand-600 font-semibold inline-flex items-center gap-1">Order <Icon name="arrowRight" className="w-3.5 h-3.5"/></span>
+    </div>
+  </a>
+);
+
+/* ─── LISTING SHELL (filters + grid) ─────────────────────────── */
+const ListingShell = ({ kind, params }) => {
+  const all = DATA[kind] || [];
+  const [city, setCity] = useState(params.city || "");
+  const [q, setQ] = useState(params.q || "");
+  const [specialty, setSpecialty] = useState("");
+  const [sort, setSort] = useState("relevance");
+  const [feeMax, setFeeMax] = useState(5000);
+  const [onlyVideo, setOnlyVideo] = useState(false);
+  const [only24x7, setOnly24x7] = useState(false);
+  const [onlyHome, setOnlyHome] = useState(false);
+  const [onlyCashless, setOnlyCashless] = useState(false);
+  const resetAll = () => { setCity(""); setSpecialty(""); setFeeMax(5000); setOnlyVideo(false); setOnly24x7(false); setOnlyHome(false); setOnlyCashless(false); setQ(""); };
+
+  const filtered = useMemo(() => {
+    let arr = all.slice();
+    if (city) arr = arr.filter(x => x.city === city);
+    if (q) {
+      const ql = q.toLowerCase();
+      arr = arr.filter(x =>
+        (x.name||"").toLowerCase().includes(ql) ||
+        (x.specialty||"").toLowerCase().includes(ql) ||
+        (x.specialties||[]).join(" ").toLowerCase().includes(ql) ||
+        (x.popular_tests||[]).join(" ").toLowerCase().includes(ql) ||
+        (x.locality||"").toLowerCase().includes(ql)
+      );
+    }
+    if (specialty) {
+      arr = arr.filter(x =>
+        (x.specialty === specialty) ||
+        (x.specialties || []).includes(specialty)
+      );
+    }
+    if (kind === "doctors") {
+      arr = arr.filter(x => x.fee <= feeMax);
+      if (onlyVideo) arr = arr.filter(x => x.available_modes.includes("Video"));
+    }
+    if (kind === "pathology" || kind === "pharmacies" || kind === "hospitals") {
+      if (only24x7) arr = arr.filter(x => x.open_24x7 || x.emergency_24x7);
+    }
+    if (kind === "pathology" || kind === "pharmacies") {
+      if (onlyHome) arr = arr.filter(x => x.home_collection || x.home_delivery);
+    }
+    if (kind === "hospitals" && onlyCashless) arr = arr.filter(x => x.cashless);
+    if (sort === "rating") arr.sort((a,b) => (b.rating||0) - (a.rating||0));
+    if (sort === "price-low" && kind === "doctors") arr.sort((a,b) => (a.fee||0) - (b.fee||0));
+    if (sort === "price-low" && kind === "pathology") arr.sort((a,b) => (a.starting_price||0) - (b.starting_price||0));
+    if (sort === "reviews") arr.sort((a,b) => (b.reviews||0) - (a.reviews||0));
+    return arr;
+  }, [all, city, q, specialty, sort, feeMax, onlyVideo, only24x7, onlyHome, kind]);
+
+  const titles = {
+    doctors:    { h: "Doctors", e: "Find a specialist" },
+    hospitals:  { h: "Hospitals", e: "Hospitals near you" },
+    pathology:  { h: "Diagnostics & Labs", e: "Book lab tests" },
+    pharmacies: { h: "Pharmacies", e: "Order medicines" }
+  }[kind] || { h: kind, e: "" };
+
+  return (
+    <main className="pt-20 pb-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Re-search bar */}
+        <div className="mt-4">
+          <SearchBar initial={{ kind, q, city }}/>
+        </div>
+
+        <div className="mt-6 grid lg:grid-cols-12 gap-6">
+          {/* Filters */}
+          <aside className="lg:col-span-3">
+            <div className="bg-white border border-ink-200 rounded-2xl p-5 sticky top-20">
+              <div className="flex items-center justify-between mb-4">
+                <div className="font-bold text-ink-900 inline-flex items-center gap-2"><Icon name="filter" className="w-4 h-4"/> Filters</div>
+                <button onClick={resetAll} className="text-xs font-semibold text-brand-600 hover:text-brand-700">Reset</button>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="text-xs font-semibold text-ink-700 uppercase tracking-wide">City</label>
+                  <select value={city} onChange={e => setCity(e.target.value)} className="mt-2 w-full text-sm py-2.5 px-3 rounded-xl border border-ink-200 bg-white">
+                    <option value="">All cities</option>
+                    {DATA.CITIES.map(c => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+
+                {(kind === "doctors" || kind === "hospitals") && (
+                  <div>
+                    <label className="text-xs font-semibold text-ink-700 uppercase tracking-wide">Specialty</label>
+                    <select value={specialty} onChange={e => setSpecialty(e.target.value)} className="mt-2 w-full text-sm py-2.5 px-3 rounded-xl border border-ink-200 bg-white">
+                      <option value="">All specialties</option>
+                      {DATA.SPECIALTIES.map(s => <option key={s}>{s}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                {kind === "doctors" && (
+                  <>
+                    <div>
+                      <label className="text-xs font-semibold text-ink-700 uppercase tracking-wide flex items-center justify-between">
+                        <span>Max consult fee</span><span className="text-brand-600">₹{feeMax}</span>
+                      </label>
+                      <input type="range" min={300} max={3000} step={100} value={feeMax} onChange={e => setFeeMax(+e.target.value)} className="mt-2 w-full accent-brand-500"/>
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={onlyVideo} onChange={e => setOnlyVideo(e.target.checked)} className="rounded accent-brand-500"/>
+                      <span className="text-sm text-ink-700">Video consult available</span>
+                    </label>
+                  </>
+                )}
+
+                {(kind === "pathology" || kind === "hospitals" || kind === "pharmacies") && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={only24x7} onChange={e => setOnly24x7(e.target.checked)} className="rounded accent-brand-500"/>
+                    <span className="text-sm text-ink-700">Open 24×7</span>
+                  </label>
+                )}
+
+                {(kind === "pathology" || kind === "pharmacies") && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={onlyHome} onChange={e => setOnlyHome(e.target.checked)} className="rounded accent-brand-500"/>
+                    <span className="text-sm text-ink-700">{kind === "pathology" ? "Home collection" : "Home delivery"}</span>
+                  </label>
+                )}
+
+                {kind === "hospitals" && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={onlyCashless} onChange={e => setOnlyCashless(e.target.checked)} className="rounded accent-brand-500"/>
+                    <span className="text-sm text-ink-700">Cashless insurance accepted</span>
+                  </label>
+                )}
+              </div>
+            </div>
+          </aside>
+
+          {/* Results */}
+          <div className="lg:col-span-9">
+            <div className="flex items-end justify-between gap-3 flex-wrap mb-4">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-widest text-brand-600">{titles.e}</div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-ink-900">
+                  {filtered.length} {titles.h.toLowerCase()} found{city ? ` in ${city}` : ""}
+                </h1>
+              </div>
+              <select value={sort} onChange={e => setSort(e.target.value)} className="text-sm py-2.5 px-3 rounded-xl border border-ink-200 bg-white">
+                <option value="relevance">Relevance</option>
+                <option value="rating">Top rated</option>
+                <option value="reviews">Most reviewed</option>
+                {(kind === "doctors" || kind === "pathology") && <option value="price-low">Price: low to high</option>}
+              </select>
+            </div>
+
+            {filtered.length === 0 ? (
+              <div className="bg-white border border-dashed border-ink-200 rounded-2xl p-12 text-center">
+                <div className="w-14 h-14 mx-auto rounded-2xl bg-ink-100 text-ink-500 flex items-center justify-center"><Icon name="search" className="w-6 h-6"/></div>
+                <div className="mt-4 font-bold text-ink-900">No matches found</div>
+                <div className="text-sm text-ink-500 mt-1">Try a different city or clear some filters.</div>
+                <div className="mt-4 flex justify-center gap-2 flex-wrap">
+                  <Btn size="sm" variant="ghost" onClick={resetAll}>Reset filters</Btn>
+                  <Btn size="sm" as="a" href={`#/${kind}`}>Show all {titles.h.toLowerCase()}</Btn>
+                </div>
+              </div>
+            ) : (
+              <div className={kind === "hospitals" ? "grid sm:grid-cols-2 gap-4" : "grid sm:grid-cols-2 gap-4"}>
+                {filtered.map(item => {
+                  if (kind === "doctors") return <DoctorCard key={item.id} doctor={item}/>;
+                  if (kind === "hospitals") return <HospitalCard key={item.id} hospital={item}/>;
+                  if (kind === "pathology") return <LabCard key={item.id} lab={item}/>;
+                  if (kind === "pharmacies") return <PharmacyCard key={item.id} pharmacy={item}/>;
+                  return null;
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+/* ─── Sample medicines & upload dropzone ─────────────────────── */
+const SAMPLE_MEDS = [
+  { name: "Crocin Advance 500mg", pack: "Strip of 15 tablets", for: "Fever / Pain", mrp: 35 },
+  { name: "Dolo 650mg", pack: "Strip of 15 tablets", for: "Fever / Pain", mrp: 32 },
+  { name: "Azithral 500mg", pack: "Strip of 5 tablets", for: "Antibiotic (Rx)", mrp: 120 },
+  { name: "Pan-D", pack: "Strip of 15 capsules", for: "Acidity", mrp: 165 },
+  { name: "Thyronorm 50 mcg", pack: "Bottle of 120 tablets", for: "Thyroid (Rx)", mrp: 196 },
+  { name: "Metformin 500mg", pack: "Strip of 15 tablets", for: "Diabetes (Rx)", mrp: 28 },
+  { name: "ORS Sachet (Electral)", pack: "Pack of 5 sachets", for: "Rehydration", mrp: 110 },
+  { name: "Calcimax Forte", pack: "Strip of 15 tablets", for: "Calcium + D3", mrp: 175 }
+];
+
+const UploadDropzone = ({ p }) => {
+  const c = useApp();
+  const [name, setName] = useState(null);
+  return (
+    <label className="mt-4 block border-2 border-dashed border-ink-200 rounded-2xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50/30 transition-colors">
+      <Icon name="upload" className="w-7 h-7 mx-auto text-ink-400"/>
+      <div className="mt-2 text-sm font-semibold text-ink-900">{name ? name : "Tap to upload"}</div>
+      <div className="text-xs text-ink-500">JPG, PNG or PDF · up to 10 MB · Demo only — file not stored</div>
+      <input type="file" className="hidden" onChange={(e) => {
+        const fn = e.target.files?.[0]?.name; if (!fn) return;
+        setName(fn); c.notify(`Routed "${fn}" to ${p.name}. A pharmacist will call you back.`);
+      }}/>
+    </label>
+  );
+};
+
+/* ─── REVIEWS BLOCK (deterministic demo reviews) ─────────────── */
+const SAMPLE_REVIEWS = [
+  { name: "Priya S.", text: "Smooth experience, doctor was patient and thorough. Booking was instant.", rating: 5, when: "2 weeks ago" },
+  { name: "Rohit M.", text: "Front-desk was quick, parking is tight but the consult was excellent.", rating: 4, when: "1 month ago" },
+  { name: "Anita K.", text: "Cashless was approved in minutes. Honest pricing, would recommend.", rating: 5, when: "3 weeks ago" },
+  { name: "Vikram J.", text: "Report came in promptly and the summary was easy to understand.", rating: 4, when: "2 months ago" },
+  { name: "Sneha P.", text: "Compassionate care, treated like family. Highly trustworthy.", rating: 5, when: "5 weeks ago" }
+];
+const ReviewsBlock = ({ rating, reviews }) => {
+  const list = SAMPLE_REVIEWS.slice(0, 3);
+  const dist = [5,4,3,2,1].map(s => ({ s, pct: s === 5 ? 68 : s === 4 ? 22 : s === 3 ? 7 : s === 2 ? 2 : 1 }));
+  return (
+    <div className="bg-white border border-ink-200 rounded-2xl p-6">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <h2 className="font-bold text-ink-900 text-lg">Patient reviews</h2>
+        <Pill tone="ink">Only verified patients can review</Pill>
+      </div>
+      <div className="mt-4 grid sm:grid-cols-3 gap-5">
+        <div className="sm:border-r sm:border-ink-100 sm:pr-5">
+          <div className="text-4xl font-extrabold text-ink-900">{rating}<span className="text-base text-ink-400 font-medium"> /5</span></div>
+          <Rating value={rating} reviews={reviews}/>
+          <div className="text-xs text-ink-500 mt-1">{reviews?.toLocaleString()} verified reviews</div>
+        </div>
+        <div className="sm:col-span-2 space-y-1.5">
+          {dist.map(r => (
+            <div key={r.s} className="flex items-center gap-3 text-xs">
+              <span className="w-6 text-ink-500">{r.s}★</span>
+              <div className="flex-1 h-2 rounded-full bg-ink-100 overflow-hidden">
+                <div className="h-full bg-amber-400" style={{ width: `${r.pct}%` }}/>
+              </div>
+              <span className="w-10 text-right text-ink-500">{r.pct}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-5 space-y-3">
+        {list.map((r,i) => (
+          <div key={i} className="border border-ink-100 rounded-2xl p-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Avatar name={r.name} hue={(i*73) % 360} size={32}/>
+                <div>
+                  <div className="text-sm font-semibold text-ink-900">{r.name}</div>
+                  <div className="text-[11px] text-ink-500">{r.when}</div>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-0.5 text-amber-500 text-sm font-semibold">
+                <Icon name="star" className="w-3.5 h-3.5 fill-current" strokeWidth={0}/>{r.rating}.0
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-ink-700">"{r.text}"</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ─── DETAIL PAGES ───────────────────────────────────────────── */
+const DetailHeader = ({ title, subtitle, badges = [], image_hue = 200, icon = "building", rating, reviews, back = "/", backLabel = "Back" }) => (
+  <div className="hero-bg text-white pt-24 pb-10 relative">
+    <div className="absolute inset-0 hero-grid opacity-100 pointer-events-none"/>
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="text-sm text-ink-300 mb-4 flex items-center gap-2 flex-wrap" aria-label="Breadcrumb">
+        <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3.5 h-3.5"/> Home</a>
+        <span className="text-ink-500">/</span>
+        <a href={`#${back}`} className="hover:text-white">{backLabel}</a>
+        <span className="text-ink-500">/</span>
+        <span className="text-white truncate max-w-[200px]">{title}</span>
+      </nav>
+      <div className="flex items-start gap-5 flex-wrap">
+        <div className="w-20 h-20 rounded-3xl avatar-gradient flex items-center justify-center text-white shrink-0" style={{ '--h': image_hue }}>
+          <Icon name={icon} className="w-9 h-9"/>
+        </div>
+        <div className="flex-1 min-w-[280px]">
+          <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight">{title}</h1>
+          <div className="text-ink-300 mt-1">{subtitle}</div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {rating != null && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/15 text-amber-300 text-sm font-semibold border border-amber-300/20">
+                <Icon name="star" className="w-3.5 h-3.5 fill-current" strokeWidth={0}/> {rating} ({reviews?.toLocaleString()} reviews)
+              </span>
+            )}
+            {badges.map((b,i) => (
+              <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-white text-xs font-semibold border border-white/10">{b}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const HospitalDetail = ({ slug }) => {
+  const h = DATA.hospitals.find(x => x.slug === slug);
+  if (!h) return <NotFound/>;
+  const hospDoctors = DATA.doctors.filter(d => d.hospital_id === h.id);
+  return (
+    <main>
+      <DetailHeader
+        title={h.name}
+        subtitle={`${h.type} · ${h.beds} beds · ${h.locality}, ${h.city}`}
+        badges={[...h.accreditation, h.emergency_24x7 && "24×7 Emergency", h.cashless && "Cashless"].filter(Boolean)}
+        image_hue={h.image_hue} icon="building"
+        rating={h.rating} reviews={h.reviews}
+        back="/hospitals" backLabel="Hospitals"
+      />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">About</h2>
+              <p className="mt-2 text-ink-700 leading-relaxed">{h.about}</p>
+              <div className="mt-5 grid sm:grid-cols-3 gap-3 text-center">
+                <div className="rounded-xl bg-ink-50 p-3"><div className="text-2xl font-bold text-ink-900">{h.beds}</div><div className="text-xs text-ink-500 uppercase">Beds</div></div>
+                <div className="rounded-xl bg-ink-50 p-3"><div className="text-2xl font-bold text-ink-900">{h.doctors_count}</div><div className="text-xs text-ink-500 uppercase">Doctors</div></div>
+                <div className="rounded-xl bg-ink-50 p-3"><div className="text-2xl font-bold text-ink-900">{new Date().getFullYear() - h.established}</div><div className="text-xs text-ink-500 uppercase">Years serving</div></div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">Specialties</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {h.specialties.map(s => <Pill key={s} tone="brand">{s}</Pill>)}
+              </div>
+            </div>
+
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">Facilities</h2>
+              <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {h.facilities.map(f => (
+                  <div key={f} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-ink-50 text-sm text-ink-700">
+                    <Icon name="check" className="w-4 h-4 text-heal-500"/> {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {hospDoctors.length > 0 && (
+              <div className="bg-white border border-ink-200 rounded-2xl p-6">
+                <h2 className="font-bold text-ink-900 text-lg">Doctors at {h.name}</h2>
+                <div className="mt-3 grid sm:grid-cols-2 gap-3">
+                  {hospDoctors.map(d => <DoctorCard key={d.id} doctor={d}/>)}
+                </div>
+              </div>
+            )}
+
+            <ReviewsBlock rating={h.rating} reviews={h.reviews}/>
+          </div>
+
+          <aside className="space-y-4">
+            <div className="bg-white border border-ink-200 rounded-2xl p-6 sticky top-20">
+              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Get in touch</div>
+              <div className="mt-3 space-y-2 text-sm text-ink-700">
+                <div className="flex items-start gap-2"><Icon name="map" className="w-4 h-4 mt-0.5 text-ink-400"/> {h.address}</div>
+                <div className="flex items-center gap-2"><Icon name="phone" className="w-4 h-4 text-ink-400"/> {h.phone}</div>
+                <div className="flex items-center gap-2"><Icon name="rupee" className="w-4 h-4 text-ink-400"/> Consult ₹{h.fee_consultation}</div>
+              </div>
+              <div className="mt-5 grid grid-cols-1 gap-2">
+                <Btn size="lg" as="a" href={`tel:${h.phone}`}><Icon name="phone" className="w-4 h-4"/> Call now</Btn>
+                <Btn size="lg" variant="heal" as="a" href={`#/doctors?city=${encodeURIComponent(h.city)}`}><Icon name="calendar" className="w-4 h-4"/> Book consultation</Btn>
+                <Btn size="lg" variant="ghost" as="a" target="_blank" rel="noreferrer"
+                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name + ", " + h.address)}`}>
+                  <Icon name="map" className="w-4 h-4"/> Get directions
+                </Btn>
+                {h.emergency_24x7 && (
+                  <Btn size="lg" variant="danger" className="pulse-soft" as="a" href="tel:102">
+                    <Icon name="alert" className="w-4 h-4"/> Emergency · 102
+                  </Btn>
+                )}
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+const DoctorDetail = ({ slug, onBook }) => {
+  const d = DATA.doctors.find(x => x.slug === slug);
+  if (!d) return <NotFound/>;
+  const hosp = DATA.hospitals.find(h => h.id === d.hospital_id);
+  return (
+    <main>
+      <DetailHeader
+        title={d.name}
+        subtitle={`${d.specialty} · ${d.experience_years} years · ${d.locality}, ${d.city}`}
+        badges={[d.qualification, ...(d.available_modes||[]), `Reg ${d.reg_no}`]}
+        image_hue={d.image_hue} icon="stethoscope"
+        rating={d.rating} reviews={d.reviews}
+        back="/doctors" backLabel="Doctors"
+      />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">About Dr. {d.name.replace(/^Dr\.\s*/, '').split(' ')[0]}</h2>
+              <p className="mt-2 text-ink-700 leading-relaxed">{d.about}</p>
+              {d.awards.length > 0 && (
+                <div className="mt-4">
+                  <div className="text-xs font-semibold uppercase text-ink-500 mb-2">Awards & recognition</div>
+                  <div className="flex flex-wrap gap-2">
+                    {d.awards.map(a => <Pill key={a} tone="amber"><Icon name="award" className="w-3 h-3"/> {a}</Pill>)}
+                  </div>
+                </div>
+              )}
+            </div>
+            {hosp && (
+              <div className="bg-white border border-ink-200 rounded-2xl p-6">
+                <h2 className="font-bold text-ink-900 text-lg">Practices at</h2>
+                <div className="mt-3"><HospitalCard hospital={hosp}/></div>
+              </div>
+            )}
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">Languages spoken</h2>
+              <div className="mt-3 flex gap-2 flex-wrap">{d.languages.map(l => <Pill key={l}>{l}</Pill>)}</div>
+            </div>
+
+            <ReviewsBlock rating={d.rating} reviews={d.reviews}/>
+          </div>
+
+          <aside className="space-y-4">
+            <div className="bg-white border border-ink-200 rounded-2xl p-6 sticky top-20">
+              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Book consultation</div>
+              <div className="mt-3 flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-ink-500">Consult fee</div>
+                  <div className="text-2xl font-bold text-ink-900">₹{d.fee}</div>
+                </div>
+                <Pill tone="heal"><Icon name="clock" className="w-3 h-3"/> {d.next_slot}</Pill>
+              </div>
+
+              <div className="mt-5 grid grid-cols-1 gap-2">
+                {d.available_modes.includes("Video") && (
+                  <Btn size="lg" variant="heal" onClick={() => onBook(d, "Video")}>
+                    <Icon name="video" className="w-4 h-4"/> Video consult
+                  </Btn>
+                )}
+                <Btn size="lg" onClick={() => onBook(d, "In-Clinic")}>
+                  <Icon name="calendar" className="w-4 h-4"/> Book in-clinic
+                </Btn>
+              </div>
+
+              <div className="mt-5 text-xs text-ink-500">
+                100% verified profile · Cancellation up to 1 hour before slot.
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+const PathologyDetail = ({ slug }) => {
+  const l = DATA.pathology.find(x => x.slug === slug);
+  // Stable, deterministic per-test prices (no Math.random in render)
+  const testPrices = useMemo(() => {
+    if (!l) return {};
+    const seed = (s) => s.split("").reduce((a,c) => a + c.charCodeAt(0), 0);
+    return Object.fromEntries(l.popular_tests.map(t => [t, l.starting_price + (seed(t) % 400)]));
+  }, [l && l.id]);
+  if (!l) return <NotFound/>;
+  return (
+    <main>
+      <DetailHeader
+        title={l.name}
+        subtitle={`${l.locality}, ${l.city}`}
+        badges={[l.nabl && "NABL accredited", l.home_collection && "Home collection", l.open_24x7 && "24×7", `${l.report_tat_hours}h TAT`].filter(Boolean)}
+        image_hue={l.image_hue} icon="flask"
+        rating={l.rating} reviews={l.reviews}
+        back="/pathology" backLabel="Diagnostics"
+      />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">About</h2>
+              <p className="mt-2 text-ink-700 leading-relaxed">{l.about}</p>
+              <div className="mt-3 text-sm text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {l.address}</div>
+            </div>
+
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">Popular tests at this lab</h2>
+              <div className="mt-3 divide-y divide-ink-100">
+                {l.popular_tests.map(t => (
+                  <div key={t} className="flex items-center justify-between py-3">
+                    <div>
+                      <div className="font-semibold text-ink-900 text-sm">{t}</div>
+                      <div className="text-xs text-ink-500">Sample at home · Report in {l.report_tat_hours}h</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <div className="text-[11px] text-ink-500">From</div>
+                        <div className="font-bold text-ink-900">₹{testPrices[t]}</div>
+                      </div>
+                      <Btn size="sm" variant="soft">Add</Btn>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">Radiology & scans</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {l.scans.map(s => <Pill key={s} tone="brand">{s}</Pill>)}
+              </div>
+            </div>
+
+            <ReviewsBlock rating={l.rating} reviews={l.reviews}/>
+          </div>
+
+          <aside className="space-y-4">
+            <div className="bg-white border border-ink-200 rounded-2xl p-6 sticky top-20">
+              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Book a test</div>
+              <div className="mt-3 space-y-2 text-sm text-ink-700">
+                <div className="flex items-center gap-2"><Icon name="truck" className="w-4 h-4 text-ink-400"/> Home collection in your area</div>
+                <div className="flex items-center gap-2"><Icon name="clock" className="w-4 h-4 text-ink-400"/> Report in {l.report_tat_hours} hours</div>
+                <div className="flex items-center gap-2"><Icon name="shield" className="w-4 h-4 text-ink-400"/> Auto-saved to your Vault</div>
+              </div>
+              <div className="mt-5 grid gap-2">
+                <Btn size="lg" variant="heal"><Icon name="truck" className="w-4 h-4"/> Schedule home collection</Btn>
+                <Btn size="lg" variant="ghost" as="a" href={`tel:${l.phone}`}><Icon name="phone" className="w-4 h-4"/> {l.phone}</Btn>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+const PharmacyDetail = ({ slug }) => {
+  const p = DATA.pharmacies.find(x => x.slug === slug);
+  if (!p) return <NotFound/>;
+  return (
+    <main>
+      <DetailHeader
+        title={p.name}
+        subtitle={`${p.locality}, ${p.city}`}
+        badges={[p.open_24x7 && "24×7", p.home_delivery && `${p.delivery_eta_minutes} min delivery`, `${p.discount_pct}% off`, p.online_consult && "Free consult"].filter(Boolean)}
+        image_hue={p.image_hue} icon="pill"
+        rating={p.rating} reviews={p.reviews}
+        back="/pharmacies" backLabel="Pharmacies"
+      />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">About</h2>
+              <p className="mt-2 text-ink-700 leading-relaxed">{p.about}</p>
+              <div className="mt-3 text-sm text-ink-500 inline-flex items-center gap-1"><Icon name="map" className="w-4 h-4"/> {p.address}</div>
+            </div>
+
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">Upload prescription</h2>
+              <p className="mt-1 text-sm text-ink-500">Snap your prescription. We'll source genuine meds with up to {p.discount_pct}% off.</p>
+              <UploadDropzone p={p}/>
+            </div>
+
+            <div className="bg-white border border-ink-200 rounded-2xl p-6">
+              <h2 className="font-bold text-ink-900 text-lg">Popular medicines</h2>
+              <p className="mt-1 text-sm text-ink-500">All prices include {p.discount_pct}% off MRP. Demo catalogue.</p>
+              <div className="mt-3 divide-y divide-ink-100">
+                {SAMPLE_MEDS.map(m => {
+                  const price = Math.round(m.mrp * (1 - p.discount_pct/100));
+                  return (
+                    <div key={m.name} className="flex items-center justify-between py-3">
+                      <div className="min-w-0">
+                        <div className="font-semibold text-ink-900 text-sm">{m.name}</div>
+                        <div className="text-xs text-ink-500">{m.pack} · {m.for}</div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <div className="text-[11px] text-ink-500 line-through">₹{m.mrp}</div>
+                          <div className="font-bold text-ink-900">₹{price}</div>
+                        </div>
+                        <Btn size="sm" variant="soft">Add</Btn>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <ReviewsBlock rating={p.rating} reviews={p.reviews}/>
+          </div>
+
+          <aside className="space-y-4">
+            <div className="bg-white border border-ink-200 rounded-2xl p-6 sticky top-20">
+              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Order medicines</div>
+              <div className="mt-3 space-y-2 text-sm text-ink-700">
+                {p.home_delivery && <div className="flex items-center gap-2"><Icon name="truck" className="w-4 h-4 text-ink-400"/> Delivery in {p.delivery_eta_minutes} min</div>}
+                {p.open_24x7 && <div className="flex items-center gap-2"><Icon name="clock" className="w-4 h-4 text-ink-400"/> Open 24×7</div>}
+                {p.online_consult && <div className="flex items-center gap-2"><Icon name="chat" className="w-4 h-4 text-ink-400"/> Free pharmacist chat</div>}
+              </div>
+              <div className="mt-5 grid gap-2">
+                <Btn size="lg" variant="heal"><Icon name="upload" className="w-4 h-4"/> Upload prescription</Btn>
+                <Btn size="lg" variant="ghost" as="a" href={`tel:${p.phone}`}><Icon name="phone" className="w-4 h-4"/> {p.phone}</Btn>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+/* ─── Masked ABHA ID with reveal ─────────────────────────────── */
+const MaskedAbha = ({ id }) => {
+  const [shown, setShown] = useState(false);
+  if (!id) return null;
+  const parts = id.split("-");
+  const masked = parts.length === 4 ? `${parts[0]}-••••-••••-${parts[3]}` : id;
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      ABHA <span className="font-mono text-white">{shown ? id : masked}</span>
+      <button onClick={() => setShown(!shown)} className="text-[11px] uppercase tracking-wide text-brand-300 hover:text-white">
+        {shown ? "hide" : "reveal"}
+      </button>
+    </span>
+  );
+};
+
+/* ─── PATIENT VAULT ──────────────────────────────────────────── */
+const VaultPage = ({ onLoginClick }) => {
+  const { user } = useAuth();
+  const { items, add, remove } = useVault();
+  const c = useApp();
+  const [filter, setFilter] = useState("All");
+  const [adding, setAdding] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+
+  if (!user) {
+    return (
+      <main className="pt-28 pb-16 max-w-3xl mx-auto px-4">
+        <div className="bg-white border border-ink-200 rounded-3xl p-10 text-center card-soft">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center"><Icon name="vault" className="w-8 h-8"/></div>
+          <h1 className="mt-5 text-3xl font-extrabold text-ink-900">Sign in to open your vault</h1>
+          <p className="mt-3 text-ink-500">Your prescriptions, lab reports, scans and insurance — secured and ABDM-linked.</p>
+          <Btn size="lg" className="mt-6" onClick={onLoginClick}><Icon name="user" className="w-4 h-4"/> Sign in with demo</Btn>
+        </div>
+      </main>
+    );
+  }
+
+  const types = ["All", "Lab Report", "Prescription", "Imaging", "Vaccination", "Insurance"];
+  const visible = items.filter(i => filter === "All" || i.type === filter);
+
+  return (
+    <main className="pt-24 pb-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Patient header card */}
+        <div className="rounded-3xl hero-bg text-white p-6 sm:p-8 relative overflow-hidden">
+          <div className="absolute inset-0 hero-grid opacity-100"/>
+          <div className="relative flex flex-col sm:flex-row sm:items-center gap-5">
+            <Avatar name={user.name} hue={user.avatar_hue} size={72}/>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs uppercase tracking-widest text-brand-300">Patient Vault</div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold">{user.name}</h1>
+              <div className="text-sm text-ink-300 mt-1 flex items-center gap-1.5 flex-wrap">
+                <span>{user.blood_group}</span><span>·</span>
+                <span>{user.gender}</span><span>·</span>
+                <span>DOB {user.dob}</span><span>·</span>
+                <MaskedAbha id={user.abha_id}/>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
+                <div className="text-[11px] text-ink-300 uppercase">Records</div>
+                <div className="text-xl font-bold">{items.length}</div>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
+                <div className="text-[11px] text-ink-300 uppercase">Allergies</div>
+                <div className="text-xl font-bold">{user.allergies.length}</div>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
+                <div className="text-[11px] text-ink-300 uppercase">Flagged</div>
+                <div className="text-xl font-bold text-amber-300">{items.filter(i => i.flagged).length}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-12 gap-6 mt-6">
+          {/* Profile sidebar */}
+          <aside className="lg:col-span-3 space-y-4">
+            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Vitals</div>
+              <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                <div><div className="text-xs text-ink-500">Height</div><div className="font-semibold">{user.height_cm} cm</div></div>
+                <div><div className="text-xs text-ink-500">Weight</div><div className="font-semibold">{user.weight_kg} kg</div></div>
+                <div><div className="text-xs text-ink-500">BMI</div><div className="font-semibold">{(user.weight_kg / Math.pow(user.height_cm/100, 2)).toFixed(1)}</div></div>
+                <div><div className="text-xs text-ink-500">Blood</div><div className="font-semibold">{user.blood_group}</div></div>
+              </div>
+            </div>
+            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Allergies</div>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {user.allergies.map(a => <Pill key={a} tone="red">{a}</Pill>)}
+              </div>
+            </div>
+            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Chronic conditions</div>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {user.chronic.map(c => <Pill key={c} tone="amber">{c}</Pill>)}
+              </div>
+            </div>
+            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+              <div className="text-xs font-bold uppercase tracking-wide text-brand-600">Emergency contact</div>
+              <div className="mt-2 text-sm text-ink-700">{user.emergency_contact.name}</div>
+              <div className="text-sm text-ink-500">{user.emergency_contact.phone}</div>
+            </div>
+          </aside>
+
+          {/* Records area */}
+          <div className="lg:col-span-9">
+            <div className="bg-white border border-ink-200 rounded-2xl p-5">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                  {types.map(t => (
+                    <button key={t} onClick={() => setFilter(t)}
+                            className={`px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors
+                              ${filter === t ? "bg-brand-500 text-white" : "bg-ink-50 text-ink-700 hover:bg-ink-100"}`}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Btn size="md" variant="ghost" onClick={() => setSharing(true)}><Icon name="shield" className="w-4 h-4"/> Share with doctor</Btn>
+                  <Btn size="md" variant="heal" onClick={() => setAdding(true)}><Icon name="plus" className="w-4 h-4"/> Add record</Btn>
+                </div>
+              </div>
+
+              <div className="mt-5 grid sm:grid-cols-2 gap-3">
+                {visible.length === 0 ? (
+                  <div className="sm:col-span-2 text-center py-12 text-ink-500">No {filter.toLowerCase()} records yet.</div>
+                ) : visible.map(v => (
+                  <div key={v.id} className="border border-ink-200 rounded-2xl p-4 hover:border-brand-400 transition-colors">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+                          <Icon name={v.type === "Lab Report" ? "flask" : v.type === "Prescription" ? "pill" : v.type === "Imaging" ? "shield" : v.type === "Vaccination" ? "award" : "shield"} className="w-5 h-5"/>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-semibold text-ink-900 text-sm leading-snug">{v.title}</div>
+                          <div className="text-xs text-ink-500 mt-0.5">{v.source} · {v.date}</div>
+                        </div>
+                      </div>
+                      {v.flagged && <Pill tone="amber">Flagged</Pill>}
+                    </div>
+                    <p className="text-xs text-ink-600 mt-3 line-clamp-2">{v.summary}</p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <Pill>{v.type}</Pill>
+                      <div className="flex items-center gap-1">
+                        <button className="p-1.5 rounded-lg text-ink-500 hover:bg-ink-100" title="Download" onClick={() => c.notify(`Demo: would download "${v.title}"`)}><Icon name="download" className="w-4 h-4"/></button>
+                        <button className="p-1.5 rounded-lg text-red-500 hover:bg-red-50" title="Delete" onClick={() => setConfirmDelete(v)}><Icon name="x" className="w-4 h-4"/></button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {adding && <AddRecordModal onClose={() => setAdding(false)} onSave={(rec) => { add(rec); setAdding(false); }}/>}
+      {sharing && <ShareVaultModal items={items} onClose={() => setSharing(false)}/>}
+      {confirmDelete && (
+        <Modal onClose={() => setConfirmDelete(null)} title="Delete this record?">
+          <p className="text-sm text-ink-600">"{confirmDelete.title}" will be removed from your vault. This cannot be undone in the demo.</p>
+          <div className="mt-5 flex justify-end gap-2">
+            <Btn variant="ghost" onClick={() => setConfirmDelete(null)}>Cancel</Btn>
+            <Btn variant="danger" onClick={() => { remove(confirmDelete.id); setConfirmDelete(null); }}>Delete</Btn>
+          </div>
+        </Modal>
+      )}
+    </main>
+  );
+};
+
+/* ─── Share Vault with Doctor modal ──────────────────────────── */
+const ShareVaultModal = ({ items, onClose }) => {
+  const c = useApp();
+  const [doctorId, setDoctorId] = useState(DATA.doctors[0].id);
+  const [selected, setSelected] = useState(items.map(i => i.id));
+  const [hours, setHours] = useState(72);
+  const [step, setStep] = useState(1);
+  const doc = DATA.doctors.find(d => d.id === doctorId);
+  const toggle = (id) => setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+  return (
+    <Modal onClose={onClose} title="Share records with a doctor">
+      {step === 1 && (
+        <div>
+          <Field label="Choose doctor">
+            <select value={doctorId} onChange={e => setDoctorId(e.target.value)} className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm">
+              {DATA.doctors.map(d => <option key={d.id} value={d.id}>{d.name} — {d.specialty} ({d.city})</option>)}
+            </select>
+          </Field>
+          <div className="mt-3">
+            <div className="text-xs font-semibold uppercase tracking-wide text-ink-500 mb-1.5">Select records ({selected.length} of {items.length})</div>
+            <div className="border border-ink-200 rounded-xl max-h-52 overflow-y-auto">
+              {items.length === 0 && <div className="p-4 text-sm text-ink-500">No records to share.</div>}
+              {items.map(i => (
+                <label key={i.id} className="flex items-start gap-2 p-3 border-b border-ink-100 last:border-b-0 cursor-pointer hover:bg-ink-50">
+                  <input type="checkbox" checked={selected.includes(i.id)} onChange={() => toggle(i.id)} className="mt-1 accent-brand-500"/>
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-ink-900 truncate">{i.title}</div>
+                    <div className="text-xs text-ink-500">{i.type} · {i.source} · {i.date}</div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+          <Field label="Access valid for">
+            <select value={hours} onChange={e => setHours(+e.target.value)} className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm">
+              <option value={24}>24 hours</option>
+              <option value={72}>3 days</option>
+              <option value={168}>7 days</option>
+            </select>
+          </Field>
+          <div className="mt-5 flex justify-end gap-2">
+            <Btn variant="ghost" onClick={onClose}>Cancel</Btn>
+            <Btn variant="heal" disabled={!selected.length} onClick={() => setStep(2)}>Generate consent</Btn>
+          </div>
+        </div>
+      )}
+      {step === 2 && (
+        <div className="text-center py-2">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-heal-50 text-heal-600 flex items-center justify-center"><Icon name="check" className="w-7 h-7" strokeWidth={3}/></div>
+          <h3 className="mt-4 text-xl font-extrabold text-ink-900">Consent created</h3>
+          <p className="mt-1 text-sm text-ink-500">{doc.name} can view {selected.length} record(s) for the next {hours} hours.</p>
+          <div className="mt-3 inline-block bg-ink-50 border border-ink-200 rounded-xl px-3 py-1.5 text-xs font-mono text-ink-700">
+            consent-artefact: CA-{Date.now().toString(36).toUpperCase()}
+          </div>
+          <Btn className="mt-5" onClick={() => { c.notify("Consent shared with " + doc.name + "."); onClose(); }}>Done</Btn>
+        </div>
+      )}
+    </Modal>
+  );
+};
+
+const AddRecordModal = ({ onClose, onSave }) => {
+  const [type, setType] = useState("Lab Report");
+  const [title, setTitle] = useState("");
+  const [source, setSource] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().slice(0,10));
+  const [summary, setSummary] = useState("");
+  return (
+    <Modal onClose={onClose} title="Add a record">
+      <div className="space-y-3">
+        <Field label="Record type">
+          <select value={type} onChange={e => setType(e.target.value)} className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm">
+            {["Lab Report","Prescription","Imaging","Vaccination","Insurance"].map(t => <option key={t}>{t}</option>)}
+          </select>
+        </Field>
+        <Field label="Title">
+          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. CBC at Krishna PathLab"
+                 className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/>
+        </Field>
+        <Field label="Source / facility">
+          <input value={source} onChange={e => setSource(e.target.value)} placeholder="e.g. Veda Diagnostics"
+                 className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/>
+        </Field>
+        <Field label="Date">
+          <input type="date" value={date} onChange={e => setDate(e.target.value)}
+                 className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/>
+        </Field>
+        <Field label="Notes / summary">
+          <textarea value={summary} onChange={e => setSummary(e.target.value)} rows={3}
+                    placeholder="Key findings or doctor instructions"
+                    className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/>
+        </Field>
+        <Field label="Attach file (demo)">
+          <label className="block border-2 border-dashed border-ink-200 rounded-xl p-5 text-center cursor-pointer hover:border-brand-400">
+            <Icon name="upload" className="w-5 h-5 mx-auto text-ink-400"/>
+            <div className="mt-1 text-xs text-ink-500">Tap to upload (not saved in demo)</div>
+            <input type="file" className="hidden"/>
+          </label>
+        </Field>
+      </div>
+      <div className="mt-5 flex justify-end gap-2">
+        <Btn variant="ghost" onClick={onClose}>Cancel</Btn>
+        <Btn variant="heal" disabled={!title || !source} onClick={() => onSave({ type, title, source, date, summary, file_kind: "PDF", flagged: false })}>Save to vault</Btn>
+      </div>
+    </Modal>
+  );
+};
+
+const Field = ({ label, children }) => (
+  <label className="block">
+    <div className="text-xs font-semibold uppercase tracking-wide text-ink-500 mb-1.5">{label}</div>
+    {children}
+  </label>
+);
+
+/* ─── LOGIN MODAL ────────────────────────────────────────────── */
+const LoginModal = ({ open, onClose }) => {
+  const { signIn } = useAuth();
+  if (!open) return null;
+  const useDemo = () => { signIn(); onClose(); navigate("/vault"); };
+  return (
+    <Modal onClose={onClose} title="Sign in to MediNext">
+      <p className="text-sm text-ink-500">For this demo, sign in as our pre-loaded patient. In production this will connect to ABDM (ABHA) + OTP / Google.</p>
+      <div className="mt-4 p-4 rounded-2xl bg-ink-50 border border-ink-200 flex items-center gap-3">
+        <Avatar name={DATA.demoPatient.name} hue={DATA.demoPatient.avatar_hue} size={44}/>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-ink-900">{DATA.demoPatient.name}</div>
+          <div className="text-xs text-ink-500 truncate">{DATA.demoPatient.email} · ABHA linked</div>
+        </div>
+        <Btn size="sm" onClick={useDemo}>Continue</Btn>
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <Btn variant="ghost" onClick={useDemo}><Icon name="user" className="w-4 h-4"/> Google</Btn>
+        <Btn variant="ghost" onClick={useDemo}><Icon name="phone" className="w-4 h-4"/> OTP</Btn>
+      </div>
+      <div className="mt-5 text-[11px] text-ink-400 text-center">By continuing you agree to MediNext's Terms & Privacy (ABDM compliant).</div>
+    </Modal>
+  );
+};
+
+/* ─── BOOKING MODAL ──────────────────────────────────────────── */
+const BookingModal = ({ booking, onClose }) => {
+  const [step, setStep] = useState(1);
+  const [slot, setSlot] = useState(null);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  if (!booking) return null;
+  const { doctor, mode } = booking;
+  const slots = ["10:30 AM", "11:15 AM", "12:00 PM", "4:00 PM", "5:30 PM", "6:30 PM", "7:45 PM"];
+  return (
+    <Modal onClose={onClose} title={`${mode} consult with ${doctor.name}`}>
+      {step === 1 && (
+        <div>
+          <div className="text-sm text-ink-500">Pick a slot for today</div>
+          <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
+            {slots.map(s => (
+              <button key={s} onClick={() => setSlot(s)}
+                      className={`py-2.5 rounded-xl text-sm font-semibold border transition-colors
+                        ${slot === s ? "bg-brand-500 text-white border-brand-500" : "bg-white text-ink-700 border-ink-200 hover:border-brand-400"}`}>
+                {s}
+              </button>
+            ))}
+          </div>
+          <div className="mt-5 flex justify-between items-center">
+            <div className="text-sm text-ink-500">Consult fee · <span className="font-semibold text-ink-900">₹{doctor.fee}</span></div>
+            <Btn disabled={!slot} onClick={() => setStep(2)}>Next <Icon name="arrowRight" className="w-4 h-4"/></Btn>
+          </div>
+        </div>
+      )}
+      {step === 2 && (
+        <div>
+          <Field label="Patient name"><input value={name} onChange={e => setName(e.target.value)} placeholder="Full name" className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
+          <div className="mt-3"/>
+          <Field label="Phone (we'll send OTP)"><input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91" className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
+          <div className="mt-5 flex justify-between">
+            <Btn variant="ghost" onClick={() => setStep(1)}>Back</Btn>
+            <Btn variant="heal" disabled={!name || !phone} onClick={() => setStep(3)}>Confirm booking</Btn>
+          </div>
+        </div>
+      )}
+      {step === 3 && (
+        <div className="text-center py-2">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-heal-50 text-heal-600 flex items-center justify-center"><Icon name="check" className="w-7 h-7" strokeWidth={3}/></div>
+          <h3 className="mt-4 text-xl font-extrabold text-ink-900">Booking confirmed</h3>
+          <p className="mt-1 text-sm text-ink-500">{mode} with {doctor.name} at <strong>{slot}</strong>. Confirmation sent to {phone}.</p>
+          <Btn className="mt-5" onClick={onClose}>Done</Btn>
+        </div>
+      )}
+    </Modal>
+  );
+};
+
+/* ─── MODAL SHELL ────────────────────────────────────────────── */
+const Modal = ({ onClose, title, children }) => {
+  const dialogRef = useRef(null);
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    // Focus first focusable element
+    setTimeout(() => {
+      const el = dialogRef.current?.querySelector("input,select,textarea,button");
+      el?.focus?.();
+    }, 50);
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [onClose]);
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink-900/60 p-0 sm:p-4 fade-up" onClick={onClose} role="presentation">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={title}
+           className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 fade-up max-h-[92vh] overflow-y-auto"
+           onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="font-display font-bold text-lg text-ink-900">{title}</div>
+          <button onClick={onClose} className="p-2 rounded-xl text-ink-500 hover:bg-ink-100" aria-label="Close"><Icon name="x" className="w-5 h-5"/></button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+/* ─── STATIC PAGES ───────────────────────────────────────────── */
+const StaticPage = ({ title, eyebrow, children }) => (
+  <main>
+    <div className="hero-bg text-white pt-24 pb-10 relative">
+      <div className="absolute inset-0 hero-grid opacity-100"/>
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="text-sm text-ink-300 mb-3 flex items-center gap-2" aria-label="Breadcrumb">
+          <a href="#/" className="hover:text-white inline-flex items-center gap-1"><Icon name="home" className="w-3.5 h-3.5"/> Home</a>
+          <span className="text-ink-500">/</span>
+          <span className="text-white">{title}</span>
+        </nav>
+        <div className="text-xs font-bold uppercase tracking-widest text-brand-300">{eyebrow}</div>
+        <h1 className="mt-2 text-3xl sm:text-4xl font-extrabold">{title}</h1>
+      </div>
+    </div>
+    <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 pb-16">
+      <div className="bg-white border border-ink-200 rounded-2xl p-6 sm:p-8">{children}</div>
+    </section>
+  </main>
+);
+
+const ContactPage = () => {
+  const c = useApp();
+  const [name, setName] = useState(""), [email, setEmail] = useState(""), [msg, setMsg] = useState(""), [sent, setSent] = useState(false);
+  return (
+    <StaticPage title="Contact us" eyebrow="We're here to help">
+      {sent ? (
+        <div className="text-center py-8">
+          <div className="w-12 h-12 mx-auto rounded-2xl bg-heal-50 text-heal-600 flex items-center justify-center"><Icon name="check" className="w-6 h-6" strokeWidth={3}/></div>
+          <h2 className="mt-4 font-bold text-ink-900 text-xl">Thanks — we'll be in touch.</h2>
+          <p className="text-ink-500 mt-1 text-sm">Our team typically responds within 2 business hours.</p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <div className="font-bold text-ink-900">Talk to a human</div>
+            <p className="text-ink-500 text-sm mt-1">For partnerships, press, or anything urgent.</p>
+            <ul className="mt-4 space-y-2 text-sm text-ink-700">
+              <li className="inline-flex items-center gap-2"><Icon name="phone" className="w-4 h-4 text-ink-400"/> 1800-MEDI-NEXT</li>
+              <li className="inline-flex items-center gap-2"><Icon name="chat" className="w-4 h-4 text-ink-400"/> hello@medinext.in</li>
+              <li className="inline-flex items-center gap-2"><Icon name="map" className="w-4 h-4 text-ink-400"/> Bengaluru · Mumbai · Delhi</li>
+            </ul>
+          </div>
+          <form onSubmit={e => { e.preventDefault(); c.notify("Message sent."); setSent(true); }} className="space-y-3">
+            <Field label="Your name"><input value={name} onChange={e=>setName(e.target.value)} required className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
+            <Field label="Email"><input type="email" value={email} onChange={e=>setEmail(e.target.value)} required className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
+            <Field label="Message"><textarea value={msg} onChange={e=>setMsg(e.target.value)} required rows={4} className="w-full py-2.5 px-3 rounded-xl border border-ink-200 text-sm"/></Field>
+            <Btn type="submit" className="w-full justify-center">Send message</Btn>
+          </form>
+        </div>
+      )}
+    </StaticPage>
+  );
+};
+
+const ListWithUsPage = () => (
+  <StaticPage title="List your facility" eyebrow="Hospitals, clinics, labs & pharmacies">
+    <div className="grid md:grid-cols-2 gap-6 items-start">
+      <div>
+        <p className="text-ink-700 leading-relaxed">Join 1,800+ hospitals and 50,000+ doctors already discoverable on MediNext. Verified listings get 5–8× more enquiries than unclaimed ones.</p>
+        <ul className="mt-4 space-y-2 text-sm text-ink-700">
+          <li className="flex items-start gap-2"><Icon name="check" className="w-4 h-4 text-heal-500 mt-0.5"/> Verified profile badge after NABH/NABL check</li>
+          <li className="flex items-start gap-2"><Icon name="check" className="w-4 h-4 text-heal-500 mt-0.5"/> Real-time appointment slots</li>
+          <li className="flex items-start gap-2"><Icon name="check" className="w-4 h-4 text-heal-500 mt-0.5"/> ABDM-aligned record sharing</li>
+          <li className="flex items-start gap-2"><Icon name="check" className="w-4 h-4 text-heal-500 mt-0.5"/> Free for the first 12 months</li>
+        </ul>
+      </div>
+      <div className="bg-ink-50 border border-ink-200 rounded-2xl p-5">
+        <div className="font-bold text-ink-900">Get a callback</div>
+        <p className="text-sm text-ink-500 mt-1">A partnerships manager will reach out within 24 hours.</p>
+        <a href="#/contact" className="mt-4 inline-flex"><Btn>Request a callback</Btn></a>
+      </div>
+    </div>
+  </StaticPage>
+);
+
+const PrivacyPage = () => (
+  <StaticPage title="Privacy & ABDM" eyebrow="How we handle your data">
+    <div className="prose max-w-none text-ink-700 space-y-4 text-[15px] leading-relaxed">
+      <p>MediNext is built to be compliant with India's Digital Personal Data Protection Act (DPDP) 2023 and the Ayushman Bharat Digital Mission (ABDM) Health Data Management Policy.</p>
+      <p><strong className="text-ink-900">Your data, your control.</strong> Your Patient Vault is governed by a consent-artefact model. Records are shared only when you explicitly grant access, and you can revoke at any time.</p>
+      <p><strong className="text-ink-900">Encryption.</strong> Health records are encrypted at rest and in transit. ABHA identifiers are masked by default in the UI.</p>
+      <p><strong className="text-ink-900">Retention.</strong> You can request deletion of your vault and account at any time at <a href="mailto:privacy@medinext.in" className="text-brand-600">privacy@medinext.in</a>.</p>
+      <p><strong className="text-ink-900">Grievance officer.</strong> Reach our DPO at <a href="mailto:dpo@medinext.in" className="text-brand-600">dpo@medinext.in</a>.</p>
+      <p className="text-xs text-ink-500 mt-6">Demo build — production policy will be reviewed by an empanelled DPIA partner before launch.</p>
+    </div>
+  </StaticPage>
+);
+
+/* ─── 404 ────────────────────────────────────────────────────── */
+const NotFound = () => (
+  <main className="pt-32 pb-24 max-w-2xl mx-auto px-4 text-center">
+    <div className="w-16 h-16 mx-auto rounded-2xl bg-ink-100 text-ink-500 flex items-center justify-center"><Icon name="alert" className="w-8 h-8"/></div>
+    <h1 className="mt-5 text-3xl font-extrabold text-ink-900">Page not found</h1>
+    <p className="mt-2 text-ink-500">The link you followed may be broken or the page may have been moved.</p>
+    <Btn className="mt-5" as="a" href="#/"><Icon name="home" className="w-4 h-4"/> Back home</Btn>
+  </main>
+);
+
+/* ─── APP SHELL / ROUTER ─────────────────────────────────────── */
+function App() {
+  const route = useRoute();
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [booking, setBooking] = useState(null);
+
+  // Render based on route
+  const renderRoute = () => {
+    const [first, second] = route.parts;
+    if (!first) return <HomePage onLoginClick={() => setLoginOpen(true)}/>;
+    // key forces remount when query params change so filter state re-initialises
+    const lKey = first + "?" + new URLSearchParams(route.params).toString();
+    if (first === "hospitals" && !second) return <ListingShell key={lKey} kind="hospitals" params={route.params}/>;
+    if (first === "doctors" && !second)   return <ListingShell key={lKey} kind="doctors" params={route.params}/>;
+    if (first === "pathology" && !second) return <ListingShell key={lKey} kind="pathology" params={route.params}/>;
+    if (first === "pharmacies" && !second)return <ListingShell key={lKey} kind="pharmacies" params={route.params}/>;
+    if (first === "hospital" && second)   return <HospitalDetail slug={second}/>;
+    if (first === "doctor" && second)     return <DoctorDetail slug={second} onBook={(d, m) => setBooking({ doctor: d, mode: m })}/>;
+    if (first === "pathology" && second)  return <PathologyDetail slug={second}/>;
+    if (first === "pharmacy" && second)   return <PharmacyDetail slug={second}/>;
+    if (first === "vault")                return <VaultPage onLoginClick={() => setLoginOpen(true)}/>;
+    if (first === "contact")              return <ContactPage/>;
+    if (first === "list-with-us")         return <ListWithUsPage/>;
+    if (first === "privacy")              return <PrivacyPage/>;
+    return <NotFound/>;
+  };
+
+  return (
+    <>
+      <Navbar onLoginClick={() => setLoginOpen(true)}/>
+      <div className="min-h-screen">{renderRoute()}</div>
+      <Footer/>
+      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)}/>
+      <BookingModal booking={booking} onClose={() => setBooking(null)}/>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <AppProvider>
+    <App/>
+    <ToastHost/>
+  </AppProvider>
+);
+</script>
+</body>
+</html>

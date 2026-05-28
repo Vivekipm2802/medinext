@@ -246,6 +246,37 @@ tailwind.config = {
     font-feature-settings: "kern" 1, "liga" 1;
     letter-spacing: 0;
   }
+
+  /* Saffron → cream → emerald shimmer for Devanagari mantra in hero */
+  @keyframes shimmer-saffron {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .text-shimmer-saffron {
+    background: linear-gradient(
+      100deg,
+      #F59E0B 0%,
+      #FCD34D 18%,
+      #FFF3D6 36%,
+      #6EE7B7 54%,
+      #FFF3D6 72%,
+      #FCD34D 86%,
+      #F59E0B 100%
+    );
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer-saffron 7s ease-in-out infinite;
+    filter: drop-shadow(0 0 28px rgba(252, 211, 77, 0.22));
+  }
+  /* A second slower glow halo behind the line */
+  @keyframes glow-breathe {
+    0%, 100% { opacity: 0.35; transform: scale(0.95); }
+    50%      { opacity: 0.65; transform: scale(1.05); }
+  }
+  .glow-breathe { animation: glow-breathe 6s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -1211,8 +1242,23 @@ const HomePage = ({ onLoginClick }) => {
             <span className="gradient-text-bright italic font-serif font-normal">surprise&nbsp;bills.</span>
           </h1>
 
+          {/* ─── DEVANAGARI MANTRA — saffron→cream→emerald shimmer with glow halo ─── */}
+          <div className="fade-up mt-8 sm:mt-9 relative" style={{ animationDelay: "0.4s" }}>
+            {/* Soft golden glow halo behind */}
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto h-20 max-w-md rounded-full bg-amber-400/15 blur-3xl glow-breathe pointer-events-none"/>
+
+            <div className="relative flex items-center justify-center gap-3 sm:gap-5">
+              <span className="h-px w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-300/50 to-amber-300/70"/>
+              <p className="dev text-[22px] sm:text-[28px] lg:text-[32px] font-semibold tracking-wide text-shimmer-saffron leading-none whitespace-nowrap">
+                मरीज़ पहले<span className="opacity-60">.</span> मुनाफ़ा बाद में<span className="opacity-60">.</span>
+              </p>
+              <span className="h-px w-8 sm:w-16 bg-gradient-to-l from-transparent via-amber-300/50 to-amber-300/70"/>
+            </div>
+            <p className="relative mt-2.5 text-[11px] sm:text-[12px] text-white/55 italic tracking-wide">Patient first. Profit later.</p>
+          </div>
+
           {/* One-line subhead */}
-          <p className="fade-up mt-6 text-[17px] sm:text-[18px] leading-snug text-white/80 max-w-lg mx-auto font-light">
+          <p className="fade-up mt-7 sm:mt-8 text-[17px] sm:text-[18px] leading-snug text-white/80 max-w-lg mx-auto font-light" style={{ animationDelay: "0.2s" }}>
             See what other Indian patients actually paid, <em className="not-italic text-white font-medium">before</em> you book.
           </p>
 
@@ -1281,11 +1327,6 @@ const HomePage = ({ onLoginClick }) => {
               <div className="eyebrow !text-amber-300/80 mb-3">The transparency moat</div>
               <h2 className="display-md text-white">What patients <span className="gradient-text-bright italic font-serif font-normal">actually paid</span> this month.</h2>
               <p className="mt-4 text-[16px] sm:text-[17px] text-white/70 max-w-xl mx-auto">Same procedure. Same city. Up to <span className="text-white font-semibold">13× price difference</span>. This is why MediNext exists.</p>
-              {/* Devanagari brand line */}
-              <p className="dev mt-6 text-[18px] sm:text-[22px] font-medium text-white/85 tracking-wide">
-                मरीज़ पहले<span className="text-amber-300">.</span> मुनाफ़ा बाद में<span className="text-amber-300">.</span>
-              </p>
-              <p className="mt-2 text-[12px] text-white/45 italic">Patient first. Profit later.</p>
             </div>
           </Reveal>
 
